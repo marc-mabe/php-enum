@@ -1,6 +1,19 @@
-### Example
+# php-enum
 
-## The way normal class constants
+This is a native PHP implementation to add enumarable support to PHP.
+It's an abstract class that can be extended to emulate enumerables.
+
+
+# Why not ```SplEnum```
+
+* It's not build-in PHP and requires pecl/extension
+* SplEnum is too much magic under the hod
+* SplEnum hasn't strict comparison
+
+
+# Example
+
+## The way of class constants
 
     class User
     {
@@ -82,7 +95,8 @@
 * Using type-hint makes arguments save
 * Human readable name of a value is simple accessable
 
-### New BSD License
+
+# New BSD License
 
 The files in this archive are released under the New BSD License.
 You can find a copy of this license in LICENSE.txt file.
