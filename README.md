@@ -51,7 +51,7 @@ It's an abstract class that can be extended to emulate enumerables.
 * Hard to extend the list of possible values
 * Hard to get a human readable name of a value
 
-## The way of enumerables:
+## The way of php-enum:
 
     class UserStatusEnum extends Enum
     {
