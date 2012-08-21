@@ -16,7 +16,7 @@ if ('@package_version@' !== PHPUnit_Runner_Version::id() && version_compare(PHPU
 	exit(1);
 }
 
-require_once dirname(__FILE__) . '/../library/Enum.php';
+require_once dirname(__FILE__) . '/../src/Enum.php';
 
 class EnumTest extends PHPUnit_Framework_TestCase
 {
