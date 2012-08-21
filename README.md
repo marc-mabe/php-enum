@@ -11,7 +11,58 @@ It's an abstract class that can be extended to emulate enumerables.
 * SplEnum hasn't strict comparison
 
 
-# Example
+# API
+
+    Enum
+    {
+        protected $value = null;
+        final public function __construct($value = null);
+        final public function getConstants();
+        final public function setValue($value);
+        final public function getValue()
+        final public function setName($name);
+        final public function getName();
+        final public function __toString();
+    }
+
+## Examples:
+
+    // Enum with ONE as default value
+    class MyEnumWithDefaultValue
+    {
+        const ONE = 1;
+        const TWO = 2;
+        protected $value = 1;
+    }
+
+    // Enum without a default value
+    // No argument on constructor results in InvalidArgumentException
+    class MyEnumWithoutDefaultValue
+    {
+        const ONE = 1;
+        const TWO = 2;
+    }
+
+    // Because the $value object property is defined as NULL
+    // a constant with a NULL value gets the default value automatically
+    class MyEnumWithNullAsDefaultValue
+    {
+        const NONE = null;
+        const ONE  = 1;
+        const TWO  = 2;
+    }
+
+    // To disable the last behavior it's possible to set the default value to an unknown value
+    class MyEnumWithoutNullAsDefaultValue
+    {
+        const NONE = null;
+        const ONE  = 1;
+        const TWO  = 2;
+        protected $value = -1;
+    }
+
+
+# Class constants vs. php-enum
 
 ## The way of class constants
 
