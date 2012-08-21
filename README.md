@@ -22,7 +22,8 @@ It's an abstract class that can be extended to emulate enumerables.
         final public function getValue()
         final public function setName($name);
         final public function getName();
-        final public function __toString();
+        final public function __toString(); // Alias of getName()
+        final public function __invoke();   // Alias of getValue()
     }
 
 ## Examples:
