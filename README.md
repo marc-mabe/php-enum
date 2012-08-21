@@ -34,9 +34,9 @@
     Default user status: 0
     Changed user status: 1
 
-* Requires validation on every argument
+* Requires validation on every use
 * Hard to extend the list of possible values
-* Hard to get the name of a value
+* Hard to get a human readable name of a value
 
 ## The way of enumerables:
 
@@ -78,9 +78,9 @@
     Default user status: INACTIVE (0)
     Changed user status: ACTIVE (1)
 
-* Validation already done on basic enum
-* Using type-hint makes argumets save
-* Name of value simple accessable
+* Validation already done on basic class ```Enum```
+* Using type-hint makes arguments save
+* Human readable name of a value is simple accessable
 
 ### New BSD License
 
