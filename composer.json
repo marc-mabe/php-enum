@@ -3,7 +3,10 @@
     "description": "Enumerations for PHP 5 (without SplEnum)",
     "type": "library",
     "keywords": [
-        "enum"
+        "enum",
+        "enumeration",
+        "typehint",
+        "type-hint"
     ],
     "homepage": "http://www.marc-bennewitz.de/",
     "license": "BSD-3-Clause",
