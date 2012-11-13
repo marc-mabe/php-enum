@@ -13,7 +13,7 @@ It's an abstract class that can be extended to emulate enumerables.
 
 # API
 
-    Enum
+    Mabe_Enum
     {
         protected $value = null;
         final public function __construct($value = null);
@@ -29,7 +29,7 @@ It's an abstract class that can be extended to emulate enumerables.
 ## Examples:
 
     // Enum with ONE as default value
-    class MyEnumWithDefaultValue
+    class MyEnumWithDefaultValue extends Mabe_Enum
     {
         const ONE = 1;
         const TWO = 2;
@@ -38,7 +38,7 @@ It's an abstract class that can be extended to emulate enumerables.
 
     // Enum without a default value
     // No argument on constructor results in InvalidArgumentException
-    class MyEnumWithoutDefaultValue
+    class MyEnumWithoutDefaultValue extends Mabe_Enum
     {
         const ONE = 1;
         const TWO = 2;
@@ -46,7 +46,7 @@ It's an abstract class that can be extended to emulate enumerables.
 
     // Because the $value object property is defined as NULL
     // a constant with a NULL value gets the default value automatically
-    class MyEnumWithNullAsDefaultValue
+    class MyEnumWithNullAsDefaultValue extends Mabe_Enum
     {
         const NONE = null;
         const ONE  = 1;
@@ -54,7 +54,7 @@ It's an abstract class that can be extended to emulate enumerables.
     }
 
     // To disable the last behavior it's possible to set the default value to an unknown value
-    class MyEnumWithoutNullAsDefaultValue
+    class MyEnumWithoutNullAsDefaultValue extends Mabe_Enum
     {
         const NONE = null;
         const ONE  = 1;
@@ -105,7 +105,7 @@ It's an abstract class that can be extended to emulate enumerables.
 
 ## The way of php-enum:
 
-    class UserStatusEnum extends Enum
+    class UserStatusEnum extends Mabe_Enum
     {
         const INACTIVE = 0;
         const ACTIVE   = 1;
@@ -143,7 +143,7 @@ It's an abstract class that can be extended to emulate enumerables.
     Default user status: INACTIVE (0)
     Changed user status: ACTIVE (1)
 
-* Validation already done on basic class ```Enum```
+* Validation already done on basic class ```Mabe_Enum```
 * Using type-hint makes arguments save
 * Human readable name of a value is simple accessable
 
