@@ -1,4 +1,4 @@
-# php-enum
+# php-enum [![Build Status](https://secure.travis-ci.org/marc-mabe/php-enum.png?branch=master)](http://travis-ci.org/marc-mabe/php-enum)
 
 This is a native PHP implementation to add enumarable support to PHP.
 It's an abstract class that can be extended to emulate enumerables.
