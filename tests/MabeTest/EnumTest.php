@@ -1,6 +1,6 @@
 <?php
 /**
- * TODO: description
+ * Unit tests for the class Mabe_Enum
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2012 Marc Bennewitz
@@ -16,9 +16,9 @@ if ('@package_version@' !== PHPUnit_Runner_Version::id() && version_compare(PHPU
 	exit(1);
 }
 
-require_once dirname(__FILE__) . '/../src/Enum.php';
+require_once dirname(__FILE__) . '/../../src/Mabe/Enum.php';
 
-class EnumTest extends PHPUnit_Framework_TestCase
+class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
 {
 	
 	public function testEnumWithDefaultValue()
@@ -98,14 +98,14 @@ class EnumTest extends PHPUnit_Framework_TestCase
 	
 }
 
-class EnumWithDefaultValue extends Enum
+class EnumWithDefaultValue extends Mabe_Enum
 {
 	const ONE = 1;
 	const TWO = 2;
 	protected $value = 1;
 }
 
-class EnumWithNullAsDefaultValue extends Enum
+class EnumWithNullAsDefaultValue extends Mabe_Enum
 {
 	const NONE = null;
 	const ONE  = 1;
@@ -113,11 +113,11 @@ class EnumWithNullAsDefaultValue extends Enum
 }
 
 
-class EnumWithoutDefaultValue extends Enum
+class EnumWithoutDefaultValue extends Mabe_Enum
 {
 	const ONE = 1;
 	const TWO = 2;
 }
 
-class EmptyEnum extends Enum
+class EmptyEnum extends Mabe_Enum
 {}
