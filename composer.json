@@ -9,6 +9,12 @@
         "type-hint"
     ],
     "homepage": "http://www.marc-bennewitz.de/",
+    "authors": [{
+        "name":     "Marc Bennewitz",
+        "email":    "php-enum@marc-bennewitz.de",
+        "homepage": "http://www.marc-bennewitz.de/",
+        "role":     "Project Lead"
+    }],
     "license": "BSD-3-Clause",
     "require": {
         "php": ">=5.0.0",
