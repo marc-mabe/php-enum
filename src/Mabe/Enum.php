@@ -29,7 +29,7 @@ abstract class Mabe_Enum
      */
     final public function __construct($value = null)
     {
-        $reflectionClass = new \ReflectionClass($this);
+        $reflectionClass = new ReflectionClass($this);
         $this->constants = $reflectionClass->getConstants();
        
         if (func_num_args() > 0) {
