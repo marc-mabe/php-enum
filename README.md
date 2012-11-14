@@ -128,7 +128,7 @@ It's an abstract class that needs to be extended to use it.
     Changed user status: ACTIVE (1)
 
 
-# Installation
+# Install
 
 ## Composer
 
@@ -198,6 +198,21 @@ to a constant.
         const ONE  = 1;
         const TWO  = 2;
         protected $value = -1;
+    }
+
+## Inheritance
+
+It's also possible to extend other enumerations.
+
+    class MyEnum extends Mabe_Enum
+    {
+        const ONE = 1;
+        const TWO = 2;
+    }
+
+    class EnumInheritance extends MyEnum
+    {
+        const INHERITACE = 'Inheritance';
     }
 
 

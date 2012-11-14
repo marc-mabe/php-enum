@@ -58,8 +58,17 @@ class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
 	{
 		$this->setExpectedException('InvalidArgumentException');
 		new EnumWithoutDefaultValue();
+	}	
+
+	public function testEnumInheritance()
+	{
+		$enum = new EnumInheritance(EnumInheritance::ONE);
+		$this->assertSame(EnumInheritance::ONE, $enum->getValue());
+
+		$enum = new EnumInheritance(EnumInheritance::INHERITACE);
+		$this->assertSame(EnumInheritance::INHERITACE, $enum->getValue());
 	}
-	
+
 	public function testChangeValueOnConstructor()
 	{
 		$enum = new EnumWithoutDefaultValue(1);
@@ -117,6 +126,11 @@ class EnumWithoutDefaultValue extends Mabe_Enum
 {
 	const ONE = 1;
 	const TWO = 2;
+}
+
+class EnumInheritance extends EnumWithoutDefaultValue
+{
+	const INHERITACE = 'Inheritance';
 }
 
 class EmptyEnum extends Mabe_Enum
