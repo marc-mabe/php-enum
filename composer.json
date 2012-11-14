@@ -1,6 +1,6 @@
 {
     "name": "marc-mabe/php-enum",
-    "description": "Enumerations for PHP 5 (without SplEnum)",
+    "description": "Simple and fast implementation of enumerations with native PHP 5.*",
     "type": "library",
     "keywords": [
         "enum",
@@ -8,18 +8,21 @@
         "typehint",
         "type-hint"
     ],
-    "homepage": "http://www.marc-bennewitz.de/",
+    "homepage": "https://github.com/marc-mabe/php-enum",
     "authors": [{
         "name":     "Marc Bennewitz",
         "email":    "php-enum@marc-bennewitz.de",
         "homepage": "http://www.marc-bennewitz.de/",
-        "role":     "Project Lead"
+        "role":     "Lead"
     }],
     "license": "BSD-3-Clause",
     "require": {
-        "php": ">=5.0.0",
+        "php": ">=5.0",
         "ext-reflection": "*"
     },
+    "require-dev": {
+        "phpunit/phpunit": ">=3.6"
+    }
     "autoload": {
         "psr-0": {
             "Mabe_": "src/",
