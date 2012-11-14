@@ -169,7 +169,7 @@ Don't define a ```$value``` to not define a default value if none of your
 constant values has ```NULL``` as value.
 
 That's because ```$value``` was defined as ```NULL``` in the base class and
-No constant assignable to the default value.
+no constant assignable to the default value.
 
     class MyEnumWithoutDefaultValue extends Mabe_Enum
     {
