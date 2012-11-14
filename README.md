@@ -45,10 +45,6 @@ It's an abstract class that needs to be extended to use it.
 
 ## The way of class constants
 
-* Requires validation on every use
-* Hard to extend the list of possible values
-* Hard to get a human readable name of a value
-
     class User
     {
         const INACTIVE = 0;
@@ -82,11 +78,11 @@ It's an abstract class that needs to be extended to use it.
     Default user status: 0
     Changed user status: 1
 
-## The way of php-enum:
+* Requires validation on every use
+* Hard to extend the list of possible values
+* Hard to get a human readable name of a value
 
-* Validation will be already done on basic class ```Mabe_Enum```
-* Using type-hint makes arguments save
-* Human readable name of a value is simple accessable
+## The way of php-enum:
 
     class UserStatusEnum extends Mabe_Enum
     {
@@ -127,6 +123,10 @@ It's an abstract class that needs to be extended to use it.
     Default user status: INACTIVE (0)
     Changed user status: ACTIVE (1)
 
+* Validation will be already done on basic class ```Mabe_Enum```
+* Using type-hint makes arguments save
+* Human readable name of a value is simple accessable
+
 
 # Install
 
@@ -138,12 +138,14 @@ Add ```marc-mabe/php-enum``` to the project's composer.json dependencies and run
 ## GIT
 
 ```git clone git://github.com/marc-mabe/php-enum.git```
+
 (The class ```Mabe_Enum``` will be located in ```src/Mabe/Enum.php```)
 
 ## ZIP / TAR
 
 Download the last version from [Github](https://github.com/marc-mabe/php-enum/tags)
 and extract it.
+
 (The class ```Mabe_Enum``` will be located in ```src/Mabe/Enum.php```)
 
 
@@ -169,13 +171,13 @@ constant values has ```NULL``` as value.
 That's because ```$value``` was defined as ```NULL``` in the base class and
 No constant assignable to the default value.
 
-* No argument on constructor results in an InvalidArgumentException
-
     class MyEnumWithoutDefaultValue extends Mabe_Enum
     {
         const ONE = 1;
         const TWO = 2;
     }
+
+* No argument on constructor results in an InvalidArgumentException
 
 ## Constant with NULL as value
 
