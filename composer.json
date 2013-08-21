@@ -25,8 +25,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Mabe_": "src/",
-            "MabeTest_": "tests/"
+            "Mabe_": "src/"
         }
     }
 }
