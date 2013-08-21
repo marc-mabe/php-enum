@@ -20,117 +20,114 @@ require_once dirname(__FILE__) . '/../../src/Mabe/Enum.php';
 
 class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
 {
-	
-	public function testEnumWithDefaultValue()
-	{
-		$enum = new EnumWithDefaultValue();
-		
-		$this->assertSame(array(
-			'ONE' => 1,
-			'TWO' => 2,
-		), $enum->getConstants());
-		
-		$this->assertSame(1, $enum->getValue());
-		$this->assertSame(1, $enum->__invoke());
-		
-		$this->assertSame('ONE', $enum->getName());
-		$this->assertSame('ONE', $enum->__toString());
-	}
-	
-	public function testEnumWithNullAsDefaultValue()
-	{
-		$enum = new EnumWithNullAsDefaultValue();
-	
-		$this->assertSame(array(
-			'NONE' => null,
-			'ONE'  => 1,
-			'TWO'  => 2,
-		), $enum->getConstants());
-	
-		$this->assertNull($enum->getValue());
-		$this->assertNull($enum->__invoke());
-	
-		$this->assertSame('NONE', $enum->getName());
-		$this->assertSame('NONE', $enum->__toString());
-	}
-	
-	public function testEnumWithoutDefaultValue()
-	{
-		$this->setExpectedException('InvalidArgumentException');
-		new EnumWithoutDefaultValue();
-	}	
 
-	public function testEnumInheritance()
-	{
-		$enum = new EnumInheritance(EnumInheritance::ONE);
-		$this->assertSame(EnumInheritance::ONE, $enum->getValue());
+    public function testEnumWithDefaultValue()
+    {
+        $enum = new EnumWithDefaultValue();
 
-		$enum = new EnumInheritance(EnumInheritance::INHERITACE);
-		$this->assertSame(EnumInheritance::INHERITACE, $enum->getValue());
-	}
+        $this->assertSame(array(
+            'ONE' => 1,
+            'TWO' => 2,
+        ), $enum->getConstants());
 
-	public function testChangeValueOnConstructor()
-	{
-		$enum = new EnumWithoutDefaultValue(1);
-		
-		$this->assertSame(1, $enum->getValue());
-		$this->assertSame(1, $enum->__invoke());
-		
-		$this->assertSame('ONE', $enum->getName());
-		$this->assertSame('ONE', $enum->__toString());
-	}
-	
-	public function testChangeValueOnConstructorThrowsInvalidArgumentExceptionOnStrictComparison()
-	{
-		$this->setExpectedException('InvalidArgumentException');
-		$enum = new EnumWithoutDefaultValue('1');
-	}
-	
-	public function testSetValue()
-	{
-		$enum = new EnumWithDefaultValue();
-		$enum->setValue(2);
-	
-		$this->assertSame(2, $enum->getValue());
-		$this->assertSame(2, $enum->__invoke());
-	
-		$this->assertSame('TWO', $enum->getName());
-		$this->assertSame('TWO', $enum->__toString());
-	}
-	
-	public function testSetValueThrowsInvalidArgumentExceptionOnStrictComparison()
-	{
-		$this->setExpectedException('InvalidArgumentException');
-		$enum = new EnumWithDefaultValue();
-		$enum->setValue('2');
-	}
-	
+        $this->assertSame(1, $enum->getValue());
+        $this->assertSame('1', $enum->__toString());
+
+        $this->assertSame('ONE', $enum->getName());
+    }
+
+    public function testGetNameReturnsConstantNameOfCurrentValue()
+    {
+        $enum = new EnumWithoutDefaultValue(EnumWithoutDefaultValue::ONE);
+        $this->assertSame('ONE', $enum->getName());
+    }
+
+    public function testToStringMagicMethodReturnsValueAsString()
+    {
+        $enum = new EnumWithoutDefaultValue(EnumWithoutDefaultValue::ONE);
+        $this->assertSame('1', $enum->__toString());
+    }
+
+    public function testEnumWithNullAsDefaultValue()
+    {
+        $enum = new EnumWithNullAsDefaultValue();
+
+        $this->assertSame(array(
+            'NONE' => null,
+            'ONE'  => 1,
+            'TWO'  => 2,
+        ), $enum->getConstants());
+
+        $this->assertNull($enum->getValue());
+    }
+
+    public function testEnumWithoutDefaultValue()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        new EnumWithoutDefaultValue();
+    }
+
+    public function testEnumInheritance()
+    {
+        $enum = new EnumInheritance(EnumInheritance::ONE);
+        $this->assertSame(EnumInheritance::ONE, $enum->getValue());
+
+        $enum = new EnumInheritance(EnumInheritance::INHERITACE);
+        $this->assertSame(EnumInheritance::INHERITACE, $enum->getValue());
+    }
+
+    public function testChangeValueOnConstructor()
+    {
+        $enum = new EnumWithoutDefaultValue(1);
+        $this->assertSame(1, $enum->getValue());
+    }
+
+    public function testChangeValueOnConstructorThrowsInvalidArgumentExceptionOnStrictComparison()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        $enum = new EnumWithoutDefaultValue('1');
+    }
+
+    public function testSetValue()
+    {
+        $enum = new EnumWithDefaultValue();
+        $enum->setValue(2);
+
+        $this->assertSame(2, $enum->getValue());
+    }
+
+    public function testSetValueThrowsInvalidArgumentExceptionOnStrictComparison()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        $enum = new EnumWithDefaultValue();
+        $enum->setValue('2');
+    }
 }
 
 class EnumWithDefaultValue extends Mabe_Enum
 {
-	const ONE = 1;
-	const TWO = 2;
-	protected $value = 1;
+    const ONE = 1;
+    const TWO = 2;
+    protected $value = 1;
 }
 
 class EnumWithNullAsDefaultValue extends Mabe_Enum
 {
-	const NONE = null;
-	const ONE  = 1;
-	const TWO  = 2;
+    const NONE = null;
+    const ONE  = 1;
+    const TWO  = 2;
 }
 
 
 class EnumWithoutDefaultValue extends Mabe_Enum
 {
-	const ONE = 1;
-	const TWO = 2;
+    const ONE = 1;
+    const TWO = 2;
 }
 
 class EnumInheritance extends EnumWithoutDefaultValue
 {
-	const INHERITACE = 'Inheritance';
+    const INHERITACE = 'Inheritance';
 }
 
 class EmptyEnum extends Mabe_Enum

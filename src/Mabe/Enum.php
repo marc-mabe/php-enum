@@ -14,7 +14,7 @@ abstract class Mabe_Enum
      * @var mixed
      */
     protected $value = null;
-    
+
     /**
      * An array of available constants
      * @var array
@@ -31,7 +31,7 @@ abstract class Mabe_Enum
     {
         $reflectionClass = new ReflectionClass($this);
         $this->constants = $reflectionClass->getConstants();
-       
+
         if (func_num_args() > 0) {
             $this->setValue($value);
         } elseif (!in_array($this->value, $this->constants, true)) {
@@ -47,7 +47,7 @@ abstract class Mabe_Enum
     {
         return $this->constants;
     }
-    
+
     /**
      * Select a new value
      * @param mixed $value
@@ -99,16 +99,6 @@ abstract class Mabe_Enum
      */
     final public function __toString()
     {
-        return $this->getName();
-    }
-    
-    /**
-     * Get the current selected value
-     * @return mixed
-     * @see getValue()
-     */
-    final public function __invoke()
-    {
-        return $this->getValue();
+        return (string) $this->value;
     }
 }
