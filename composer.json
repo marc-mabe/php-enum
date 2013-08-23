@@ -21,7 +21,9 @@
         "ext-reflection": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": ">=3.6"
+        "squizlabs/php_codesniffer": "1.4.*",
+        "phpunit/phpunit": ">=3.6",
+        "satooshi/php-coveralls": "~0.6"
     },
     "autoload": {
         "psr-0": {
