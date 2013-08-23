@@ -1,12 +1,12 @@
 <?php
-/**
-* Class to implement enumerations for PHP 5 (without SplEnum) 
-* 
-* @link http://github.com/marc-mabe/php-enum for the canonical source repository
-* @copyright Copyright (c) 2012 Marc Bennewitz
-* @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
-*/
 
+/**
+ * Class to implement enumerations for PHP 5 (without SplEnum)
+ *
+ * @link http://github.com/marc-mabe/php-enum for the canonical source repository
+ * @copyright Copyright (c) 2012 Marc Bennewitz
+ * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ */
 abstract class Mabe_Enum
 {
     /**

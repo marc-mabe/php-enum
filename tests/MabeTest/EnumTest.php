@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unit tests for the class Mabe_Enum
  *
@@ -6,29 +7,19 @@
  * @copyright Copyright (c) 2012 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-
-error_reporting(E_ALL | E_STRICT);
-
-// init PHPUnit
-require_once 'PHPUnit/Framework/TestCase.php';
-if ('@package_version@' !== PHPUnit_Runner_Version::id() && version_compare(PHPUnit_Runner_Version::id(), '3.6.0', '<')) {
-	echo 'This version of PHPUnit (' . PHPUnit_Runner_Version::id() . ') is not supported.' . PHP_EOL;
-	exit(1);
-}
-
-require_once dirname(__FILE__) . '/../../src/Mabe/Enum.php';
-
 class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
 {
-
     public function testEnumWithDefaultValue()
     {
         $enum = new EnumWithDefaultValue();
 
-        $this->assertSame(array(
-            'ONE' => 1,
-            'TWO' => 2,
-        ), $enum->getConstants());
+        $this->assertSame(
+            array(
+                'ONE' => 1,
+                'TWO' => 2,
+            ),
+            $enum->getConstants()
+        );
 
         $this->assertSame(1, $enum->getValue());
         $this->assertSame('1', $enum->__toString());
