@@ -7,11 +7,11 @@
  * @copyright Copyright (c) 2012 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
+class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
 {
     public function testEnumWithDefaultValue()
     {
-        $enum = new EnumWithDefaultValue();
+        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
 
         $this->assertSame(
             array(
@@ -29,19 +29,19 @@ class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
 
     public function testGetNameReturnsConstantNameOfCurrentValue()
     {
-        $enum = new EnumWithoutDefaultValue(EnumWithoutDefaultValue::ONE);
+        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE);
         $this->assertSame('ONE', $enum->getName());
     }
 
     public function testToStringMagicMethodReturnsValueAsString()
     {
-        $enum = new EnumWithoutDefaultValue(EnumWithoutDefaultValue::ONE);
+        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE);
         $this->assertSame('1', $enum->__toString());
     }
 
     public function testEnumWithNullAsDefaultValue()
     {
-        $enum = new EnumWithNullAsDefaultValue();
+        $enum = new MabeEnumTest_TestAsset_EnumWithNullAsDefaultValue();
 
         $this->assertSame(array(
             'NONE' => null,
@@ -55,33 +55,33 @@ class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
     public function testEnumWithoutDefaultValue()
     {
         $this->setExpectedException('InvalidArgumentException');
-        new EnumWithoutDefaultValue();
+        new MabeEnumTest_TestAsset_EnumWithoutDefaultValue();
     }
 
     public function testEnumInheritance()
     {
-        $enum = new EnumInheritance(EnumInheritance::ONE);
-        $this->assertSame(EnumInheritance::ONE, $enum->getValue());
+        $enum = new MabeEnumTest_TestAsset_EnumInheritance(MabeEnumTest_TestAsset_EnumInheritance::ONE);
+        $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::ONE, $enum->getValue());
 
-        $enum = new EnumInheritance(EnumInheritance::INHERITACE);
-        $this->assertSame(EnumInheritance::INHERITACE, $enum->getValue());
+        $enum = new MabeEnumTest_TestAsset_EnumInheritance(MabeEnumTest_TestAsset_EnumInheritance::INHERITACE);
+        $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::INHERITACE, $enum->getValue());
     }
 
     public function testChangeValueOnConstructor()
     {
-        $enum = new EnumWithoutDefaultValue(1);
+        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(1);
         $this->assertSame(1, $enum->getValue());
     }
 
     public function testChangeValueOnConstructorThrowsInvalidArgumentExceptionOnStrictComparison()
     {
         $this->setExpectedException('InvalidArgumentException');
-        $enum = new EnumWithoutDefaultValue('1');
+        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue('1');
     }
 
     public function testSetValue()
     {
-        $enum = new EnumWithDefaultValue();
+        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
         $enum->setValue(2);
 
         $this->assertSame(2, $enum->getValue());
@@ -90,36 +90,7 @@ class MabeTest_EnumTest extends PHPUnit_Framework_TestCase
     public function testSetValueThrowsInvalidArgumentExceptionOnStrictComparison()
     {
         $this->setExpectedException('InvalidArgumentException');
-        $enum = new EnumWithDefaultValue();
+        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
         $enum->setValue('2');
     }
 }
-
-class EnumWithDefaultValue extends Mabe_Enum
-{
-    const ONE = 1;
-    const TWO = 2;
-    protected $value = 1;
-}
-
-class EnumWithNullAsDefaultValue extends Mabe_Enum
-{
-    const NONE = null;
-    const ONE  = 1;
-    const TWO  = 2;
-}
-
-
-class EnumWithoutDefaultValue extends Mabe_Enum
-{
-    const ONE = 1;
-    const TWO = 2;
-}
-
-class EnumInheritance extends EnumWithoutDefaultValue
-{
-    const INHERITACE = 'Inheritance';
-}
-
-class EmptyEnum extends Mabe_Enum
-{}

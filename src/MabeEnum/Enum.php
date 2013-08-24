@@ -7,7 +7,7 @@
  * @copyright Copyright (c) 2012 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-abstract class Mabe_Enum
+abstract class MabeEnum_Enum
 {
     /**
      * The current selected value
