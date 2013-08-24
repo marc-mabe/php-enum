@@ -27,7 +27,7 @@ abstract class Mabe_Enum
      * @param mixed $value The value to select
      * @throws InvalidArgumentException
      */
-    final public function __construct($value = null)
+    public function __construct($value = null)
     {
         $reflectionClass = new ReflectionClass($this);
         $this->constants = $reflectionClass->getConstants();
