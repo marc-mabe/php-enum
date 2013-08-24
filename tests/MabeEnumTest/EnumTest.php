@@ -93,4 +93,21 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
         $enum->setValue('2');
     }
+
+    public function testSetName()
+    {
+        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
+        $enum->setValue(2);
+        $enum->setName('ONE');
+        $this->assertEquals(1, $enum->getValue());
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testSetInvalidName()
+    {
+        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
+        $enum->setName('FOO');
+    }
 }
