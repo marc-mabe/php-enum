@@ -6,8 +6,14 @@ php:
   - 5.4
   - 5.5
 
-script:
- - phpunit --strict --verbose ./tests
+before_script:
+  - composer self-update
+  - composer update --prefer-source --dev
 
-notifications:
-  email: false
+script:
+  - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
+  - ./vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/
+
+after_script:
+  - php vendor/bin/coveralls -v
+
