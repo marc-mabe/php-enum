@@ -6,13 +6,8 @@ php:
   - 5.4
   - 5.5
 
-before_script:
-  - composer self-update
-  - composer update --prefer-source --dev
-
 script:
-  - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
+ - phpunit --strict --verbose ./tests
 
 after_script:
   - php vendor/bin/coveralls -v
-
