@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for the class Mabe_Enum
+ * Unit tests for the class MabeEnum_Enum
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2012 Marc Bennewitz
