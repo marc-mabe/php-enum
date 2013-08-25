@@ -7,7 +7,7 @@ php:
   - 5.5
 
 script:
- - phpunit --strict --verbose ./tests
+ - phpunit
 
-after_script:
-  - php vendor/bin/coveralls -v
+notifications:
+  email: false
