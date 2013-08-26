@@ -1,4 +1,9 @@
-# php-enum [![Build Status](https://secure.travis-ci.org/marc-mabe/php-enum.png?branch=master)](http://travis-ci.org/marc-mabe/php-enum)
+# php-enum
+[![Build Status](https://secure.travis-ci.org/marc-mabe/php-enum.png?branch=master)](http://travis-ci.org/marc-mabe/php-enum)
+[![Total Downloads](https://poser.pugx.org/marc-mabe/php-enum/downloads.png)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Latest Stable Version](https://poser.pugx.org/marc-mabe/php-enum/v/stable.png)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Latest Unstable Version](https://poser.pugx.org/marc-mabe/php-enum/v/unstable.png)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Dependency Status](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master/badge.png)](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master)
 
 This is a native PHP implementation to add enumeration support to PHP 5.x.
 It's an abstract class that needs to be extended to use it.
@@ -27,17 +32,16 @@ It's an abstract class that needs to be extended to use it.
 
 # API
 
-    Mabe_Enum
+    MabeEnum_Enum
     {
         protected $value = null;
-        final public function __construct($value = null);
+        public function __construct($value = null);
         final public function getConstants();
         final public function setValue($value);
         final public function getValue()
         final public function setName($name);
         final public function getName();
-        final public function __toString(); // Alias of getName()
-        final public function __invoke();   // Alias of getValue()
+        final public function __toString(); // Alias of getValue()
     }
 
 
@@ -84,7 +88,7 @@ It's an abstract class that needs to be extended to use it.
 
 ## The way of php-enum:
 
-    class UserStatusEnum extends Mabe_Enum
+    class UserStatusEnum extends MabeEnum_Enum
     {
         const INACTIVE = 0;
         const ACTIVE   = 1;
@@ -123,7 +127,7 @@ It's an abstract class that needs to be extended to use it.
     Default user status: INACTIVE (0)
     Changed user status: ACTIVE (1)
 
-* Validation will be already done on basic class ```Mabe_Enum```
+* Validation will be already done on basic class ```MabeEnum_Enum```
 * Using type-hint makes arguments save
 * Human readable name of a value is simple accessable
 
@@ -139,14 +143,14 @@ Add ```marc-mabe/php-enum``` to the project's composer.json dependencies and run
 
 ```git clone git://github.com/marc-mabe/php-enum.git```
 
-(The class ```Mabe_Enum``` will be located in ```src/Mabe/Enum.php```)
+(The class ```MabeEnum_Enum``` will be located in ```src/Mabe/Enum.php```)
 
 ## ZIP / TAR
 
 Download the last version from [Github](https://github.com/marc-mabe/php-enum/tags)
 and extract it.
 
-(The class ```Mabe_Enum``` will be located in ```src/Mabe/Enum.php```)
+(The class ```MabeEnum_Enum``` will be located in ```src/Mabe/Enum.php```)
 
 
 # Examples
@@ -156,7 +160,7 @@ and extract it.
 This example defines the constant ```ONE``` with value ```1``` as default
 value.
 
-    class MyEnumWithDefaultValue extends Mabe_Enum
+    class MyEnumWithDefaultValue extends MabeEnum_Enum
     {
         const ONE = 1;
         const TWO = 2;
@@ -171,7 +175,7 @@ constant values has ```NULL``` as value.
 That's because ```$value``` was defined as ```NULL``` in the base class and
 no constant assignable to the default value.
 
-    class MyEnumWithoutDefaultValue extends Mabe_Enum
+    class MyEnumWithoutDefaultValue extends MabeEnum_Enum
     {
         const ONE = 1;
         const TWO = 2;
@@ -184,7 +188,7 @@ no constant assignable to the default value.
 Because ```$value``` property is defined as ```NULL``` a constant with
 ```NULL```  as value gets the default value automatically.
 
-    class MyEnumWithNullAsDefaultValue extends Mabe_Enum
+    class MyEnumWithNullAsDefaultValue extends MabeEnum_Enum
     {
         const NONE = null;
         const ONE  = 1;
@@ -194,7 +198,7 @@ Because ```$value``` property is defined as ```NULL``` a constant with
 To disable this behavior simply define ```$value``` to a value not assignable
 to a constant.
 
-    class MyEnumWithoutNullAsDefaultValue extends Mabe_Enum
+    class MyEnumWithoutNullAsDefaultValue extends MabeEnum_Enum
     {
         const NONE = null;
         const ONE  = 1;
@@ -206,7 +210,7 @@ to a constant.
 
 It's also possible to extend other enumerations.
 
-    class MyEnum extends Mabe_Enum
+    class MyEnum extends MabeEnum_Enum
     {
         const ONE = 1;
         const TWO = 2;
