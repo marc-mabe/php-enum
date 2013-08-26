@@ -1,5 +1,6 @@
 # php-enum
 [![Build Status](https://secure.travis-ci.org/marc-mabe/php-enum.png?branch=master)](http://travis-ci.org/marc-mabe/php-enum)
+[![Coverage Status](https://coveralls.io/repos/marc-mabe/php-enum/badge.png?branch=master)](https://coveralls.io/r/marc-mabe/php-enum?branch=master)
 [![Total Downloads](https://poser.pugx.org/marc-mabe/php-enum/downloads.png)](https://packagist.org/packages/marc-mabe/php-enum)
 [![Latest Stable Version](https://poser.pugx.org/marc-mabe/php-enum/v/stable.png)](https://packagist.org/packages/marc-mabe/php-enum)
 [![Latest Unstable Version](https://poser.pugx.org/marc-mabe/php-enum/v/unstable.png)](https://packagist.org/packages/marc-mabe/php-enum)
@@ -143,14 +144,10 @@ Add ```marc-mabe/php-enum``` to the project's composer.json dependencies and run
 
 ```git clone git://github.com/marc-mabe/php-enum.git```
 
-(The class ```MabeEnum_Enum``` will be located in ```src/Mabe/Enum.php```)
-
 ## ZIP / TAR
 
 Download the last version from [Github](https://github.com/marc-mabe/php-enum/tags)
 and extract it.
-
-(The class ```MabeEnum_Enum``` will be located in ```src/Mabe/Enum.php```)
 
 
 # Examples
@@ -164,7 +161,7 @@ value.
     {
         const ONE = 1;
         const TWO = 2;
-        protected $value = 1;
+        protected $value = self::ONE;
     }
 
 ## Enum without a default value
