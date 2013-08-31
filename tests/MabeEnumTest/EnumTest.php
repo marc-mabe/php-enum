@@ -25,6 +25,7 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $this->assertSame('1', $enum->__toString());
 
         $this->assertSame('ONE', $enum->getName());
+        $this->assertSame(0, $enum->getOrdinal());
     }
 
     public function testGetNameReturnsConstantNameOfCurrentValue()
@@ -61,53 +62,30 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
     public function testEnumInheritance()
     {
         $enum = new MabeEnumTest_TestAsset_EnumInheritance(MabeEnumTest_TestAsset_EnumInheritance::ONE);
+        $this->assertSame(array(
+            'ONE'         => 1,
+            'TWO'         => 2,
+            'INHERITANCE' => 'Inheritance'
+        ), $enum->getConstants());
         $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::ONE, $enum->getValue());
+        $this->assertSame(0, $enum->getOrdinal());
 
-        $enum = new MabeEnumTest_TestAsset_EnumInheritance(MabeEnumTest_TestAsset_EnumInheritance::INHERITACE);
-        $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::INHERITACE, $enum->getValue());
+        $enum = new MabeEnumTest_TestAsset_EnumInheritance(MabeEnumTest_TestAsset_EnumInheritance::INHERITANCE);
+        $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::INHERITANCE, $enum->getValue());
+        $this->assertSame(2, $enum->getOrdinal());
     }
 
-    public function testChangeValueOnConstructor()
+    public function testConstructorStrictValue()
     {
-        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(1);
+        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE);
         $this->assertSame(1, $enum->getValue());
+        $this->assertSame(0, $enum->getOrdinal());
     }
 
-    public function testChangeValueOnConstructorThrowsInvalidArgumentExceptionOnStrictComparison()
+    public function testConstuctorNonStrictValue()
     {
-        $this->setExpectedException('InvalidArgumentException');
-        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue('1');
-    }
-
-    public function testSetValue()
-    {
-        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
-        $enum->setValue(2);
-
+        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue((string)MabeEnumTest_TestAsset_EnumWithoutDefaultValue::TWO);
         $this->assertSame(2, $enum->getValue());
-    }
-
-    public function testSetValueThrowsInvalidArgumentExceptionOnStrictComparison()
-    {
-        $this->setExpectedException('InvalidArgumentException');
-        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
-        $enum->setValue('2');
-    }
-
-    public function testSetName()
-    {
-        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
-        $enum->setValue(2);
-        $enum->setName('ONE');
-        $this->assertEquals(1, $enum->getValue());
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testSetInvalidName()
-    {
-        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
-        $enum->setName('FOO');
+        $this->assertSame(1, $enum->getOrdinal());
     }
 }

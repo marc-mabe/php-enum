@@ -11,9 +11,15 @@ abstract class MabeEnum_Enum
 {
     /**
      * The current selected value
-     * @var mixed
+     * @var scalar
      */
     protected $value = null;
+
+    /**
+     * The ordinal number of the value
+     * @var null|int
+     */
+    private $ordinal = null;
 
     /**
      * An array of available constants
@@ -30,13 +36,28 @@ abstract class MabeEnum_Enum
     public function __construct($value = null)
     {
         $reflectionClass = new ReflectionClass($this);
-        $this->constants = $reflectionClass->getConstants();
+        $constants       = $reflectionClass->getConstants();
 
-        if (func_num_args() > 0) {
-            $this->setValue($value);
-        } elseif (!in_array($this->value, $this->constants, true)) {
-            throw new InvalidArgumentException("No value given and no default value defined");
+        // This is required to make sure that constants of base classes will be the first
+        while ( ($reflectionClass = $reflectionClass->getParentClass()) ) {
+            $constants = $reflectionClass->getConstants() + $constants;
         }
+        $this->constants = $constants;
+
+        // TODO: Check that constant values are equal (non strict comparison)
+
+        // use the default value
+        if (func_num_args() == 0) {
+            $value = $this->value;
+        }
+
+        // find and set the given value
+        // set the defined value because of non strict comparison
+        $const = array_search($value, $this->constants);
+        if ($const === false) {
+            throw new InvalidArgumentException("Unknown value '{$value}'");
+        }
+        $this->value = $this->constants[$const];
     }
 
     /**
@@ -49,19 +70,6 @@ abstract class MabeEnum_Enum
     }
 
     /**
-     * Select a new value
-     * @param mixed $value
-     * @throws InvalidArgumentException
-     */
-    final public function setValue($value)
-    {
-        if (!in_array($value, $this->constants, true)) {
-            throw new InvalidArgumentException("Unknown value '{$value}'");
-        }
-        $this->value = $value;
-    }
-
-    /**
      * Get the current selected value
      * @return mixed
      */
@@ -71,25 +79,34 @@ abstract class MabeEnum_Enum
     }
 
     /**
-     * Select a new value by constant name
-     * @param string $name
-     * @throws InvalidArgumentException
-     */
-    final public function setName($name)
-    {
-        if (!array_key_exists($name, $this->constants)) {
-            throw new InvalidArgumentException("Unknown name '{$name}'");
-        }
-        $this->value = $this->constants[$name];
-    }
-
-    /**
      * Get the current selected constant name
      * @return string
      */
     final public function getName()
     {
         return array_search($this->value, $this->constants, true);
+    }
+
+    final public function getOrdinal()
+    {
+        if ($this->ordinal !== null) {
+            return $this->ordinal;
+        }
+
+        // detect ordinal
+        $ordinal = 0;
+        $value   = $this->value;
+        foreach ($this->constants as $constValue) {
+            if ($value === $constValue) {
+                $this->ordinal = $ordinal;
+                return $ordinal;
+            }
+            ++$ordinal;
+        }
+
+        throw new RuntimeException(
+            "Current value '{$value}' isn't defined within this '" . get_class($this) . "'"
+        );
     }
 
     /**
