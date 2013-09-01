@@ -89,6 +89,26 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $this->assertSame(1, $enum->getOrdinal());
     }
 
+    public function testCallingGetOrdinalTwoTimesWillResultTheSameValue()
+    {
+        $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::TWO);
+        $this->assertSame(1, $enum->getOrdinal());
+        $this->assertSame(1, $enum->getOrdinal());
+    }
+
+    public function testGetOrdinalThrowsRuntimeExceptionOnUnknwonValue()
+    {
+        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
+
+        // change the protected value property to an unknwon value
+        $reflectionValue = new ReflectionProperty($enum, 'value');
+        $reflectionValue->setAccessible(true);
+        $reflectionValue->setValue($enum, 'unknwonValue');
+
+        $this->setExpectedException('RuntimeException');
+        $enum->getOrdinal();
+    }
+
     public function testInstantiateUsingMagicMethod()
     {
         if (version_compare(PHP_VERSION, '5.3', '<')) {
@@ -98,5 +118,15 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $enum = MabeEnumTest_TestAsset_EnumInheritance::ONE();
         $this->assertInstanceOf('MabeEnumTest_TestAsset_EnumInheritance', $enum);
         $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::ONE, $enum->getValue());
+    }
+
+    public function testInstantiateUsingMagicMethodThrowsBadMethodCallException()
+    {
+        if (version_compare(PHP_VERSION, '5.3', '<')) {
+            $this->markTestSkipped("Instantiating using magic method doesn't work for PHP < 5.3");
+        }
+
+        $this->setExpectedException('BadMethodCallException');
+        MabeEnumTest_TestAsset_EnumInheritance::UNKNOWN();
     }
 }
