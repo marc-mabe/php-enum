@@ -118,4 +118,26 @@ abstract class MabeEnum_Enum
     {
         return (string) $this->value;
     }
+
+    /**
+     * Instantiate an enum by a name of a constant.
+     *
+     * This will be called automatically on calling a method
+     * with the same name of a defined constant.
+     *
+     * NOTE: THIS WORKS FOR PHP >= 5.3 ONLY
+     *
+     * @param string $const The name of the constant to instantiate the enum with
+     * @param array  $args  There should be no arguments
+     * @throws BadMethodCallException
+     */
+    final public static function __callStatic($const, array $args)
+    {
+        $class      = get_called_class();
+        $classConst = $class . '::' . $const;
+        if (!defined($classConst)) {
+            throw new BadMethodCallException($classConst . ' not defined');
+        }
+        return new $class(constant($classConst));
+    }
 }

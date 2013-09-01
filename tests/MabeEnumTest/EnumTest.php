@@ -88,4 +88,15 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $this->assertSame(2, $enum->getValue());
         $this->assertSame(1, $enum->getOrdinal());
     }
+
+    public function testInstantiateUsingMagicMethod()
+    {
+        if (version_compare(PHP_VERSION, '5.3', '<')) {
+            $this->markTestSkipped("Instantiating using magic method doesn't work for PHP < 5.3");
+        }
+
+        $enum = MabeEnumTest_TestAsset_EnumInheritance::ONE();
+        $this->assertInstanceOf('MabeEnumTest_TestAsset_EnumInheritance', $enum);
+        $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::ONE, $enum->getValue());
+    }
 }
