@@ -28,21 +28,61 @@ It's an abstract class that needs to be extended to use it.
 
 * It's not build-in PHP and requires pecl extension
 * SplEnum is too much magic under the hod
-* SplEnum hasn't strict comparison
 
 
 # API
 
-    MabeEnum_Enum
+    abstract class MabeEnum_Enum
     {
-        protected $value = null;
-        public function __construct($value = null);
+        /**
+         * Constructor
+         * @param scalar $value             The enum value to select
+         * @throws InvalidArgumentException On unknwon value
+         */
+        public function __construct($value);
+    
+        /**
+         * Returns an assoc array of defined constant names and the values
+         * @return array
+         */
         final public function getConstants();
-        final public function setValue($value);
-        final public function getValue()
-        final public function setName($name);
+    
+        /**
+         * Get the selected value
+         * @return scalar
+         */
+        final public function getValue();
+    
+        /**
+         * Get the constant name of the selected value
+         * @return string
+         */
         final public function getName();
-        final public function __toString(); // Alias of getValue()
+    
+        /**
+         * Get the ordinal number of the selected value
+         * @return int
+         */
+        final public function getOrdinal();
+    
+        /**
+         * Get the selected value as string
+         * (This will be called automatically on converting into a string)
+         * @return string
+         */
+        final public function __toString();
+    
+        /**
+         * Instantiate a new enum were the selected value
+         * is the constant name of the called method name
+         * (This will be called automatically on calling static method)
+         * NOTE: THIS WILL WORK FOR PHP >= 5.3 ONLY
+         * @param string $name            The name of the constant to instantiate
+         * @param array  $args            This should be an empty array (no arguments)
+         * @throws BadMethodCallException If the called method hasn't the same name as a constant
+         * @return MabeEnum_Enum          The instantiated enum
+         */
+        final public static __callStatic($name, array $args);
     }
 
 
@@ -94,30 +134,27 @@ It's an abstract class that needs to be extended to use it.
         const INACTIVE = 0;
         const ACTIVE   = 1;
         const DELETED  = 2;
-
-        // default value
-        protected $value = self::INACTIVE;
     }
-
+    
     class User
     {
         protected $status;
-
+    
         public function setStatus(UserStatusEnum $status)
         {
             $this->status = $status;
         }
-
+    
         public function getStatus()
         {
             if (!$this->status) {
                 // init default status
-                $this->status = new UserStatusEnum();
+                $this->status = new UserStatusEnum(UserStatusEnum::INACTIVE);
             }
             return $this->status;
         }
     }
-
+    
     $user = new User();
     echo 'Default user status: ' . $user->getStatus() . '(' . $user->getStatus()->getValue() . ')' . PHP_EOL;
     $user->setStatus(new UserStatusEnum(UserStatusEnum::ACTIVE));
@@ -161,46 +198,11 @@ value.
     {
         const ONE = 1;
         const TWO = 2;
-        protected $value = self::ONE;
-    }
-
-## Enum without a default value
-
-Don't define a ```$value``` to not define a default value if none of your
-constant values has ```NULL``` as value.
-
-That's because ```$value``` was defined as ```NULL``` in the base class and
-no constant assignable to the default value.
-
-    class MyEnumWithoutDefaultValue extends MabeEnum_Enum
-    {
-        const ONE = 1;
-        const TWO = 2;
-    }
-
-* No argument on constructor results in an InvalidArgumentException
-
-## Constant with NULL as value
-
-Because ```$value``` property is defined as ```NULL``` a constant with
-```NULL```  as value gets the default value automatically.
-
-    class MyEnumWithNullAsDefaultValue extends MabeEnum_Enum
-    {
-        const NONE = null;
-        const ONE  = 1;
-        const TWO  = 2;
-    }
-
-To disable this behavior simply define ```$value``` to a value not assignable
-to a constant.
-
-    class MyEnumWithoutNullAsDefaultValue extends MabeEnum_Enum
-    {
-        const NONE = null;
-        const ONE  = 1;
-        const TWO  = 2;
-        protected $value = -1;
+    
+        public function __construct($value = self::ONE)
+        {
+            parent::__construct($value);
+        }
     }
 
 ## Inheritance
@@ -212,12 +214,24 @@ It's also possible to extend other enumerations.
         const ONE = 1;
         const TWO = 2;
     }
-
+    
     class EnumInheritance extends MyEnum
     {
-        const INHERITACE = 'Inheritance';
+        const INHERITANCE = 'Inheritance';
     }
 
+## Simplified instantiation
+
+With PHP >= 5.3 it possible to call one of the defined constants like a method
+and you will get the instantiated enum as a result.
+
+    class MyEnum extends MabeEnum_Enum
+    {
+        const ONE = 1;
+        const TWO = 2;
+    }
+    
+    $enum = MyEnum::ONE();
 
 # New BSD License
 

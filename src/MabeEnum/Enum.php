@@ -11,29 +11,29 @@ abstract class MabeEnum_Enum
 {
     /**
      * The current selected value
-     * @var scalar
+     * @var null|scalar
      */
-    protected $value = null;
+    private $value;
 
     /**
      * The ordinal number of the value
      * @var null|int
      */
-    private $ordinal = null;
+    private $ordinal;
 
     /**
      * An array of available constants
-     * @var array
+     * @var null|array
      */
-    private $constants = null;
+    private $constants;
 
     /**
      * Constructor
      * 
-     * @param mixed $value The value to select
+     * @param scalar $value The value to select
      * @throws InvalidArgumentException
      */
-    public function __construct($value = null)
+    public function __construct($value)
     {
         $reflectionClass = new ReflectionClass($this);
         $constants       = $reflectionClass->getConstants();
@@ -45,11 +45,6 @@ abstract class MabeEnum_Enum
         $this->constants = $constants;
 
         // TODO: Check that constant values are equal (non strict comparison)
-
-        // use the default value
-        if (func_num_args() == 0) {
-            $value = $this->value;
-        }
 
         // find and set the given value
         // set the defined value because of non strict comparison
@@ -98,15 +93,13 @@ abstract class MabeEnum_Enum
         $value   = $this->value;
         foreach ($this->constants as $constValue) {
             if ($value === $constValue) {
-                $this->ordinal = $ordinal;
-                return $ordinal;
+                break;
             }
             ++$ordinal;
         }
 
-        throw new RuntimeException(
-            "Current value '{$value}' isn't defined within this '" . get_class($this) . "'"
-        );
+        $this->ordinal = $ordinal;
+        return $ordinal;
     }
 
     /**

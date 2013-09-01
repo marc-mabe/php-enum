@@ -40,25 +40,6 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $this->assertSame('1', $enum->__toString());
     }
 
-    public function testEnumWithNullAsDefaultValue()
-    {
-        $enum = new MabeEnumTest_TestAsset_EnumWithNullAsDefaultValue();
-
-        $this->assertSame(array(
-            'NONE' => null,
-            'ONE'  => 1,
-            'TWO'  => 2,
-        ), $enum->getConstants());
-
-        $this->assertNull($enum->getValue());
-    }
-
-    public function testEnumWithoutDefaultValue()
-    {
-        $this->setExpectedException('InvalidArgumentException');
-        new MabeEnumTest_TestAsset_EnumWithoutDefaultValue();
-    }
-
     public function testEnumInheritance()
     {
         $enum = new MabeEnumTest_TestAsset_EnumInheritance(MabeEnumTest_TestAsset_EnumInheritance::ONE);
@@ -89,24 +70,17 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $this->assertSame(1, $enum->getOrdinal());
     }
 
+    public function testConstructorInvalidValueThrowsInvalidArgumentException()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        new MabeEnumTest_TestAsset_EnumWithoutDefaultValue('unknown');
+    }
+
     public function testCallingGetOrdinalTwoTimesWillResultTheSameValue()
     {
         $enum = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::TWO);
         $this->assertSame(1, $enum->getOrdinal());
         $this->assertSame(1, $enum->getOrdinal());
-    }
-
-    public function testGetOrdinalThrowsRuntimeExceptionOnUnknwonValue()
-    {
-        $enum = new MabeEnumTest_TestAsset_EnumWithDefaultValue();
-
-        // change the protected value property to an unknwon value
-        $reflectionValue = new ReflectionProperty($enum, 'value');
-        $reflectionValue->setAccessible(true);
-        $reflectionValue->setValue($enum, 'unknwonValue');
-
-        $this->setExpectedException('RuntimeException');
-        $enum->getOrdinal();
     }
 
     public function testInstantiateUsingMagicMethod()

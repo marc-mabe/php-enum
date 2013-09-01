@@ -11,5 +11,9 @@ class MabeEnumTest_TestAsset_EnumWithDefaultValue extends MabeEnum_Enum
 {
     const ONE = 1;
     const TWO = 2;
-    protected $value = 1;
+
+    public function __construct($value = self::ONE)
+    {
+        parent::__construct($value);
+    }
 }
