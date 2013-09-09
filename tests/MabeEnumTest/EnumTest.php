@@ -66,10 +66,6 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
 
     public function testInstantiateUsingMagicMethod()
     {
-        if (version_compare(PHP_VERSION, '5.3', '<')) {
-            $this->markTestSkipped("Instantiating using magic method doesn't work for PHP < 5.3");
-        }
-
         $enum = MabeEnumTest_TestAsset_EnumInheritance::ONE();
         $this->assertInstanceOf('MabeEnumTest_TestAsset_EnumInheritance', $enum);
         $this->assertSame(MabeEnumTest_TestAsset_EnumInheritance::ONE, $enum->getValue());
@@ -77,10 +73,6 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
 
     public function testInstantiateUsingMagicMethodThrowsBadMethodCallException()
     {
-        if (version_compare(PHP_VERSION, '5.3', '<')) {
-            $this->markTestSkipped("Instantiating using magic method doesn't work for PHP < 5.3");
-        }
-
         $this->setExpectedException('BadMethodCallException');
         MabeEnumTest_TestAsset_EnumInheritance::UNKNOWN();
     }
@@ -89,5 +81,23 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('LogicException');
         MabeEnumTest_TestAsset_EnumAmbiguous::get(MabeEnumTest_TestAsset_EnumAmbiguous::AMBIGUOUS1);
+    }
+
+    public function testSingleton()
+    {
+        $enum1 = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::get(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE);
+        $enum2 = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE();
+        $this->assertSame($enum1, $enum2);
+    }
+
+    public function testClear()
+    {
+        $enum1 = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE();
+        MabeEnumTest_TestAsset_EnumWithoutDefaultValue::clear();
+        $enum2 = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE();
+        $enum3 = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE();
+        
+        $this->assertNotSame($enum1, $enum2);
+        $this->assertSame($enum2, $enum3);
     }
 }

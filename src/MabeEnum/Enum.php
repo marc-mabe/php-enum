@@ -144,12 +144,13 @@ abstract class MabeEnum_Enum
      */
     final static function clear()
     {
-        $class = get_called_class();
+        $class  = get_called_class();
+        $length = strlen($class);
 
         // clear instantiated enums
-        foreach (self::$enums as $id => $enum) {
-            if (strcasecmp($class . '.', $id) === 0) {
-                unset(self::$enums[$id]);
+        foreach (self::$instances as $id => $enum) {
+            if (strncasecmp($class . '.', $id, $length) === 0) {
+                unset(self::$instances[$id]);
             }
         }
 
@@ -181,10 +182,9 @@ abstract class MabeEnum_Enum
         if (count($constants) > count(array_unique($constants))) {
             $ambiguous = array();
             foreach (array_count_values($constants) as $constValue => $countValue) {
-                if ($countValue < 2) {
-                    continue;
+                if ($countValue > 1) {
+                    $ambiguous[] = $constValue;
                 }
-                $ambiguous[] = $constValue;
             }
             throw new LogicException(sprintf(
                 'All possible values needs to be unique. The following are ambiguous: %s',
