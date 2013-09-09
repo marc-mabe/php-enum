@@ -53,6 +53,25 @@ abstract class MabeEnum_Enum
     }
 
     /**
+     * Get the selected value
+     * @return string
+     * @see getValue()
+     */
+    final public function __toString()
+    {
+        return (string) $this->value;
+    }
+
+    /**
+     * @throws LogicException Enums are not cloneable
+     *                        because instances are implemented as singletons
+     */
+    final private function __clone()
+    {
+        throw new LogicException('Enums are not cloneable');
+    }
+
+    /**
      * Get the current selected value
      * @return mixed
      */
@@ -92,16 +111,6 @@ abstract class MabeEnum_Enum
 
         $this->ordinal = $ordinal;
         return $ordinal;
-    }
-
-    /**
-     * Get the current selected constant name
-     * @return string
-     * @see getName()
-     */
-    final public function __toString()
-    {
-        return (string) $this->value;
     }
 
     /**
