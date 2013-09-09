@@ -103,4 +103,10 @@ class MabeEnumTest_EnumTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('BadMethodCallException');
         MabeEnumTest_TestAsset_EnumInheritance::UNKNOWN();
     }
+
+    public function testAmbuguousConstantsThrowsLogicException()
+    {
+        $this->setExpectedException('LogicException');
+        new MabeEnumTest_TestAsset_EnumAmbiguous(MabeEnumTest_TestAsset_EnumAmbiguous::AMBIGUOUS1);
+    }
 }

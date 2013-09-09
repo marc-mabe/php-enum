@@ -38,13 +38,26 @@ abstract class MabeEnum_Enum
         $reflectionClass = new ReflectionClass($this);
         $constants       = $reflectionClass->getConstants();
 
+        // Constant values needs to be unique
+        if (count($constants) > count(array_unique($constants))) {
+            $ambiguous = array();
+            foreach (array_count_values($constants) as $constValue => $countValue) {
+                if ($countValue < 2) {
+                    continue;
+                }
+                $ambiguous[] = $constValue;
+            }
+            throw new LogicException(sprintf(
+                'All possible values needs to be unique. The following are ambiguous: %s',
+                "'" . implode("', '", $ambiguous) . "'"
+            ));
+        }
+
         // This is required to make sure that constants of base classes will be the first
         while ( ($reflectionClass = $reflectionClass->getParentClass()) ) {
             $constants = $reflectionClass->getConstants() + $constants;
         }
         $this->constants = $constants;
-
-        // TODO: Check that constant values are equal (non strict comparison)
 
         // find and set the given value
         // set the defined value because of non strict comparison
