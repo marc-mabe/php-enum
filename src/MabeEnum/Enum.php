@@ -142,7 +142,7 @@ abstract class MabeEnum_Enum
      * @param null|string $class
      * @return void
      */
-    final static function clear($class = null)
+    final static function clear()
     {
         $class = get_called_class();
 
