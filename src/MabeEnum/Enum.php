@@ -179,16 +179,13 @@ abstract class MabeEnum_Enum
         $constants  = $reflection->getConstants();
 
         // Constant values needs to be unique
-        if (count($constants) > count(array_unique($constants))) {
-            $ambiguous = array();
-            foreach (array_count_values($constants) as $constValue => $countValue) {
-                if ($countValue > 1) {
-                    $ambiguous[] = $constValue;
-                }
-            }
+        if (max(array_count_values($constants)) > 1) {
+            $ambiguous = array_map(function ($v) use ($constants) {
+                return implode('/', array_keys($constants, $v)) . '=' . $v;
+            }, array_unique(array_diff_assoc($constants, array_unique($constants))));
             throw new LogicException(sprintf(
                 'All possible values needs to be unique. The following are ambiguous: %s',
-                "'" . implode("', '", $ambiguous) . "'"
+                implode(', ', $ambiguous)
             ));
         }
 
