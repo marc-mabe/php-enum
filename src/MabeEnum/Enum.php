@@ -145,11 +145,12 @@ abstract class MabeEnum_Enum
     final static function clear()
     {
         $class  = get_called_class();
-        $length = strlen($class);
 
         // clear instantiated enums
+        $prefix       = $class . '.';
+        $prefixLength = strlen($prefix);
         foreach (self::$instances as $id => $enum) {
-            if (strncasecmp($class . '.', $id, $length) === 0) {
+            if (strncasecmp($prefix, $id, $prefixLength) === 0) {
                 unset(self::$instances[$id]);
             }
         }
