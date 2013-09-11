@@ -107,4 +107,18 @@ class EnumTest extends TestCase
         $this->assertNotSame($enum1, $enum2);
         $this->assertSame($enum2, $enum3);
     }
+
+    public function testCloneNotCallableAndThrowsLogicException()
+    {
+        $enum = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE();
+
+        $reflectionClass  = new ReflectionClass($enum);
+        $reflectionMethod = $reflectionClass->getMethod('__clone');
+        $this->assertTrue($reflectionMethod->isPrivate(), 'The method __clone must be private');
+        $this->assertTrue($reflectionMethod->isFinal(), 'The method __clone must be final');
+
+        $reflectionMethod->setAccessible(true);
+        $this->setExpectedException('LogicException');
+        $reflectionMethod->invoke($enum);
+    }
 }
