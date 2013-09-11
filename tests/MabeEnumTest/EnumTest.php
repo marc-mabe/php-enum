@@ -6,6 +6,7 @@ use MabeEnumTest\TestAsset\EnumWithoutDefaultValue;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
 use PHPUnit_Framework_TestCase as TestCase;
+use ReflectionClass;
 
 /**
  * Unit tests for the class MabeEnum\Enum
@@ -110,7 +111,7 @@ class EnumTest extends TestCase
 
     public function testCloneNotCallableAndThrowsLogicException()
     {
-        $enum = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE();
+        $enum = EnumWithoutDefaultValue::ONE();
 
         $reflectionClass  = new ReflectionClass($enum);
         $reflectionMethod = $reflectionClass->getMethod('__clone');
