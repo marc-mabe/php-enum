@@ -17,7 +17,7 @@
     }],
     "license": "BSD-3-Clause",
     "require": {
-        "php": ">=5.0",
+        "php": ">=5.3",
         "ext-reflection": "*"
     },
     "require-dev": {
@@ -25,7 +25,7 @@
     },
     "autoload": {
         "psr-0": {
-            "MabeEnum_": "src/"
+            "MabeEnum\\": "src/"
         }
     }
 }

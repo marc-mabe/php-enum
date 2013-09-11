@@ -11,6 +11,11 @@ use MabeEnum\Enum;
  * @copyright Copyright (c) 2012 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-class EmptyEnum extends Enum
+class EnumAmbiguous extends Enum
 {
+    const UNIQUE1    = 'unique1';
+    const AMBIGUOUS1 = 1;
+    const UNIQUE2    = 'unique2';
+    const AMBIGUOUS2 = '1';
+    const UNIQUE3    = 'unique3';
 }
