@@ -10,7 +10,7 @@
 abstract class MabeEnum_Enum
 {
     /**
-     * The current selected value
+     * The selected value
      * @var null|scalar
      */
     private $value;
@@ -22,59 +22,53 @@ abstract class MabeEnum_Enum
     private $ordinal;
 
     /**
-     * An array of available constants
-     * @var null|array
+     * An array of available constants by class
+     * @var array ["$class" => ["$const" => $value, ...], ...]
      */
-    private $constants;
+    private static $constants = array();
+
+    /**
+     * Already instantiated enums
+     * @param array ["$class.$value" => MabeEnum_Enum, ...]
+     */
+    private static $instances = array();
 
     /**
      * Constructor
      * 
      * @param scalar $value The value to select
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException On an unknwon or invalid value
+     * @throws LogicException           On ambiguous constant values
      */
-    public function __construct($value)
+    final private function __construct($value)
     {
-        $reflectionClass = new ReflectionClass($this);
-        $constants       = $reflectionClass->getConstants();
-
-        // Constant values needs to be unique
-        if (count($constants) > count(array_unique($constants))) {
-            $ambiguous = array();
-            foreach (array_count_values($constants) as $constValue => $countValue) {
-                if ($countValue < 2) {
-                    continue;
-                }
-                $ambiguous[] = $constValue;
-            }
-            throw new LogicException(sprintf(
-                'All possible values needs to be unique. The following are ambiguous: %s',
-                "'" . implode("', '", $ambiguous) . "'"
-            ));
-        }
-
-        // This is required to make sure that constants of base classes will be the first
-        while ( ($reflectionClass = $reflectionClass->getParentClass()) ) {
-            $constants = $reflectionClass->getConstants() + $constants;
-        }
-        $this->constants = $constants;
-
         // find and set the given value
         // set the defined value because of non strict comparison
-        $const = array_search($value, $this->constants);
+        $constants = static::getConstants();
+        $const     = array_search($value, $constants);
         if ($const === false) {
             throw new InvalidArgumentException("Unknown value '{$value}'");
         }
-        $this->value = $this->constants[$const];
+        $this->value = $constants[$const];
     }
 
     /**
-     * Get all available constants
-     * @return array
+     * Get the selected value
+     * @return string
+     * @see getValue()
      */
-    final public function getConstants()
+    final public function __toString()
     {
-        return $this->constants;
+        return (string) $this->value;
+    }
+
+    /**
+     * @throws LogicException Enums are not cloneable
+     *                        because instances are implemented as singletons
+     */
+    final private function __clone()
+    {
+        throw new LogicException('Enums are not cloneable');
     }
 
     /**
@@ -92,9 +86,13 @@ abstract class MabeEnum_Enum
      */
     final public function getName()
     {
-        return array_search($this->value, $this->constants, true);
+        return array_search($this->value, $this::getConstants(), true);
     }
 
+    /**
+     * Get the ordinal number of the selected value
+     * @return int
+     */
     final public function getOrdinal()
     {
         if ($this->ordinal !== null) {
@@ -104,7 +102,7 @@ abstract class MabeEnum_Enum
         // detect ordinal
         $ordinal = 0;
         $value   = $this->value;
-        foreach ($this->constants as $constValue) {
+        foreach ($this::getConstants() as $constValue) {
             if ($value === $constValue) {
                 break;
             }
@@ -116,13 +114,89 @@ abstract class MabeEnum_Enum
     }
 
     /**
-     * Get the current selected constant name
-     * @return string
-     * @see getName()
+     * Get an enum of the given value
+     *
+     * @param scalar $value
+     * @return MabeEnum_Enum
+     * @throws InvalidArgumentException On an unknwon or invalid value
+     * @throws LogicException           On ambiguous constant values
      */
-    final public function __toString()
+    static public function get($value)
     {
-        return (string) $this->value;
+        $class = get_called_class();
+        $id    = $class . '.' . $value;
+        if (isset(self::$instances[$id])) {
+            return self::$instances[$id];
+        }
+
+        $instance = new $class($value);
+        self::$instances[$id] = $instance;
+        return $instance;
+    }
+
+    /**
+     * Clears all instantiated enums
+     *
+     * NOTE: This can break singleton behavior ... use it with caution!
+     *
+     * @param null|string $class
+     * @return void
+     */
+    final static function clear()
+    {
+        $class  = get_called_class();
+
+        // clear instantiated enums
+        $prefix       = $class . '.';
+        $prefixLength = strlen($prefix);
+        foreach (self::$instances as $id => $enum) {
+            if (strncasecmp($prefix, $id, $prefixLength) === 0) {
+                unset(self::$instances[$id]);
+            }
+        }
+
+        // clear constants buffer
+        foreach (self::$constants as $constantsClass => & $constants) {
+            if (strcasecmp($class, $constantsClass) === 0) {
+                unset(self::$constants[$constantsClass]);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Get all available constants
+     * @return array
+     * @throws LogicException On ambiguous constant values
+     */
+    final static public function getConstants()
+    {
+        $class = get_called_class();
+        if (isset(self::$constants[$class])) {
+            return self::$constants[$class];
+        }
+
+        $reflection = new ReflectionClass($class);
+        $constants  = $reflection->getConstants();
+
+        // Constant values needs to be unique
+        if (max(array_count_values($constants)) > 1) {
+            $ambiguous = array_map(function ($v) use ($constants) {
+                return implode('/', array_keys($constants, $v)) . '=' . $v;
+            }, array_unique(array_diff_assoc($constants, array_unique($constants))));
+            throw new LogicException(sprintf(
+                'All possible values needs to be unique. The following are ambiguous: %s',
+                implode(', ', $ambiguous)
+            ));
+        }
+
+        // This is required to make sure that constants of base classes will be the first
+        while ( ($reflection = $reflection->getParentClass()) ) {
+            $constants = $reflection->getConstants() + $constants;
+        }
+
+        self::$constants[$class] = $constants;
+        return $constants;
     }
 
     /**
@@ -131,19 +205,18 @@ abstract class MabeEnum_Enum
      * This will be called automatically on calling a method
      * with the same name of a defined constant.
      *
-     * NOTE: THIS WORKS FOR PHP >= 5.3 ONLY
-     *
      * @param string $const The name of the constant to instantiate the enum with
      * @param array  $args  There should be no arguments
-     * @throws BadMethodCallException
+     * @throws BadMethodCallException On an unknown constant name (method name)
+     * @throws LogicException         On ambiguous constant values
      */
     final public static function __callStatic($const, array $args)
     {
-        $class      = get_called_class();
-        $classConst = $class . '::' . $const;
+        $classConst = 'static::' . $const;
         if (!defined($classConst)) {
-            throw new BadMethodCallException($classConst . ' not defined');
+            $class = get_called_class();
+            throw new BadMethodCallException($class . '::' . $const . ' not defined');
         }
-        return new $class(constant($classConst));
+        return static::get(constant($classConst));
     }
 }
