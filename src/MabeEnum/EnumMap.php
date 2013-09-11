@@ -1,114 +1,86 @@
 <?php
 
-class MabeEnum_EnumMap implements Iterator, Countable
+namespace MabeEnum;
+
+use SplObjectStorage;
+
+class EnumMap extends SplObjectStorage
 {
-    private $enums  = array();
-    private $values = array();
-    private $position = 0;
-    private $enumClass;
 
     public function __construct($enumClass)
     {
         $this->enumClass = $enumClass;
     }
 
-    public function attach($enum, $value)
+    public function attach($enum, $data = null)
     {
         if (!($enum instanceof $this->enumClass)) {
-            $enum = new $this->enumClass($enum);
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
         }
 
-        if ($this->contains($enum)) {
-            throw new RuntimeException("'{$enum}' already attached to map");
-        }
-
-        $ordinal = $enum->getOrdinal();
-        $this->values[$ordinal] = $value;
-        $this->enums[$ordinal]  = $enum;
-    }
-
-    public function detach($enum)
-    {
-        if (!($enum instanceof $this->enumClass)) {
-            $enum = new $this->enumClass($enum);
-        }
-
-        if (!$this->contains($enum)) {
-            throw new RuntimeException("'{$enum}' not attached to map");
-        }
-
-        $ordinal = $enum->getOrdinal();
-        unset($this->values[$ordinal], $this->enums[$ordinal]);
-    }
-
-    public function get($enum)
-    {
-        if (!($enum instanceof $this->enumClass)) {
-            $enum = new $this->enumClass($enum);
-        }
-
-        if (!$this->contains($enum)) {
-            throw new RuntimeException("'{$enum}' not attached to map");
-        }
-
-        return $this->values[$enum->getOrdinal()];
+        parent::attach($enum, $data);
     }
 
     public function contains($enum)
     {
         if (!($enum instanceof $this->enumClass)) {
-            $enum = new $this->enumClass($enum);
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
         }
 
-        return array_key_exists($enum->getOrdinal(), $this->values);
+        return parent::contains($enum);
     }
 
-    public function currentValue()
+    public function detach($enum)
     {
-        return $this->values[$this->position];
+        if (!($enum instanceof $this->enumClass)) {
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
+        }
+
+        parent::detach($enum);
     }
 
-    public function currentEnum()
+    public function getHash($enum)
     {
-        return $this->enums[$this->position];
+        if (!($enum instanceof $this->enumClass)) {
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
+        }
+
+        return parent::getHash($enum);
     }
 
-    public function currentPosition()
+    public function offsetExists($enum)
     {
-        return $this->position;
+        if (!($enum instanceof $this->enumClass)) {
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
+        }
+
+        return parent::offsetExists($enum);
     }
 
-    /* Iterator */
-
-    public function current()
+    public function offsetGet($enum)
     {
-        return $this->currentValue();
+        if (!($enum instanceof $this->enumClass)) {
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
+        }
+
+        return parent::offsetGet($enum);
     }
 
-    public function key()
+    public function offsetSet($enum, $data = null)
     {
-        return $this->currentEnum()->getValue();
+        if (!($enum instanceof $this->enumClass)) {
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
+        }
+
+        parent::offsetSet($enum, $data);
     }
 
-    public function next()
+    public function offsetUnset($enum)
     {
-        ++$this->position;
-    }
+        if (!($enum instanceof $this->enumClass)) {
+            $enum = call_user_func(array($this->enumClass, 'get'), $enum);
+        }
 
-    public function valid()
-    {
-        return ($this->position < $this->count());
-    }
-
-    public function rewind()
-    {
-        $this->position = 0;
-    }
-
-    /* Countable */
-
-    public function count()
-    {
-        return count($this->enums);
+        parent::offsetUnset($enum, $data);
     }
 }

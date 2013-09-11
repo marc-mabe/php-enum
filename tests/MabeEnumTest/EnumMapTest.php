@@ -1,33 +1,40 @@
 <?php
 
+namespace MabeEnumTest;
+
+use MabeEnum\Enum;
+use MabeEnum\EnumMap;
+use MabeEnumTest\TestAsset\EnumWithoutDefaultValue;
+use PHPUnit_Framework_TestCase as TestCase;
+
 /**
- * Unit tests for the class MabeEnum_Enum
+ * Unit tests for the class MabeEnum\EnumMap
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2012 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-class MabeEnumTest_EnumMapTest extends PHPUnit_Framework_TestCase
+class EnumMapTest extends TestCase
 {
     public function testBasic()
     {
-        $enumMap = new MabeEnum_EnumMap('MabeEnumTest_TestAsset_EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
         
-        $enum1  = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE);
+        $enum1  = EnumWithoutDefaultValue::ONE();
         $value1 = 'value2';
 
-        $enum2  = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::TWO);
+        $enum2  = EnumWithoutDefaultValue::TWO();
         $value2 = 'value2';
 
         $this->assertFalse($enumMap->contains($enum1));
         $this->assertNull($enumMap->attach($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
-        $this->assertSame($value1, $enumMap->get($enum1));
+        $this->assertSame($value1, $enumMap[$enum1]);
 
         $this->assertFalse($enumMap->contains($enum2));
         $this->assertNull($enumMap->attach($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
-        $this->assertSame($value2, $enumMap->get($enum2));
+        $this->assertSame($value2, $enumMap[$enum2]);
 
         $this->assertNull($enumMap->detach($enum1));
         $this->assertFalse($enumMap->contains($enum1));
@@ -38,23 +45,23 @@ class MabeEnumTest_EnumMapTest extends PHPUnit_Framework_TestCase
 
     public function testBasicWithConstantValuesAsEnums()
     {
-        $enumMap = new MabeEnum_EnumMap('MabeEnumTest_TestAsset_EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
 
-        $enum1  = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE;
+        $enum1  = EnumWithoutDefaultValue::ONE;
         $value1 = 'value2';
 
-        $enum2  = MabeEnumTest_TestAsset_EnumWithoutDefaultValue::TWO;
+        $enum2  = EnumWithoutDefaultValue::TWO;
         $value2 = 'value2';
 
         $this->assertFalse($enumMap->contains($enum1));
         $this->assertNull($enumMap->attach($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
-        $this->assertSame($value1, $enumMap->get($enum1));
+        $this->assertSame($value1, $enumMap[$enum1]);
 
         $this->assertFalse($enumMap->contains($enum2));
         $this->assertNull($enumMap->attach($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
-        $this->assertSame($value2, $enumMap->get($enum2));
+        $this->assertSame($value2, $enumMap[$enum2]);
 
         $this->assertNull($enumMap->detach($enum1));
         $this->assertFalse($enumMap->contains($enum1));
@@ -65,12 +72,12 @@ class MabeEnumTest_EnumMapTest extends PHPUnit_Framework_TestCase
 
     public function testIterate()
     {
-        $enumMap = new MabeEnum_EnumMap('MabeEnumTest_TestAsset_EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
 
-        $enum1  = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::ONE);
+        $enum1  = EnumWithoutDefaultValue::ONE();
         $value1 = 'value2';
 
-        $enum2  = new MabeEnumTest_TestAsset_EnumWithoutDefaultValue(MabeEnumTest_TestAsset_EnumWithoutDefaultValue::TWO);
+        $enum2  = EnumWithoutDefaultValue::TWO();
         $value2 = 'value2';
 
         // an empty enum map needs to be invalid, starting by 0
