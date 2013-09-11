@@ -11,11 +11,11 @@ if ('@package_version@' !== PHPUnit_Runner_Version::id() && version_compare(PHPU
 
 function autoload($className)
 {
-    $test = dirname(__FILE__) . '/../src/' . str_replace('_', '/', $className) . '.php';
+    $test = dirname(__FILE__) . '/../src/' . str_replace('\\', '/', $className) . '.php';
     if (file_exists($test)) {
         require $test;
     }
-    $test = dirname(__FILE__) . '/' . str_replace('_', '/', $className) . '.php';
+    $test = dirname(__FILE__) . '/' . str_replace('\\', '/', $className) . '.php';
     if (file_exists($test)) {
         require $test;
     }

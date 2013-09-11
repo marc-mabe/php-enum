@@ -1,5 +1,12 @@
 <?php
 
+namespace MabeEnum;
+
+use ReflectionClass;
+use InvalidArgumentException;
+use LogicException;
+use BadMethodCallException;
+
 /**
  * Class to implement enumerations for PHP 5 (without SplEnum)
  *
@@ -7,7 +14,7 @@
  * @copyright Copyright (c) 2012 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-abstract class MabeEnum_Enum
+abstract class Enum
 {
     /**
      * The selected value
@@ -29,7 +36,7 @@ abstract class MabeEnum_Enum
 
     /**
      * Already instantiated enums
-     * @param array ["$class.$value" => MabeEnum_Enum, ...]
+     * @param array ["$class.$value" => MabeEnum\Enum, ...]
      */
     private static $instances = array();
 
@@ -117,7 +124,7 @@ abstract class MabeEnum_Enum
      * Get an enum of the given value
      *
      * @param scalar $value
-     * @return MabeEnum_Enum
+     * @return Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */

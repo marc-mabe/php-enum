@@ -6,7 +6,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/marc-mabe/php-enum/v/unstable.png)](https://packagist.org/packages/marc-mabe/php-enum)
 [![Dependency Status](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master/badge.png)](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master)
 
-This is a native PHP implementation to add enumeration support to PHP 5.x.
+This is a native PHP implementation to add enumeration support to PHP >= 5.3
 It's an abstract class that needs to be extended to use it.
 
 
@@ -32,7 +32,7 @@ It's an abstract class that needs to be extended to use it.
 
 # API
 
-    abstract class MabeEnum_Enum
+    abstract class MabeEnum\Enum
     {
         /**
          * Constructor
@@ -80,7 +80,7 @@ It's an abstract class that needs to be extended to use it.
          * @param string $name            The name of the constant to instantiate
          * @param array  $args            This should be an empty array (no arguments)
          * @throws BadMethodCallException If the called method hasn't the same name as a constant
-         * @return MabeEnum_Enum          The instantiated enum
+         * @return MabeEnum\Enum          The instantiated enum
          */
         final public static __callStatic($name, array $args);
     }
@@ -129,7 +129,9 @@ It's an abstract class that needs to be extended to use it.
 
 ## The way of php-enum:
 
-    class UserStatusEnum extends MabeEnum_Enum
+    use MabeEnum\Enum;
+    
+    class UserStatusEnum extends Enum
     {
         const INACTIVE = 0;
         const ACTIVE   = 1;
@@ -149,7 +151,7 @@ It's an abstract class that needs to be extended to use it.
         {
             if (!$this->status) {
                 // init default status
-                $this->status = new UserStatusEnum(UserStatusEnum::INACTIVE);
+                $this->status = UserStatusEnum::INACTIVE();
             }
             return $this->status;
         }
@@ -157,7 +159,7 @@ It's an abstract class that needs to be extended to use it.
     
     $user = new User();
     echo 'Default user status: ' . $user->getStatus() . '(' . $user->getStatus()->getValue() . ')' . PHP_EOL;
-    $user->setStatus(new UserStatusEnum(UserStatusEnum::ACTIVE));
+    $user->setStatus(UserStatusEnum::ACTIVE());
     echo 'Changed user status: ' . $user->getStatus() . '(' . $user->getStatus()->getValue() . ')' . PHP_EOL;
 
 **PRINTS**
@@ -165,7 +167,7 @@ It's an abstract class that needs to be extended to use it.
     Default user status: INACTIVE (0)
     Changed user status: ACTIVE (1)
 
-* Validation will be already done on basic class ```MabeEnum_Enum```
+* Validation will be already done on basic class ```MabeEnum\Enum```
 * Using type-hint makes arguments save
 * Human readable name of a value is simple accessable
 
@@ -194,7 +196,9 @@ and extract it.
 This example defines the constant ```ONE``` with value ```1``` as default
 value.
 
-    class MyEnumWithDefaultValue extends MabeEnum_Enum
+    use MabeEnum\Enum;
+    
+    class MyEnumWithDefaultValue extends Enum
     {
         const ONE = 1;
         const TWO = 2;
@@ -209,7 +213,9 @@ value.
 
 It's also possible to extend other enumerations.
 
-    class MyEnum extends MabeEnum_Enum
+    use MabeEnum\Enum;
+    
+    class MyEnum extends Enum
     {
         const ONE = 1;
         const TWO = 2;
@@ -222,10 +228,12 @@ It's also possible to extend other enumerations.
 
 ## Simplified instantiation
 
-With PHP >= 5.3 it possible to call one of the defined constants like a method
+It's possible to call one of the defined constants like a method
 and you will get the instantiated enum as a result.
 
-    class MyEnum extends MabeEnum_Enum
+    use MabeEnum\Enum;
+    
+    class MyEnum extends Enum
     {
         const ONE = 1;
         const TWO = 2;
