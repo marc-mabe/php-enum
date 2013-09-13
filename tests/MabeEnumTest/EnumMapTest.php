@@ -81,32 +81,36 @@ class EnumMapTest extends TestCase
         $value2 = 'value2';
 
         // an empty enum map needs to be invalid, starting by 0
+        $enumMap->rewind();
         $this->assertSame(0, $enumMap->count());
         $this->assertFalse($enumMap->valid());
 
-        // attach in revert order shouldn't change ordering of iteration
-        $enumMap->attach($enum2, $value2);
-        $enumMap->attach($enum1, $value1);
+        // attach
+        $enumMap->attach($enum1, $value2);
+        $enumMap->attach($enum2, $value1);
 
         // a not empty enum map should be valid, starting by 0 (if not iterated)
+        $enumMap->rewind();
         $this->assertSame(2, $enumMap->count());
         $this->assertTrue($enumMap->valid());
-        $this->assertSame(0, $enumMap->currentPosition());
-        $this->assertSame($enum1, $enumMap->key());
-        $this->assertSame($value1, $enumMap->current());
+        $this->assertSame(0, $enumMap->key());
+        $this->assertSame($enum1, $enumMap->current());
 
         // go to the next element (last)
         $this->assertNull($enumMap->next());
         $this->assertTrue($enumMap->valid());
-        $this->assertSame(1, $enumMap->currentPosition());
-        $this->assertSame($enum2, $enumMap->key());
-        $this->assertSame($value2, $enumMap->current());
+        $this->assertSame(1, $enumMap->key());
+        $this->assertSame($enum2, $enumMap->current());
 
         // go to the next element (out of range)
         $this->assertNull($enumMap->next());
         $this->assertFalse($enumMap->valid());
-        $this->assertSame(2, $enumMap->currentPosition());
-        //$this->assertSame($enum2, $enumMap->currentEnum());
-        //$this->assertSame($value2, $enumMap->currentValue());
+        $this->assertSame(2, $enumMap->key());
+
+        // rewind will set the iterator position back to 0
+        $enumMap->rewind();
+        $this->assertTrue($enumMap->valid());
+        $this->assertSame(0, $enumMap->key());
+        $this->assertSame($enum1, $enumMap->current());
     }
 }

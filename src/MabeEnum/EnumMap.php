@@ -8,7 +8,20 @@ use InvalidArgumentException;
 class EnumMap extends SplObjectStorage
 {
 
-    public function __construct($enumClass)
+    const KEY_AS_INDEX   = 1;
+    const KEY_AS_NAME    = 2;
+    const KEY_AS_VALUE   = 3;
+    const KEY_AS_ORDINAL = 4;
+    const CURRENT_AS_ENUM    = 8;
+    const CURRENT_AS_DATA    = 16;
+    const CURRENT_AS_NAME    = 24;
+    const CURRENT_AS_VALUE   = 56;
+    const CURRENT_AS_ORDINAL = 120;
+
+    private $enumClass;
+    private $flags;
+
+    public function __construct($enumClass, $flags = null)
     {
         if (!is_subclass_of($enumClass, __NAMESPACE__ . '\Enum')) {
             throw new InvalidArgumentException(sprintf(
@@ -17,6 +30,42 @@ class EnumMap extends SplObjectStorage
             ));
         }
         $this->enumClass = $enumClass;
+
+        if ($flags === null) {
+            $flags = self::KEY_AS_INDEX | self::CURRENT_AS_ENUM;
+        }
+        $this->setFlags($flags);
+    }
+
+    public function getEnumClass()
+    {
+        return $this->enumClass;
+    }
+
+    public function setFlags($flags)
+    {
+        $flags = (int)$flags;
+
+        $keyFlags = $flags & 7;
+        if ($keyFlags < 1 || $keyFlags > 4) {
+            throw new InvalidArgumentException(
+                "Flags have to contain one of the 'KEY_AS_*' constants"
+            );
+        }
+
+        $currentFlags = $flags & 120;
+        if ($currentFlags < 8 || $currentFlags > 120) {
+            throw new InvalidArgumentException(
+                "Flags have to contain one of the 'CURRENT_AS_*' constants"
+            );
+        }
+
+        $this->flags = $flags;
+    }
+
+    public function getFlags()
+    {
+        return $this->flags;
     }
 
     public function attach($enum, $data = null)
@@ -88,5 +137,39 @@ class EnumMap extends SplObjectStorage
             get_class($enum) ?: gettype($enum),
             $this->enumClass
         ));
+    }
+
+    public function current()
+    {
+        switch ($this->flags & 120) {
+            case self::CURRENT_AS_ENUM:
+                return parent::current();
+            case self::CURRENT_AS_DATA:
+                return parent::getInfo();
+            case self::CURRENT_AS_VALUE:
+                return parent::current()->getValue();
+            default:
+                throw new RuntimeException(
+                    'Invalid current flags'
+                );
+        }
+    }
+
+    public function key()
+    {
+        switch ($this->flags & 7) {
+            case self::KEY_AS_INDEX:
+                return parent::key();
+            case self::KEY_AS_NAME:
+                return parent::current()->getName();
+            case self::KEY_AS_VALUE:
+                return parent::current()->getValue();
+            case self::KEY_AS_ORDINAL:
+                return parent::current()->getOrdinal();
+            default:
+                throw new RuntimeException(
+                    'Invalid key flags'
+                );
+        }
     }
 }
