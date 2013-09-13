@@ -19,7 +19,8 @@ class EnumMapTest extends TestCase
     public function testBasic()
     {
         $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
-        
+        $this->assertSame('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', $enumMap->getEnumClass());
+
         $enum1  = EnumWithoutDefaultValue::ONE();
         $value1 = 'value2';
 
@@ -112,5 +113,93 @@ class EnumMapTest extends TestCase
         $this->assertTrue($enumMap->valid());
         $this->assertSame(0, $enumMap->key());
         $this->assertSame($enum1, $enumMap->current());
+    }
+
+    public function testIterateWithFlags()
+    {
+        $enumMap = new EnumMap(
+            'MabeEnumTest\TestAsset\EnumWithoutDefaultValue',
+            EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM
+        );
+
+        $enumMap->attach(EnumWithoutDefaultValue::TWO(), 'first');
+        $enumMap->attach(EnumWithoutDefaultValue::ONE(), 'second');
+
+        // EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM (first)
+        $this->assertSame(EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM, $enumMap->getFlags());
+
+        $enumMap->rewind();
+        $this->assertSame(0, $enumMap->key());
+        $this->assertSame(EnumWithoutDefaultValue::TWO(), $enumMap->current());
+
+        $enumMap->next();
+        $this->assertSame(1, $enumMap->key());
+        $this->assertSame(EnumWithoutDefaultValue::ONE(), $enumMap->current());
+
+        // EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA
+        $enumMap->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
+        $this->assertSame(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA, $enumMap->getFlags());
+
+        $enumMap->rewind();
+        $this->assertSame('TWO', $enumMap->key());
+        $this->assertSame('first', $enumMap->current());
+
+        $enumMap->next();
+        $this->assertSame('ONE', $enumMap->key());
+        $this->assertSame('second', $enumMap->current());
+
+        // EnumMap::KEY_AS_VALUE | EnumMap::CURRENT_AS_ORDINAL
+        $enumMap->setFlags(EnumMap::KEY_AS_VALUE | EnumMap::CURRENT_AS_ORDINAL);
+        $this->assertSame(EnumMap::KEY_AS_VALUE | EnumMap::CURRENT_AS_ORDINAL, $enumMap->getFlags());
+
+        $enumMap->rewind();
+        $this->assertSame(2, $enumMap->key());
+        $this->assertSame(1, $enumMap->current());
+
+        $enumMap->next();
+        $this->assertSame(1, $enumMap->key());
+        $this->assertSame(0, $enumMap->current());
+
+        // EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_VALUE
+        $enumMap->setFlags(EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_VALUE);
+        $this->assertSame(EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_VALUE, $enumMap->getFlags());
+    
+        $enumMap->rewind();
+        $this->assertSame(1, $enumMap->key());
+        $this->assertSame(2, $enumMap->current());
+    
+        $enumMap->next();
+        $this->assertSame(0, $enumMap->key());
+        $this->assertSame(1, $enumMap->current());
+
+        // only change current flag to EnumMap::CURRENT_AS_NAME
+        $enumMap->setFlags(EnumMap::CURRENT_AS_NAME);
+        $this->assertSame(EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_NAME, $enumMap->getFlags());
+
+        $enumMap->rewind();
+        $this->assertSame(1, $enumMap->key());
+        $this->assertSame('TWO', $enumMap->current());
+
+        $enumMap->next();
+        $this->assertSame(0, $enumMap->key());
+        $this->assertSame('ONE', $enumMap->current());
+
+        // only change key flag to EnumMap::NAME_AS_NAME
+        $enumMap->setFlags(EnumMap::KEY_AS_NAME);
+        $this->assertSame(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_NAME, $enumMap->getFlags());
+
+        $enumMap->rewind();
+        $this->assertSame('TWO', $enumMap->key());
+        $this->assertSame('TWO', $enumMap->current());
+
+        $enumMap->next();
+        $this->assertSame('ONE', $enumMap->key());
+        $this->assertSame('ONE', $enumMap->current());
+    }
+
+    public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        new EnumMap('stdClass');
     }
 }

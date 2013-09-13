@@ -4,6 +4,7 @@ namespace MabeEnum;
 
 use SplObjectStorage;
 use InvalidArgumentException;
+use RuntimeException;
 
 class EnumMap extends SplObjectStorage
 {
@@ -15,11 +16,17 @@ class EnumMap extends SplObjectStorage
     const CURRENT_AS_ENUM    = 8;
     const CURRENT_AS_DATA    = 16;
     const CURRENT_AS_NAME    = 24;
-    const CURRENT_AS_VALUE   = 56;
-    const CURRENT_AS_ORDINAL = 120;
+    const CURRENT_AS_VALUE   = 32;
+    const CURRENT_AS_ORDINAL = 40;
 
     private $enumClass;
-    private $flags;
+
+    /**
+     * Flags to define behaviors
+     * (Default = KEY_AS_INDEX | CURRENT_AS_ENUM)
+     * @var int
+     */
+    private $flags = 9;
 
     public function __construct($enumClass, $flags = null)
     {
@@ -31,10 +38,9 @@ class EnumMap extends SplObjectStorage
         }
         $this->enumClass = $enumClass;
 
-        if ($flags === null) {
-            $flags = self::KEY_AS_INDEX | self::CURRENT_AS_ENUM;
+        if ($flags !== null) {
+            $this->setFlags($flags);
         }
-        $this->setFlags($flags);
     }
 
     public function getEnumClass()
@@ -46,21 +52,26 @@ class EnumMap extends SplObjectStorage
     {
         $flags = (int)$flags;
 
-        $keyFlags = $flags & 7;
-        if ($keyFlags < 1 || $keyFlags > 4) {
+        $keyFlag = $flags & 7;
+        if ($keyFlag > 4) {
             throw new InvalidArgumentException(
-                "Flags have to contain one of the 'KEY_AS_*' constants"
+                "Unsupported flag given for key() behavior"
             );
+        } elseif (!$keyFlag) {
+            $keyFlag = $this->flags & 7;
+        }
+        
+
+        $currentFlag = $flags & 56;
+        if ($currentFlag > 40) {
+            throw new InvalidArgumentException(
+                "Unsupported flag given for current() behavior"
+            );
+        } elseif (!$currentFlag) {
+            $currentFlag = $this->flags & 56;
         }
 
-        $currentFlags = $flags & 120;
-        if ($currentFlags < 8 || $currentFlags > 120) {
-            throw new InvalidArgumentException(
-                "Flags have to contain one of the 'CURRENT_AS_*' constants"
-            );
-        }
-
-        $this->flags = $flags;
+        $this->flags = $keyFlag | $currentFlag;
     }
 
     public function getFlags()
@@ -146,12 +157,14 @@ class EnumMap extends SplObjectStorage
                 return parent::current();
             case self::CURRENT_AS_DATA:
                 return parent::getInfo();
+            case self::CURRENT_AS_NAME:
+                return parent::current()->getName();
             case self::CURRENT_AS_VALUE:
                 return parent::current()->getValue();
+            case self::CURRENT_AS_ORDINAL:
+                return parent::current()->getOrdinal();
             default:
-                throw new RuntimeException(
-                    'Invalid current flags'
-                );
+                throw new RuntimeException('Invalid current flags');
         }
     }
 
@@ -167,9 +180,7 @@ class EnumMap extends SplObjectStorage
             case self::KEY_AS_ORDINAL:
                 return parent::current()->getOrdinal();
             default:
-                throw new RuntimeException(
-                    'Invalid key flags'
-                );
+                throw new RuntimeException('Invalid key flags');
         }
     }
 }
