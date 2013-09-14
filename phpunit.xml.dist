@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <phpunit
-        bootstrap="./tests/Bootstrap.php"
+        bootstrap="./tests/bootstrap.php"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
@@ -8,6 +8,7 @@
         processIsolation="false"
         backupGlobals="false"
         syntaxCheck="true"
+        strict="true"
         >
     <testsuite name="php-enum Test-Suite">
         <directory>./tests/MabeEnumTest</directory>
