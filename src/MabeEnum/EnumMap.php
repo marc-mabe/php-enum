@@ -6,19 +6,65 @@ use SplObjectStorage;
 use InvalidArgumentException;
 use RuntimeException;
 
+/**
+ * EnumMap implementation in base of SplObjectStorage
+ *
+ * @link http://github.com/marc-mabe/php-enum for the canonical source repository
+ * @copyright Copyright (c) 2012 Marc Bennewitz
+ * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ */
 class EnumMap extends SplObjectStorage
 {
 
+    /**
+     * key()-behaviour: return the current iterator position
+     */
     const KEY_AS_INDEX   = 1;
+
+    /**
+     * key()-behaviour: return the current enum name
+     */
     const KEY_AS_NAME    = 2;
+
+    /**
+     * key()-behaviour: return the current enum value
+     */
     const KEY_AS_VALUE   = 3;
+
+    /**
+     * key()-behaviour: return the current enum ordinal
+     */
     const KEY_AS_ORDINAL = 4;
+
+    /**
+     * current()-behaviour: return the current enum object
+     */
     const CURRENT_AS_ENUM    = 8;
+
+    /**
+     * current()-behaviour: return data mapped the current enum
+     */
     const CURRENT_AS_DATA    = 16;
+
+    /**
+     * current()-behaviour: return the current enum name
+     */
     const CURRENT_AS_NAME    = 24;
+
+    /**
+     * current()-behaviour: return the current enum value
+     */
     const CURRENT_AS_VALUE   = 32;
+
+    /**
+     * current()-behaviour: return the current enum ordinal
+     */
     const CURRENT_AS_ORDINAL = 40;
 
+    /**
+     * The classname of an enumeration this map is for
+     * @var string
+     */
     private $enumClass;
 
     /**
@@ -28,6 +74,11 @@ class EnumMap extends SplObjectStorage
      */
     private $flags = 9;
 
+    /**
+     * Constructor
+     * @param string   $enumClass The classname of an enumeration the map is for
+     * @param int|null $flags     Behaviour flags, see KEY_AS_* and CURRENT_AS_* constants
+     */
     public function __construct($enumClass, $flags = null)
     {
         if (!is_subclass_of($enumClass, __NAMESPACE__ . '\Enum')) {
@@ -43,11 +94,22 @@ class EnumMap extends SplObjectStorage
         }
     }
 
+    /**
+     * Get the classname of enumeration this map is for
+     * @return string
+     */
     public function getEnumClass()
     {
         return $this->enumClass;
     }
 
+    /**
+     * Set behaviour flags
+     * see KEY_AS_* and CURRENT_AS_* constants
+     * @param int $flags
+     * @return void
+     * @throws InvalidArgumentException On invalid or unsupported flags
+     */
     public function setFlags($flags)
     {
         $flags = (int)$flags;
@@ -74,17 +136,33 @@ class EnumMap extends SplObjectStorage
         $this->flags = $keyFlag | $currentFlag;
     }
 
+    /**
+     * Get the behaviour flags
+     * @return int
+     */
     public function getFlags()
     {
         return $this->flags;
     }
 
+    /**
+     * Attach a new enumeration or overwrite an existing one
+     * @param Enum|scalar $enum
+     * @param mixed       $data
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enum
+     */
     public function attach($enum, $data = null)
     {
         $this->initEnum($enum);
         parent::attach($enum, $data);
     }
 
+    /**
+     * Test if the given enumeration exists
+     * @param Enum|scalar $enum
+     * @return boolean
+     */
     public function contains($enum)
     {
         try {
@@ -96,12 +174,24 @@ class EnumMap extends SplObjectStorage
         }
     }
 
+    /**
+     * Detach an enumeration
+     * @param Enum|scalar $enum
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enum
+     */
     public function detach($enum)
     {
         $this->initEnum($enum);
         parent::detach($enum);
     }
 
+    /**
+     * Get a unique identifier for the given enumeration
+     * @param Enum|scalar $enum
+     * @return string
+     * @throws InvalidArgumentException On an invalid given enum
+     */
     public function getHash($enum)
     {
         $this->initEnum($enum);
@@ -110,29 +200,61 @@ class EnumMap extends SplObjectStorage
         return spl_object_hash($enum);
     }
 
+    /**
+     * Test if the given enumeration exists
+     * @param Enum|scalar $enum
+     * @return boolean
+     * @see contains()
+     */
     public function offsetExists($enum)
     {
         return $this->contains($enum);
     }
 
+    /**
+     * Get mapped data for this given enum
+     * @param Enum|scalar $enum
+     * @return mixed
+     * @throws InvalidArgumentException On an invalid given enum
+     */
     public function offsetGet($enum)
     {
         $this->initEnum($enum);
         return parent::offsetGet($enum);
     }
 
+    /**
+     * Attach a new enumeration or overwrite an existing one
+     * @param Enum|scalar $enum
+     * @param mixed       $data
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enum
+     * @see attach()
+     */
     public function offsetSet($enum, $data = null)
     {
         $this->initEnum($enum);
         parent::offsetSet($enum, $data);
     }
 
+    /**
+     * Detach an existing enumeration
+     * @param Enum|scalar $enum
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enum
+     * @see detach()
+     */
     public function offsetUnset($enum)
     {
         $this->initEnum($enum);
         parent::offsetUnset($enum);
     }
 
+    /**
+     * Get the current item
+     * The return value varied by the behaviour of the current flag
+     * @return mixed
+     */
     public function current()
     {
         switch ($this->flags & 120) {
@@ -140,10 +262,10 @@ class EnumMap extends SplObjectStorage
                 return parent::current();
             case self::CURRENT_AS_DATA:
                 return parent::getInfo();
-            case self::CURRENT_AS_NAME:
-                return parent::current()->getName();
             case self::CURRENT_AS_VALUE:
                 return parent::current()->getValue();
+            case self::CURRENT_AS_NAME:
+                return parent::current()->getName();
             case self::CURRENT_AS_ORDINAL:
                 return parent::current()->getOrdinal();
             default:
@@ -151,6 +273,11 @@ class EnumMap extends SplObjectStorage
         }
     }
 
+    /**
+     * Get the current item-key
+     * The return value varied by the behaviour of the key flag
+     * @return scalar
+     */
     public function key()
     {
         switch ($this->flags & 7) {
@@ -158,15 +285,21 @@ class EnumMap extends SplObjectStorage
                 return parent::key();
             case self::KEY_AS_NAME:
                 return parent::current()->getName();
-            case self::KEY_AS_VALUE:
-                return parent::current()->getValue();
             case self::KEY_AS_ORDINAL:
                 return parent::current()->getOrdinal();
+            case self::KEY_AS_VALUE:
+                return parent::current()->getValue();
             default:
                 throw new RuntimeException('Invalid key flag');
         }
     }
 
+    /**
+     * Initialize an enumeration
+     * @param Enum|scalar $enum
+     * @return Enum
+     * @throws InvalidArgumentException On an invalid given enum
+     */
     private function initEnum(&$enum)
     {
         // auto instantiate
