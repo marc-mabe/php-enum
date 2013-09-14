@@ -87,8 +87,13 @@ class EnumMap extends SplObjectStorage
 
     public function contains($enum)
     {
-        $this->initEnum($enum);
-        return parent::contains($enum);
+        try {
+            $this->initEnum($enum);
+            return parent::contains($enum);
+        } catch (InvalidArgumentException $e) {
+            // On an InvalidArgumentException the given argument can't be contained in this map
+            return false;
+        }
     }
 
     public function detach($enum)
@@ -100,13 +105,14 @@ class EnumMap extends SplObjectStorage
     public function getHash($enum)
     {
         $this->initEnum($enum);
-        return parent::getHash($enum);
+
+        // getHash is available since PHP 5.4
+        return spl_object_hash($enum);
     }
 
     public function offsetExists($enum)
     {
-        $this->initEnum($enum);
-        return parent::offsetExists($enum);
+        return $this->contains($enum);
     }
 
     public function offsetGet($enum)
@@ -124,7 +130,41 @@ class EnumMap extends SplObjectStorage
     public function offsetUnset($enum)
     {
         $this->initEnum($enum);
-        parent::offsetUnset($enum, $data);
+        parent::offsetUnset($enum);
+    }
+
+    public function current()
+    {
+        switch ($this->flags & 120) {
+            case self::CURRENT_AS_ENUM:
+                return parent::current();
+            case self::CURRENT_AS_DATA:
+                return parent::getInfo();
+            case self::CURRENT_AS_NAME:
+                return parent::current()->getName();
+            case self::CURRENT_AS_VALUE:
+                return parent::current()->getValue();
+            case self::CURRENT_AS_ORDINAL:
+                return parent::current()->getOrdinal();
+            default:
+                throw new RuntimeException('Invalid current flag');
+        }
+    }
+
+    public function key()
+    {
+        switch ($this->flags & 7) {
+            case self::KEY_AS_INDEX:
+                return parent::key();
+            case self::KEY_AS_NAME:
+                return parent::current()->getName();
+            case self::KEY_AS_VALUE:
+                return parent::current()->getValue();
+            case self::KEY_AS_ORDINAL:
+                return parent::current()->getOrdinal();
+            default:
+                throw new RuntimeException('Invalid key flag');
+        }
     }
 
     private function initEnum(&$enum)
@@ -148,39 +188,5 @@ class EnumMap extends SplObjectStorage
             get_class($enum) ?: gettype($enum),
             $this->enumClass
         ));
-    }
-
-    public function current()
-    {
-        switch ($this->flags & 120) {
-            case self::CURRENT_AS_ENUM:
-                return parent::current();
-            case self::CURRENT_AS_DATA:
-                return parent::getInfo();
-            case self::CURRENT_AS_NAME:
-                return parent::current()->getName();
-            case self::CURRENT_AS_VALUE:
-                return parent::current()->getValue();
-            case self::CURRENT_AS_ORDINAL:
-                return parent::current()->getOrdinal();
-            default:
-                throw new RuntimeException('Invalid current flags');
-        }
-    }
-
-    public function key()
-    {
-        switch ($this->flags & 7) {
-            case self::KEY_AS_INDEX:
-                return parent::key();
-            case self::KEY_AS_NAME:
-                return parent::current()->getName();
-            case self::KEY_AS_VALUE:
-                return parent::current()->getValue();
-            case self::KEY_AS_ORDINAL:
-                return parent::current()->getOrdinal();
-            default:
-                throw new RuntimeException('Invalid key flags');
-        }
     }
 }

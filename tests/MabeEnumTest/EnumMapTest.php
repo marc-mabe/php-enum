@@ -5,7 +5,9 @@ namespace MabeEnumTest;
 use MabeEnum\Enum;
 use MabeEnum\EnumMap;
 use MabeEnumTest\TestAsset\EnumWithoutDefaultValue;
+use MabeEnumTest\TestAsset\EnumInheritance;
 use PHPUnit_Framework_TestCase as TestCase;
+use ReflectionClass;
 
 /**
  * Unit tests for the class MabeEnum\EnumMap
@@ -31,11 +33,13 @@ class EnumMapTest extends TestCase
         $this->assertNull($enumMap->attach($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
         $this->assertSame($value1, $enumMap[$enum1]);
+        $this->assertSame(spl_object_hash($enum1), $enumMap->getHash($enum1));
 
         $this->assertFalse($enumMap->contains($enum2));
         $this->assertNull($enumMap->attach($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
         $this->assertSame($value2, $enumMap[$enum2]);
+        $this->assertSame(spl_object_hash($enum2), $enumMap->getHash($enum2));
 
         $this->assertNull($enumMap->detach($enum1));
         $this->assertFalse($enumMap->contains($enum1));
@@ -58,11 +62,13 @@ class EnumMapTest extends TestCase
         $this->assertNull($enumMap->attach($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
         $this->assertSame($value1, $enumMap[$enum1]);
+        $this->assertSame(spl_object_hash(EnumWithoutDefaultValue::ONE()), $enumMap->getHash($enum1));
 
         $this->assertFalse($enumMap->contains($enum2));
         $this->assertNull($enumMap->attach($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
         $this->assertSame($value2, $enumMap[$enum2]);
+        $this->assertSame(spl_object_hash(EnumWithoutDefaultValue::TWO()), $enumMap->getHash($enum2));
 
         $this->assertNull($enumMap->detach($enum1));
         $this->assertFalse($enumMap->contains($enum1));
@@ -197,9 +203,114 @@ class EnumMapTest extends TestCase
         $this->assertSame('ONE', $enumMap->current());
     }
 
+    public function testArrayAccessWithObjects()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+
+        $enumMap[EnumWithoutDefaultValue::ONE()] = 'first';
+        $enumMap[EnumWithoutDefaultValue::TWO()] = 'second';
+
+        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::ONE()]));
+        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::TWO()]));
+
+        $this->assertSame('first', $enumMap[EnumWithoutDefaultValue::ONE()]);
+        $this->assertSame('second', $enumMap[EnumWithoutDefaultValue::TWO()]);
+
+        unset($enumMap[EnumWithoutDefaultValue::ONE()], $enumMap[EnumWithoutDefaultValue::TWO()]);
+
+        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::ONE()]));
+        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::TWO()]));
+    }
+
+    public function testArrayAccessWithValues()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+
+        $enumMap[EnumWithoutDefaultValue::ONE] = 'first';
+        $enumMap[EnumWithoutDefaultValue::TWO] = 'second';
+
+        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::ONE]));
+        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::TWO]));
+
+        $this->assertSame('first', $enumMap[EnumWithoutDefaultValue::ONE]);
+        $this->assertSame('second', $enumMap[EnumWithoutDefaultValue::TWO]);
+
+        unset($enumMap[EnumWithoutDefaultValue::ONE], $enumMap[EnumWithoutDefaultValue::TWO]);
+
+        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::ONE]));
+        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::TWO]));
+    }
+
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
     {
         $this->setExpectedException('InvalidArgumentException');
         new EnumMap('stdClass');
+    }
+
+    public function testSetFlagsThrowsInvalidArgumentExceptionOnUnsupportedKeyFlag()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+
+        $this->setExpectedException('InvalidArgumentException');
+        $enumMap->setFlags(5);
+    }
+
+    public function testCurrentThrowsRuntimeExceptionOnInvalidFlag()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap->attach(EnumWithoutDefaultValue::ONE());
+        $enumMap->rewind();
+
+        // change internal flags to an invalid current flag
+        $reflectionClass = new ReflectionClass($enumMap);
+        $reflectionProp  = $reflectionClass->getProperty('flags');
+        $reflectionProp->setAccessible(true);
+        $reflectionProp->setValue($enumMap, 0);
+
+        $this->setExpectedException('RuntimeException');
+        $enumMap->current();
+    }
+
+    public function testKeyThrowsRuntimeExceptionOnInvalidFlag()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap->attach(EnumWithoutDefaultValue::ONE());
+        $enumMap->rewind();
+
+        // change internal flags to an invalid current flag
+        $reflectionClass = new ReflectionClass($enumMap);
+        $reflectionProp  = $reflectionClass->getProperty('flags');
+        $reflectionProp->setAccessible(true);
+        $reflectionProp->setValue($enumMap, 0);
+
+        $this->setExpectedException('RuntimeException');
+        $enumMap->key();
+    }
+
+    public function testSetFlagsThrowsInvalidArgumentExceptionOnUnsupportedCurrentFlag()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+
+        $this->setExpectedException('InvalidArgumentException');
+        $enumMap->setFlags(48);
+    }
+
+    public function testInitEnumThrowsInvalidArgumentExceptionOnInvalidEnumGiven()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+
+        $this->setExpectedException('InvalidArgumentException');
+        $enumMap->offsetSet(EnumInheritance::INHERITANCE(), 'test');
+    }
+
+    public function testContainsAndOffsetExistsReturnsFalseOnInvalidEnum()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+
+        $this->assertFalse($enumMap->contains(EnumInheritance::INHERITANCE()));
+        $this->assertFalse($enumMap->contains(EnumInheritance::INHERITANCE));
+
+        $this->assertFalse(isset($enumMap[EnumInheritance::INHERITANCE()]));
+        $this->assertFalse(isset($enumMap[EnumInheritance::INHERITANCE]));
     }
 }
