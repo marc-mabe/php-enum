@@ -13,7 +13,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 // not installed
 } else {
     echo "php-enum not installed - please run 'composer install'" . PHP_EOL;
-    exit;
+    exit(1);
 }
 
 // autload test files
