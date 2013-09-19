@@ -1,0 +1,164 @@
+<?php
+
+namespace MabeEnum;
+
+use Iterator;
+use Countable;
+use InvalidArgumentException;
+use RuntimeException;
+
+/**
+ * EnumSet implementation in base of SplObjectStorage
+ *
+ * @link http://github.com/marc-mabe/php-enum for the canonical source repository
+ * @copyright Copyright (c) 2012 Marc Bennewitz
+ * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ */
+class EnumSet implements Iterator, Countable
+{
+    private $enumClass = 'EnumInheritance';
+    private $list      = array();
+    private $index     = 0;
+
+    /**
+     * Constructor
+     * @param string $enumClass The classname of an enumeration the map is for
+     */
+    public function __construct($enumClass)
+    {
+        if (!is_subclass_of($enumClass, __NAMESPACE__ . '\Enum')) {
+            throw new InvalidArgumentException(sprintf(
+                "This EnumMap can handle subclasses of '%s' only",
+                __NAMESPACE__ . '\Enum'
+            ));
+        }
+        $this->enumClass = $enumClass;
+    }
+
+    /**
+     * Get the classname of enumeration this map is for
+     * @return string
+     */
+    public function getEnumClass()
+    {
+        return $this->enumClass;
+    }
+
+    /**
+     * Attach a new enumeration or overwrite an existing one
+     * @param Enum|scalar $enum
+     * @param mixed       $data
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enum
+     */
+    public function attach($enum, $data = null)
+    {
+        $this->initEnum($enum);
+        $ordinal = $enum->getOrdinal();
+        if (!in_array($ordinal, $this->list, true)) {
+            $this->list[] = $ordinal;
+        }
+    }
+
+    /**
+     * Test if the given enumeration exists
+     * @param Enum|scalar $enum
+     * @return boolean
+     */
+    public function contains($enum)
+    {
+        $this->initEnum($enum);
+        return in_array($enum->getOrdinal(), $this->list, true);
+    }
+
+    /**
+     * Detach an enumeration
+     * @param Enum|scalar $enum
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enum
+     */
+    public function detach($enum)
+    {
+        $this->initEnum($enum);
+        $index = array_search($enum->getOrdinal(), $this->list, true);
+        if ($index) {
+            unset($this->list[$index]);
+        }
+    }
+
+    /* Iterator */
+
+    /**
+     * Get the current Enum
+     * @return Enum|null Returns the current Enum or NULL on an invalid iterator position
+     */
+    public function current()
+    {
+        if (!$this->valid()) {
+            return null;
+        }
+
+        $enumClass = $this->enumClass;
+        return $enumClass::getByOrdinal($this->list[$this->index]);
+    }
+
+    /**
+     * Get the current iterator position
+     * @return int
+     */
+    public function key()
+    {
+        return $this->index;
+    }
+
+    public function next()
+    {
+        ++$this->index;
+    }
+
+    public function rewind()
+    {
+        $this->index = 0;
+    }
+
+    public function valid()
+    {
+        return isset($this->list[$this->index]);
+    }
+
+    /* Countable */
+
+    public function count()
+    {
+        return count($this->list);
+    }
+
+    /**
+     * Initialize an enumeration
+     * @param Enum|scalar $enum
+     * @return Enum
+     * @throws InvalidArgumentException On an invalid given enum
+     */
+    private function initEnum(&$enum)
+    {
+        // auto instantiate
+        if (is_scalar($enum)) {
+            $enumClass = $this->enumClass;
+            $enum      = $enumClass::get($enum);
+            return;
+        }
+
+        // allow only enums of the same type
+        // (don't allow instance of)
+        $enumClass = get_class($enum);
+        if ($enumClass && strcasecmp($enumClass, $this->enumClass) === 0) {
+            return;
+        }
+
+        throw new InvalidArgumentException(sprintf(
+            "The given enum of type '%s' isn't same as the required type '%s'",
+            get_class($enum) ?: gettype($enum),
+            $this->enumClass
+        ));
+    }
+}
