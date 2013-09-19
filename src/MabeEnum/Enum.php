@@ -142,6 +142,24 @@ abstract class Enum
     }
 
     /**
+     * Get an enum by the given name
+     *
+     * @param string $name The name to instantiate the enum by
+     * @return Enum
+     * @throws InvalidArgumentException On an invalid or unknown name
+     * @throws LogicException           On ambiguous constant values
+     */
+    final public static function getByName($name)
+    {
+        $classConst = 'static::' . $name;
+        if (!defined($classConst)) {
+            $class = get_called_class();
+            throw new InvalidArgumentException($class . '::' . $name . ' not defined');
+        }
+        return static::get(constant($classConst));
+    }
+
+    /**
      * Get an enum by the given ordinal number
      *
      * @param int $ordinal The ordinal number to instantiate the enum by
@@ -233,19 +251,14 @@ abstract class Enum
      * This will be called automatically on calling a method
      * with the same name of a defined constant.
      *
-     * @param string $const The name of the constant to instantiate the enum with
-     * @param array  $args  There should be no arguments
+     * @param string $method The name to instantiate the enum by (called as method)
+     * @param array  $args   There should be no arguments
      * @return Enum
-     * @throws BadMethodCallException On an unknown constant name (method name)
-     * @throws LogicException         On ambiguous constant values
+     * @throws InvalidArgumentException On an invalid or unknown name
+     * @throws LogicException           On ambiguous constant values
      */
-    final public static function __callStatic($const, array $args)
+    final public static function __callStatic($method, array $args)
     {
-        $classConst = 'static::' . $const;
-        if (!defined($classConst)) {
-            $class = get_called_class();
-            throw new BadMethodCallException($class . '::' . $const . ' not defined');
-        }
-        return static::get(constant($classConst));
+        return static::getByName($method);
     }
 }

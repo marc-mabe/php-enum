@@ -72,19 +72,6 @@ class EnumTest extends TestCase
         $this->assertSame(1, $enum->getOrdinal());
     }
 
-    public function testInstantiateUsingMagicMethod()
-    {
-        $enum = EnumInheritance::ONE();
-        $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enum);
-        $this->assertSame(EnumInheritance::ONE, $enum->getValue());
-    }
-
-    public function testInstantiateUsingMagicMethodThrowsBadMethodCallException()
-    {
-        $this->setExpectedException('BadMethodCallException');
-        EnumInheritance::UNKNOWN();
-    }
-
     public function testInstantiateUsingOrdinalNumber()
     {
         $enum = EnumInheritance::getByOrdinal(2);
@@ -96,6 +83,26 @@ class EnumTest extends TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
         EnumInheritance::getByOrdinal(3);
+    }
+
+    public function testInstantiateByName()
+    {
+        $enum = EnumInheritance::getByName('ONE');
+        $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enum);
+        $this->assertSame(EnumInheritance::ONE, $enum->getValue());
+    }
+
+    public function testInstantiateByUnknownNameThrowsInvalidArgumentException()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        EnumInheritance::getByName('UNKNOWN');
+    }
+
+    public function testInstantiateUsingMagicMethod()
+    {
+        $enum = EnumInheritance::ONE();
+        $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enum);
+        $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
 
     public function testAmbuguousConstantsThrowsLogicException()
