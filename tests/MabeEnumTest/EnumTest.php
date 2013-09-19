@@ -85,6 +85,19 @@ class EnumTest extends TestCase
         EnumInheritance::UNKNOWN();
     }
 
+    public function testInstantiateUsingOrdinalNumber()
+    {
+        $enum = EnumInheritance::getByOrdinal(2);
+        $this->assertSame(2, $enum->getOrdinal());
+        $this->assertSame('INHERITANCE', $enum->getName());
+    }
+
+    public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        EnumInheritance::getByOrdinal(3);
+    }
+
     public function testAmbuguousConstantsThrowsLogicException()
     {
         $this->setExpectedException('LogicException');

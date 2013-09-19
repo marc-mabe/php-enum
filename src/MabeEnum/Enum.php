@@ -128,7 +128,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    static public function get($value)
+    final static public function get($value)
     {
         $class = get_called_class();
         $id    = $class . '.' . $value;
@@ -142,6 +142,27 @@ abstract class Enum
     }
 
     /**
+     * Get an enum by the given ordinal number
+     *
+     * @param int $ordinal The ordinal number to instantiate the enum by
+     * @return Enum
+     * @throws InvalidArgumentException On an invalid ordinal number
+     * @throws LogicException           On ambiguous constant values
+     */
+    final public static function getByOrdinal($ordinal)
+    {
+        $constants = static::getConstants();
+        $item      = array_slice($constants, $ordinal, 1, false);
+        if (!$item) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid ordinal number, must between 0 and %s',
+                count($constants) - 1
+            ));
+        }
+        return static::get(current($item));
+    }
+
+    /**
      * Clears all instantiated enums
      *
      * NOTE: This can break singleton behavior ... use it with caution!
@@ -149,7 +170,7 @@ abstract class Enum
      * @param null|string $class
      * @return void
      */
-    final static function clear()
+    final static public function clear()
     {
         $class  = get_called_class();
 
@@ -214,6 +235,7 @@ abstract class Enum
      *
      * @param string $const The name of the constant to instantiate the enum with
      * @param array  $args  There should be no arguments
+     * @return Enum
      * @throws BadMethodCallException On an unknown constant name (method name)
      * @throws LogicException         On ambiguous constant values
      */
