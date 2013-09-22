@@ -11,7 +11,7 @@ use RuntimeException;
  * EnumSet implementation in base of SplObjectStorage
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2012 Marc Bennewitz
+ * @copyright Copyright (c) 2013 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumSet implements Iterator, Countable

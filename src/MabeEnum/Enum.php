@@ -11,7 +11,7 @@ use BadMethodCallException;
  * Class to implement enumerations for PHP 5 (without SplEnum)
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2012 Marc Bennewitz
+ * @copyright Copyright (c) 2013 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 abstract class Enum
