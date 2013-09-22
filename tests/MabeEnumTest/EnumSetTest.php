@@ -12,7 +12,7 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Unit tests for the class MabeEnum\EnumSet
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2012 Marc Bennewitz
+ * @copyright Copyright (c) 2013 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumSetTest extends TestCase
@@ -21,6 +21,7 @@ class EnumSetTest extends TestCase
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
         $this->assertSame('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', $enumSet->getEnumClass());
+        $this->assertSame(EnumSet::UNIQUE, $enumSet->getFlags());
 
         $enum1  = EnumWithoutDefaultValue::ONE();
         $enum2  = EnumWithoutDefaultValue::TWO();
@@ -65,6 +66,7 @@ class EnumSetTest extends TestCase
     public function testUnique()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', EnumSet::UNIQUE);
+        $this->assertSame(EnumSet::UNIQUE, $enumSet->getFlags());
 
         $enumSet->attach(EnumWithoutDefaultValue::ONE());
         $enumSet->attach(EnumWithoutDefaultValue::ONE);
@@ -78,6 +80,7 @@ class EnumSetTest extends TestCase
     public function testNotUnique()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', 0);
+        $this->assertSame(0, $enumSet->getFlags());
 
         $enumSet->attach(EnumWithoutDefaultValue::ONE());
         $enumSet->attach(EnumWithoutDefaultValue::ONE);
@@ -102,6 +105,7 @@ class EnumSetTest extends TestCase
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
         $this->assertFalse($enumSet->valid());
+        $this->assertNull($enumSet->current());
 
         // attach
         $enumSet->attach($enum1);
@@ -123,6 +127,7 @@ class EnumSetTest extends TestCase
         $this->assertNull($enumSet->next());
         $this->assertFalse($enumSet->valid());
         $this->assertSame(2, $enumSet->key());
+        $this->assertNull($enumSet->current());
 
         // rewind will set the iterator position back to 0
         $enumSet->rewind();
@@ -141,6 +146,7 @@ class EnumSetTest extends TestCase
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
         $this->assertFalse($enumSet->valid());
+        $this->assertNull($enumSet->current());
 
         // attach
         $enumSet->attach($enum2);
@@ -162,6 +168,7 @@ class EnumSetTest extends TestCase
         $this->assertNull($enumSet->next());
         $this->assertFalse($enumSet->valid());
         $this->assertSame(2, $enumSet->key());
+        $this->assertNull($enumSet->current());
 
         // rewind will set the iterator position back to 0
         $enumSet->rewind();
@@ -180,6 +187,7 @@ class EnumSetTest extends TestCase
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
         $this->assertFalse($enumSet->valid());
+        $this->assertNull($enumSet->current());
 
         // attach
         $enumSet->attach($enum2);
@@ -215,6 +223,7 @@ class EnumSetTest extends TestCase
         $this->assertNull($enumSet->next());
         $this->assertFalse($enumSet->valid());
         $this->assertSame(4, $enumSet->key());
+        $this->assertNull($enumSet->current());
 
         // rewind will set the iterator position back to 0
         $enumSet->rewind();
@@ -247,6 +256,7 @@ class EnumSetTest extends TestCase
         // detach enum of current index if the last index
         $enumSet->detach($enumSet->current());
         $this->assertFalse($enumSet->valid());
+        $this->assertNull($enumSet->current());
     }
 
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()

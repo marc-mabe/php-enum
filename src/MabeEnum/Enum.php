@@ -11,7 +11,7 @@ use BadMethodCallException;
  * Class to implement enumerations for PHP 5 (without SplEnum)
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2012 Marc Bennewitz
+ * @copyright Copyright (c) 2013 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 abstract class Enum
@@ -109,7 +109,7 @@ abstract class Enum
         // detect ordinal
         $ordinal = 0;
         $value   = $this->value;
-        foreach ($this::getConstants() as $constValue) {
+        foreach (static::getConstants() as $constValue) {
             if ($value === $constValue) {
                 break;
             }
@@ -131,13 +131,12 @@ abstract class Enum
     final static public function get($value)
     {
         $class = get_called_class();
-        $id    = $class . '.' . $value;
-        if (isset(self::$instances[$id])) {
-            return self::$instances[$id];
+        if (isset(self::$instances[$class][$value])) {
+            return self::$instances[$class][$value];
         }
 
         $instance = new $class($value);
-        self::$instances[$id] = $instance;
+        self::$instances[$class][$value] = $instance;
         return $instance;
     }
 
@@ -193,11 +192,9 @@ abstract class Enum
         $class  = get_called_class();
 
         // clear instantiated enums
-        $prefix       = $class . '.';
-        $prefixLength = strlen($prefix);
-        foreach (self::$instances as $id => $enum) {
-            if (strncasecmp($prefix, $id, $prefixLength) === 0) {
-                unset(self::$instances[$id]);
+        foreach (self::$instances as $instanceClass => $enum) {
+            if (strcasecmp($class, $instanceClass) === 0) {
+                unset(self::$instances[$instanceClass]);
             }
         }
 

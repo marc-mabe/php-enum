@@ -1,4 +1,4 @@
-Copyright (c) 2012, Marc Bennewitz
+Copyright (c) 2013, Marc Bennewitz
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
