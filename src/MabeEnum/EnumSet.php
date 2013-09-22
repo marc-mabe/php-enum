@@ -16,15 +16,27 @@ use RuntimeException;
  */
 class EnumSet implements Iterator, Countable
 {
-    private $enumClass = 'EnumInheritance';
+    /**
+     * Flag for a unique set of enumerations
+     */
+    const UNIQUE  = 1;
+
+    /**
+     * Flag for an ordered set of enumerations by ordinal
+     */
+    const ORDERED = 2;
+
+    private $enumClass;
     private $list      = array();
     private $index     = 0;
+    private $flags     = self::UNIQUE;
 
     /**
      * Constructor
-     * @param string $enumClass The classname of an enumeration the map is for
+     * @param string   $enumClass The classname of an enumeration the map is for
+     * @param null|int $flags     Flags to define behaviours
      */
-    public function __construct($enumClass)
+    public function __construct($enumClass, $flags = null)
     {
         if (!is_subclass_of($enumClass, __NAMESPACE__ . '\Enum')) {
             throw new InvalidArgumentException(sprintf(
@@ -33,6 +45,10 @@ class EnumSet implements Iterator, Countable
             ));
         }
         $this->enumClass = $enumClass;
+
+        if ($flags !== null) {
+            $this->flags = (int) $flags;
+        }
     }
 
     /**
@@ -42,6 +58,15 @@ class EnumSet implements Iterator, Countable
     public function getEnumClass()
     {
         return $this->enumClass;
+    }
+
+    /**
+     * Get flags of defined behaviours
+     * @return int
+     */
+    public function getFlags()
+    {
+        return $this->flags;
     }
 
     /**
@@ -55,8 +80,13 @@ class EnumSet implements Iterator, Countable
     {
         $this->initEnum($enum);
         $ordinal = $enum->getOrdinal();
-        if (!in_array($ordinal, $this->list, true)) {
+
+        if (!($this->flags & self::UNIQUE) || !in_array($ordinal, $this->list, true)) {
             $this->list[] = $ordinal;
+
+            if ($this->flags & self::ORDERED) {
+                sort($this->list);
+            }
         }
     }
 
@@ -72,7 +102,7 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Detach an enumeration
+     * Detach all enumerations same as the given enum
      * @param Enum|scalar $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
@@ -80,10 +110,13 @@ class EnumSet implements Iterator, Countable
     public function detach($enum)
     {
         $this->initEnum($enum);
-        $index = array_search($enum->getOrdinal(), $this->list, true);
-        if ($index) {
+
+        while (($index = array_search($enum->getOrdinal(), $this->list, true)) !== false) {
             unset($this->list[$index]);
         }
+
+        // reset index positions to have a real list
+        $this->list = array_values($this->list);
     }
 
     /* Iterator */
@@ -94,7 +127,7 @@ class EnumSet implements Iterator, Countable
      */
     public function current()
     {
-        if (!$this->valid()) {
+        if (!isset($this->list[$this->index])) {
             return null;
         }
 
