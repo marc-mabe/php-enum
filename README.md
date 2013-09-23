@@ -23,126 +23,47 @@ It's an abstract class that needs to be extended to use it.
 > particular concrete representation in the computer's memory; compilers and
 > interpreters can represent them arbitrarily.
 
-
-# Why not ```SplEnum```
-
-* It's not build-in PHP and requires pecl extension
-* SplEnum is too much magic under the hod
-
-
-# API
-
-    abstract class MabeEnum\Enum
-    {
-        /**
-         * Constructor
-         * @param scalar $value             The enum value to select
-         * @throws InvalidArgumentException On unknwon value
-         */
-        public function __construct($value);
-    
-        /**
-         * Returns an assoc array of defined constant names and the values
-         * @return array
-         */
-        final public function getConstants();
-    
-        /**
-         * Get the selected value
-         * @return scalar
-         */
-        final public function getValue();
-    
-        /**
-         * Get the constant name of the selected value
-         * @return string
-         */
-        final public function getName();
-    
-        /**
-         * Get the ordinal number of the selected value
-         * @return int
-         */
-        final public function getOrdinal();
-    
-        /**
-         * Get the selected value as string
-         * (This will be called automatically on converting into a string)
-         * @return string
-         */
-        final public function __toString();
-    
-        /**
-         * Instantiate a new enum were the selected value
-         * is the constant name of the called method name
-         * (This will be called automatically on calling static method)
-         * NOTE: THIS WILL WORK FOR PHP >= 5.3 ONLY
-         * @param string $name            The name of the constant to instantiate
-         * @param array  $args            This should be an empty array (no arguments)
-         * @throws BadMethodCallException If the called method hasn't the same name as a constant
-         * @return MabeEnum\Enum          The instantiated enum
-         */
-        final public static __callStatic($name, array $args);
-    }
-
-
 # Usage
 
-## The way of class constants
-
-    class User
-    {
-        const INACTIVE = 0;
-        const ACTIVE   = 1;
-        const DELETED  = 2;
-
-        protected $status = 0;
-
-        public function setStatus($status)
-        {
-            $intStatus = (int)$status;
-            if (!in_array($intStatus, array(self::INACTIVE, self::ACTIVE, self::DELETED))) {
-                throw new InvalidArgumentException("Invalid status {$status}");
-            }
-            $this->status = $intStatus;
-        }
-
-        public function getStatus()
-        {
-            return $this->status;
-        }
-    }
-
-    $user = new User();
-    echo 'Default user status: ' . $user->getStatus() . PHP_EOL;
-    $user->setStatus(User::ACTIVE);
-    echo 'Changed user status: ' . $user->getStatus() . PHP_EOL;
-
-**PRINTS**
-
-    Default user status: 0
-    Changed user status: 1
-
-* Requires validation on every use
-* Hard to extend the list of possible values
-* Hard to get a human readable name of a value
-
-## The way of php-enum:
+## Basics
 
     use MabeEnum\Enum;
-    
-    class UserStatusEnum extends Enum
+
+    // define an own enumeration class
+    class UserStatus extends Enum
     {
         const INACTIVE = 0;
         const ACTIVE   = 1;
         const DELETED  = 2;
     }
+    
+    // different ways to instantiate an enumeration
+    $status = UserStatus::get(UserStatus::ACTIVE);
+    $status = UserStatus::ACTIVE();
+    $status = UserStatus::getByName('ACTIVE');
+    $status = UserStatus::getByOrdinal(1);
+    
+    // available methods to get the selected entry
+    $status->getValue();   // returns the selected constant value
+    $status->getName();    // returns the selected constant name
+    $status->getOrdinal(); // returns the ordinal number of the selected constant
+    (string) $status;      // returns the selected constant name
+    
+    // The same enumerations of the same class holds the same instance
+    UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
+    UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
+
+
+## Type-Hint
+    
+    use MabeEnum\Enum;
+    use UserStatus;
     
     class User
     {
         protected $status;
     
-        public function setStatus(UserStatusEnum $status)
+        public function setStatus(UserStatus $status)
         {
             $this->status = $status;
         }
@@ -150,26 +71,69 @@ It's an abstract class that needs to be extended to use it.
         public function getStatus()
         {
             if (!$this->status) {
-                // init default status
-                $this->status = UserStatusEnum::INACTIVE();
+                // initialize a default value
+                $this->status = UserStatus::get(UserStatus::INACTIVE);
             }
             return $this->status;
         }
     }
+
+## EnumMap
+
+An ```EnumMap``` maps enumeration instances of exactly one type to data assigned to.
+Internally the ```EnumMap``` is based of ```SplObjectStorage```.
+
+    use MabeEnum\EnumMap;
+    use UserStatus;
+
+    // create a new EnumMap
+    $enumMap = new EnumMap('UserStatus');
+
+    // attach entries (by value of by instance)
+    $enumMap->attach(UserStatus::INACTIVE, 'inaktiv');
+    $enumMap->attach(UserStatus::ACTIVE(), 'aktiv');
+    $enumMap->attach(UserStatus::DELETED(), 'gelöscht');
     
-    $user = new User();
-    echo 'Default user status: ' . $user->getStatus() . '(' . $user->getStatus()->getValue() . ')' . PHP_EOL;
-    $user->setStatus(UserStatusEnum::ACTIVE());
-    echo 'Changed user status: ' . $user->getStatus() . '(' . $user->getStatus()->getValue() . ')' . PHP_EOL;
+    // detach entries (by value or by instance)
+    $enumMap->detach(UserStatus::INACTIVE);
+    $enumMap->detach(UserStatus::DELETED());
+    
+    // iterate
+    var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
 
-**PRINTS**
+    // it's possible to define the key and the value used for iteration
+    $enumSet->setFlags(EnumSet::KEY_AS_NAME | EnumSet::CURRENT_AS_DATA);
+    var_dump(iterator_to_array($enumSet)); // array('ACTIVE' => 'aktiv');
 
-    Default user status: INACTIVE (0)
-    Changed user status: ACTIVE (1)
 
-* Validation will be already done on basic class ```MabeEnum\Enum```
-* Using type-hint makes arguments save
-* Human readable name of a value is simple accessable
+## EnumSet
+
+An ```EnumSet``` groups enumeration instances of exactly one type together.
+Internally it's based of a list (array) of ordinal values.
+
+    use MabeEnum\EnumSet;
+    use UserStatus;
+
+    // create a new EnumSet
+    $enumSet = new EnumSet('UserStatus');
+
+    // attach entries (by value of by instance)
+    $enumSet->attach(UserStatus::INACTIVE);
+    $enumSet->attach(UserStatus::ACTIVE());
+    $enumSet->attach(UserStatus::DELETED());
+    
+    // detach entries (by value or by instance)
+    $enumSet->detach(UserStatus::INACTIVE);
+    $enumSet->detach(UserStatus::DELETED());
+    
+    // iterate
+    var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
+
+# Why not ```SplEnum```
+
+* ```SplEnum``` is not build-in into PHP and requires pecl extension installed.
+* Instances of the same value of an ```SplEnum``` are not the same instances.
+* ```SplEnum``` doesn't have an implementaiton for ```EnumMap``` and ```EnumSet```.
 
 
 # Install
@@ -188,58 +152,6 @@ Add ```marc-mabe/php-enum``` to the project's composer.json dependencies and run
 Download the last version from [Github](https://github.com/marc-mabe/php-enum/tags)
 and extract it.
 
-
-# Examples
-
-## Define a default value:
-
-This example defines the constant ```ONE``` with value ```1``` as default
-value.
-
-    use MabeEnum\Enum;
-    
-    class MyEnumWithDefaultValue extends Enum
-    {
-        const ONE = 1;
-        const TWO = 2;
-    
-        public function __construct($value = self::ONE)
-        {
-            parent::__construct($value);
-        }
-    }
-
-## Inheritance
-
-It's also possible to extend other enumerations.
-
-    use MabeEnum\Enum;
-    
-    class MyEnum extends Enum
-    {
-        const ONE = 1;
-        const TWO = 2;
-    }
-    
-    class EnumInheritance extends MyEnum
-    {
-        const INHERITANCE = 'Inheritance';
-    }
-
-## Simplified instantiation
-
-It's possible to call one of the defined constants like a method
-and you will get the instantiated enum as a result.
-
-    use MabeEnum\Enum;
-    
-    class MyEnum extends Enum
-    {
-        const ONE = 1;
-        const TWO = 2;
-    }
-    
-    $enum = MyEnum::ONE();
 
 # New BSD License
 
