@@ -6,7 +6,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/marc-mabe/php-enum/v/unstable.png)](https://packagist.org/packages/marc-mabe/php-enum)
 [![Dependency Status](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master/badge.png)](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master)
 
-This is a native PHP implementation to add enumeration support to PHP >= 5.3
+This is a native PHP implementation to add enumeration support to PHP >= 5.3.
 It's an abstract class that needs to be extended to use it.
 
 
@@ -49,7 +49,7 @@ It's an abstract class that needs to be extended to use it.
     $status->getOrdinal(); // returns the ordinal number of the selected constant
     (string) $status;      // returns the selected constant name
     
-    // The same enumerations of the same class holds the same instance
+    // same enumerations of the same class holds the same instance
     UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
     UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
 
@@ -101,7 +101,7 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
     // iterate
     var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
 
-    // it's possible to define the key and the value used for iteration
+    // define key and value used for iteration
     $enumSet->setFlags(EnumSet::KEY_AS_NAME | EnumSet::CURRENT_AS_DATA);
     var_dump(iterator_to_array($enumSet)); // array('ACTIVE' => 'aktiv');
 
@@ -132,8 +132,8 @@ Internally it's based of a list (array) of ordinal values.
 # Why not ```SplEnum```
 
 * ```SplEnum``` is not build-in into PHP and requires pecl extension installed.
-* Instances of the same value of an ```SplEnum``` are not the same instances.
-* ```SplEnum``` doesn't have an implementaiton for ```EnumMap``` and ```EnumSet```.
+* Instances of the same value of an ```SplEnum``` are not the same instance.
+* ```SplEnum``` doesn't have implemented ```EnumMap``` or ```EnumSet```.
 
 
 # Install
