@@ -1,6 +1,6 @@
 {
     "name": "marc-mabe/php-enum",
-    "description": "Simple and fast implementation of enumerations with native PHP 5.*",
+    "description": "Simple and fast implementation of enumerations with native PHP 5.3 and upper",
     "type": "library",
     "keywords": [
         "enum",
