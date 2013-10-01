@@ -42,10 +42,9 @@ abstract class Enum
 
     /**
      * Constructor
-     * 
+     *
      * @param scalar $value The value to select
-     * @throws InvalidArgumentException On an unknwon or invalid value
-     * @throws LogicException           On ambiguous constant values
+     * @param int|null $ordinal
      */
     final private function __construct($value, $ordinal = null)
     {
@@ -219,7 +218,7 @@ abstract class Enum
     /**
      * Detect constants available by given class
      * @param string $class
-     * @return void
+     * @return array
      * @throws LogicException On ambiguous constant values
      */
     static private function detectConstants($class)

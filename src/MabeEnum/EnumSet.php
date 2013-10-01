@@ -5,7 +5,6 @@ namespace MabeEnum;
 use Iterator;
 use Countable;
 use InvalidArgumentException;
-use RuntimeException;
 
 /**
  * EnumSet implementation in base of SplObjectStorage
@@ -26,15 +25,32 @@ class EnumSet implements Iterator, Countable
      */
     const ORDERED = 2;
 
+    /**
+     * @var string
+     */
     private $enumClass;
+
+    /**
+     * @var array
+     */
     private $list      = array();
+
+    /**
+     * @var int
+     */
     private $index     = 0;
+
+    /**
+     * @var int
+     */
     private $flags     = self::UNIQUE;
 
     /**
      * Constructor
+     *
      * @param string   $enumClass The classname of an enumeration the map is for
      * @param null|int $flags     Flags to define behaviours
+     * @throws InvalidArgumentException
      */
     public function __construct($enumClass, $flags = null)
     {

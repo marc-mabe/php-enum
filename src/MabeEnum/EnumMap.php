@@ -78,6 +78,7 @@ class EnumMap extends SplObjectStorage
      * Constructor
      * @param string   $enumClass The classname of an enumeration the map is for
      * @param int|null $flags     Behaviour flags, see KEY_AS_* and CURRENT_AS_* constants
+     * @throws InvalidArgumentException
      */
     public function __construct($enumClass, $flags = null)
     {
