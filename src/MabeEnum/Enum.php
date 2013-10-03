@@ -47,7 +47,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final private function __construct($value, $ordinal = null)
+    private function __construct($value, $ordinal = null)
     {
         $this->value   = $value;
         $this->ordinal = $ordinal;
@@ -67,7 +67,7 @@ abstract class Enum
      * @throws LogicException Enums are not cloneable
      *                        because instances are implemented as singletons
      */
-    final private function __clone()
+    private function __clone()
     {
         throw new LogicException('Enums are not cloneable');
     }
