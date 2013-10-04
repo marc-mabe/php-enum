@@ -46,7 +46,7 @@ abstract class Enum
      * @param scalar $value The value to select
      * @param int|null $ordinal
      */
-    private function __construct($value, $ordinal = null)
+    final private function __construct($value, $ordinal = null)
     {
         $this->value   = $value;
         $this->ordinal = $ordinal;
@@ -66,7 +66,7 @@ abstract class Enum
      * @throws LogicException Enums are not cloneable
      *                        because instances are implemented as singletons
      */
-    private function __clone()
+    final private function __clone()
     {
         throw new LogicException('Enums are not cloneable');
     }
