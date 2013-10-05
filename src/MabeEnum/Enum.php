@@ -53,13 +53,13 @@ abstract class Enum
     }
 
     /**
-     * Get the selected value
+     * Get the current selected constant name
      * @return string
-     * @see getValue()
+     * @see getName()
      */
-    final public function __toString()
+    public function __toString()
     {
-        return (string) $this->value;
+        return $this->getName();
     }
 
     /**

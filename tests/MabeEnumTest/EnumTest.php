@@ -23,10 +23,10 @@ class EnumTest extends TestCase
         $this->assertSame('ONE', $enum->getName());
     }
 
-    public function testToStringMagicMethodReturnsValueAsString()
+    public function testToStringMagicMethodReturnsName()
     {
         $enum = EnumWithoutDefaultValue::get(EnumWithoutDefaultValue::ONE);
-        $this->assertSame('1', $enum->__toString());
+        $this->assertSame('ONE', $enum->__toString());
     }
 
     public function testEnumInheritance()
