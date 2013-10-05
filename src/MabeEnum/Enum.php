@@ -5,7 +5,6 @@ namespace MabeEnum;
 use ReflectionClass;
 use InvalidArgumentException;
 use LogicException;
-use BadMethodCallException;
 
 /**
  * Class to implement enumerations for PHP 5 (without SplEnum)
