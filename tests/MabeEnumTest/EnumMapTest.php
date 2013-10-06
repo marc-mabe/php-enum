@@ -24,7 +24,7 @@ class EnumMapTest extends TestCase
         $this->assertSame('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', $enumMap->getEnumClass());
 
         $enum1  = EnumWithoutDefaultValue::ONE();
-        $value1 = 'value2';
+        $value1 = 'value1';
 
         $enum2  = EnumWithoutDefaultValue::TWO();
         $value2 = 'value2';
@@ -53,7 +53,7 @@ class EnumMapTest extends TestCase
         $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
 
         $enum1  = EnumWithoutDefaultValue::ONE;
-        $value1 = 'value2';
+        $value1 = 'value1';
 
         $enum2  = EnumWithoutDefaultValue::TWO;
         $value2 = 'value2';
@@ -82,7 +82,7 @@ class EnumMapTest extends TestCase
         $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
 
         $enum1  = EnumWithoutDefaultValue::ONE();
-        $value1 = 'value2';
+        $value1 = 'value1';
 
         $enum2  = EnumWithoutDefaultValue::TWO();
         $value2 = 'value2';
