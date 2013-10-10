@@ -129,11 +129,12 @@ abstract class Enum
 
         // find the real value
         $constants = self::detectConstants($class);
-        $name      = array_search($value, $constants, true);
+        $name      = array_search($value, $constants, true); // use strict, see next lines
         if ($name === false) {
-            // enumeration values have to be unique by their string representation
-            // because array_search search in strict more or in non-strict mode we
-            // have to search for a value of the same string out self.
+            // Bnumeration values have to be unique by their string representation.
+            // Because array_search searches in strict mode or in non-strict mode only
+            // we have to search for a value of the same string our self.
+            // (see issue #26)
             $valueStr = (string) $value;
             $found    = false;
             foreach ($constants as $name => $constValue) {
