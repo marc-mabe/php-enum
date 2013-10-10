@@ -2,7 +2,7 @@
 
 namespace MabeEnumTest;
 
-use MabeEnumTest\TestAsset\EnumWithoutDefaultValue;
+use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -17,15 +17,21 @@ use ReflectionClass;
  */
 class EnumTest extends TestCase
 {
+    public function setUp()
+    {
+        EnumBasic::clear();
+        EnumInheritance::clear();
+    }
+
     public function testGetNameReturnsConstantNameOfCurrentValue()
     {
-        $enum = EnumWithoutDefaultValue::get(EnumWithoutDefaultValue::ONE);
+        $enum = EnumBasic::get(EnumBasic::ONE);
         $this->assertSame('ONE', $enum->getName());
     }
 
     public function testToStringMagicMethodReturnsName()
     {
-        $enum = EnumWithoutDefaultValue::get(EnumWithoutDefaultValue::ONE);
+        $enum = EnumBasic::get(EnumBasic::ONE);
         $this->assertSame('ONE', $enum->__toString());
     }
 
@@ -35,6 +41,14 @@ class EnumTest extends TestCase
         $this->assertSame(array(
             'ONE'         => 1,
             'TWO'         => 2,
+            'THREE'       => 3,
+            'FOUR'        => 4,
+            'FIVE'        => 5,
+            'SIX'         => 6,
+            'SEVEN'       => 7,
+            'EIGHT'       => 8,
+            'NINE'        => 9,
+            'ZERO'        => 0,
             'INHERITANCE' => 'Inheritance'
         ), $enum::getConstants());
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
@@ -42,47 +56,47 @@ class EnumTest extends TestCase
 
         $enum = EnumInheritance::get(EnumInheritance::INHERITANCE);
         $this->assertSame(EnumInheritance::INHERITANCE, $enum->getValue());
-        $this->assertSame(2, $enum->getOrdinal());
+        $this->assertSame(10, $enum->getOrdinal());
     }
 
-    public function testConstructorStrictValue()
+    public function testGetWithStrictValue()
     {
-        $enum = EnumWithoutDefaultValue::get(EnumWithoutDefaultValue::ONE);
+        $enum = EnumBasic::get(EnumBasic::ONE);
         $this->assertSame(1, $enum->getValue());
         $this->assertSame(0, $enum->getOrdinal());
     }
 
-    public function testConstuctorNonStrictValue()
+    public function testGetWithNonStrictValue()
     {
-        $enum = EnumWithoutDefaultValue::get((string)EnumWithoutDefaultValue::TWO);
+        $enum = EnumBasic::get((string)EnumBasic::TWO);
         $this->assertSame(2, $enum->getValue());
         $this->assertSame(1, $enum->getOrdinal());
     }
 
-    public function testConstructorInvalidValueThrowsInvalidArgumentException()
+    public function testGetWithInvalidValueThrowsInvalidArgumentException()
     {
         $this->setExpectedException('InvalidArgumentException');
-        EnumWithoutDefaultValue::get('unknown');
+        EnumBasic::get('unknown');
     }
 
     public function testCallingGetOrdinalTwoTimesWillResultTheSameValue()
     {
-        $enum = EnumWithoutDefaultValue::get(EnumWithoutDefaultValue::TWO);
+        $enum = EnumBasic::get(EnumBasic::TWO);
         $this->assertSame(1, $enum->getOrdinal());
         $this->assertSame(1, $enum->getOrdinal());
     }
 
     public function testInstantiateUsingOrdinalNumber()
     {
-        $enum = EnumInheritance::getByOrdinal(2);
-        $this->assertSame(2, $enum->getOrdinal());
+        $enum = EnumInheritance::getByOrdinal(10);
+        $this->assertSame(10, $enum->getOrdinal());
         $this->assertSame('INHERITANCE', $enum->getName());
     }
 
     public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException()
     {
         $this->setExpectedException('InvalidArgumentException');
-        EnumInheritance::getByOrdinal(3);
+        EnumInheritance::getByOrdinal(11);
     }
 
     public function testInstantiateByName()
@@ -113,17 +127,17 @@ class EnumTest extends TestCase
 
     public function testSingleton()
     {
-        $enum1 = EnumWithoutDefaultValue::get(EnumWithoutDefaultValue::ONE);
-        $enum2 = EnumWithoutDefaultValue::ONE();
+        $enum1 = EnumBasic::get(EnumBasic::ONE);
+        $enum2 = EnumBasic::ONE();
         $this->assertSame($enum1, $enum2);
     }
 
     public function testClear()
     {
-        $enum1 = EnumWithoutDefaultValue::ONE();
-        EnumWithoutDefaultValue::clear();
-        $enum2 = EnumWithoutDefaultValue::ONE();
-        $enum3 = EnumWithoutDefaultValue::ONE();
+        $enum1 = EnumBasic::ONE();
+        EnumBasic::clear();
+        $enum2 = EnumBasic::ONE();
+        $enum3 = EnumBasic::ONE();
         
         $this->assertNotSame($enum1, $enum2);
         $this->assertSame($enum2, $enum3);
@@ -131,7 +145,7 @@ class EnumTest extends TestCase
 
     public function testCloneNotCallableAndThrowsLogicException()
     {
-        $enum = EnumWithoutDefaultValue::ONE();
+        $enum = EnumBasic::ONE();
 
         $reflectionClass  = new ReflectionClass($enum);
         $reflectionMethod = $reflectionClass->getMethod('__clone');
