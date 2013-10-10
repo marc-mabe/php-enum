@@ -4,7 +4,7 @@ namespace MabeEnumTest;
 
 use MabeEnum\Enum;
 use MabeEnum\EnumSet;
-use MabeEnumTest\TestAsset\EnumWithoutDefaultValue;
+use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -19,12 +19,12 @@ class EnumSetTest extends TestCase
 {
     public function testBasic()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
-        $this->assertSame('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', $enumSet->getEnumClass());
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumSet->getEnumClass());
         $this->assertSame(EnumSet::UNIQUE, $enumSet->getFlags());
 
-        $enum1  = EnumWithoutDefaultValue::ONE();
-        $enum2  = EnumWithoutDefaultValue::TWO();
+        $enum1  = EnumBasic::ONE();
+        $enum2  = EnumBasic::TWO();
 
         $this->assertFalse($enumSet->contains($enum1));
         $this->assertNull($enumSet->attach($enum1));
@@ -43,10 +43,10 @@ class EnumSetTest extends TestCase
 
     public function testBasicWithConstantValuesAsEnums()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
 
-        $enum1  = EnumWithoutDefaultValue::ONE;
-        $enum2  = EnumWithoutDefaultValue::TWO;
+        $enum1  = EnumBasic::ONE;
+        $enum2  = EnumBasic::TWO;
 
         $this->assertFalse($enumSet->contains($enum1));
         $this->assertNull($enumSet->attach($enum1));
@@ -65,42 +65,42 @@ class EnumSetTest extends TestCase
 
     public function testUnique()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', EnumSet::UNIQUE);
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::UNIQUE);
         $this->assertSame(EnumSet::UNIQUE, $enumSet->getFlags());
 
-        $enumSet->attach(EnumWithoutDefaultValue::ONE());
-        $enumSet->attach(EnumWithoutDefaultValue::ONE);
+        $enumSet->attach(EnumBasic::ONE());
+        $enumSet->attach(EnumBasic::ONE);
 
-        $enumSet->attach(EnumWithoutDefaultValue::TWO());
-        $enumSet->attach(EnumWithoutDefaultValue::TWO);
+        $enumSet->attach(EnumBasic::TWO());
+        $enumSet->attach(EnumBasic::TWO);
 
         $this->assertSame(2, $enumSet->count());
     }
 
     public function testNotUnique()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', 0);
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', 0);
         $this->assertSame(0, $enumSet->getFlags());
 
-        $enumSet->attach(EnumWithoutDefaultValue::ONE());
-        $enumSet->attach(EnumWithoutDefaultValue::ONE);
+        $enumSet->attach(EnumBasic::ONE());
+        $enumSet->attach(EnumBasic::ONE);
 
-        $enumSet->attach(EnumWithoutDefaultValue::TWO());
-        $enumSet->attach(EnumWithoutDefaultValue::TWO);
+        $enumSet->attach(EnumBasic::TWO());
+        $enumSet->attach(EnumBasic::TWO);
 
         $this->assertSame(4, $enumSet->count());
 
         // detch remove all
-        $enumSet->detach(EnumWithoutDefaultValue::ONE);
+        $enumSet->detach(EnumBasic::ONE);
         $this->assertSame(2, $enumSet->count());
     }
 
     public function testIterateUnordered()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', EnumSet::UNIQUE);
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::UNIQUE);
 
-        $enum1  = EnumWithoutDefaultValue::ONE();
-        $enum2  = EnumWithoutDefaultValue::TWO();
+        $enum1  = EnumBasic::ONE();
+        $enum2  = EnumBasic::TWO();
 
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
@@ -138,10 +138,10 @@ class EnumSetTest extends TestCase
 
     public function testIterateOrdered()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', EnumSet::UNIQUE | EnumSet::ORDERED);
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::UNIQUE | EnumSet::ORDERED);
 
-        $enum1 = EnumWithoutDefaultValue::ONE();
-        $enum2 = EnumWithoutDefaultValue::TWO();
+        $enum1 = EnumBasic::ONE();
+        $enum2 = EnumBasic::TWO();
 
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
@@ -179,10 +179,10 @@ class EnumSetTest extends TestCase
 
     public function testIterateOrderedNotUnique()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', EnumSet::ORDERED);
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::ORDERED);
 
-        $enum1 = EnumWithoutDefaultValue::ONE();
-        $enum2 = EnumWithoutDefaultValue::TWO();
+        $enum1 = EnumBasic::ONE();
+        $enum2 = EnumBasic::TWO();
 
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
@@ -267,7 +267,7 @@ class EnumSetTest extends TestCase
 
     public function testInitEnumThrowsInvalidArgumentExceptionOnInvalidEnum()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
         $this->setExpectedException('InvalidArgumentException');
         $this->assertFalse($enumSet->contains(EnumInheritance::INHERITANCE()));
     }

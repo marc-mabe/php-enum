@@ -129,9 +129,22 @@ abstract class Enum
 
         // find the real value
         $constants = self::detectConstants($class);
-        $name      = array_search($value, $constants);
+        $name      = array_search($value, $constants, true);
         if ($name === false) {
-            throw new InvalidArgumentException("Unknown value '{$value}'");
+            // enumeration values have to be unique by their string representation
+            // because array_search search in strict more or in non-strict mode we
+            // have to search for a value of the same string out self.
+            $valueStr = (string) $value;
+            $found    = false;
+            foreach ($constants as $name => $constValue) {
+                if ($valueStr === (string) $constValue) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                throw new InvalidArgumentException("Unknown value '{$value}'");
+            }
         }
 
         return self::$instances[$class][$value] = new $class($constants[$name]);
