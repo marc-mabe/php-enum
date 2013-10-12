@@ -9,7 +9,7 @@ namespace MabeEnumTest\TestAsset;
  * @copyright Copyright (c) 2013 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-class EnumInheritance extends EnumWithoutDefaultValue
+class EnumInheritance extends EnumBasic
 {
     const INHERITANCE = 'Inheritance';
 }

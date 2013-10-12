@@ -23,6 +23,7 @@ It's an abstract class that needs to be extended to use it.
 > particular concrete representation in the computer's memory; compilers and
 > interpreters can represent them arbitrarily.
 
+
 # Usage
 
 ## Basics
@@ -35,6 +36,13 @@ It's an abstract class that needs to be extended to use it.
         const INACTIVE = 0;
         const ACTIVE   = 1;
         const DELETED  = 2;
+
+        // all scalar datatypes are supported
+        const NIL     = null;
+        const BOOLEAN = true;
+        const INT     = 1234;
+        const STR     = 'string';
+        const FLOAT   = 0.123;
     }
     
     // different ways to instantiate an enumeration
@@ -89,7 +97,7 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
     // create a new EnumMap
     $enumMap = new EnumMap('UserStatus');
 
-    // attach entries (by value of by instance)
+    // attach entries (by value or by instance)
     $enumMap->attach(UserStatus::INACTIVE, 'inaktiv');
     $enumMap->attach(UserStatus::ACTIVE(), 'aktiv');
     $enumMap->attach(UserStatus::DELETED(), 'gelöscht');
@@ -117,7 +125,7 @@ Internally it's based of a list (array) of ordinal values.
     // create a new EnumSet
     $enumSet = new EnumSet('UserStatus');
 
-    // attach entries (by value of by instance)
+    // attach entries (by value or by instance)
     $enumSet->attach(UserStatus::INACTIVE);
     $enumSet->attach(UserStatus::ACTIVE());
     $enumSet->attach(UserStatus::DELETED());
@@ -128,6 +136,7 @@ Internally it's based of a list (array) of ordinal values.
     
     // iterate
     var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
+
 
 # Why not ```SplEnum```
 
