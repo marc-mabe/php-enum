@@ -271,6 +271,6 @@ abstract class Enum
      */
     final public static function __callStatic($method, array $args)
     {
-        return static::getByName($method);
+        return self::getByName($method);
     }
 }
