@@ -4,7 +4,7 @@ namespace MabeEnumTest;
 
 use MabeEnum\Enum;
 use MabeEnum\EnumMap;
-use MabeEnumTest\TestAsset\EnumWithoutDefaultValue;
+use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
@@ -20,13 +20,13 @@ class EnumMapTest extends TestCase
 {
     public function testBasic()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
-        $this->assertSame('MabeEnumTest\TestAsset\EnumWithoutDefaultValue', $enumMap->getEnumClass());
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumMap->getEnumClass());
 
-        $enum1  = EnumWithoutDefaultValue::ONE();
+        $enum1  = EnumBasic::ONE();
         $value1 = 'value1';
 
-        $enum2  = EnumWithoutDefaultValue::TWO();
+        $enum2  = EnumBasic::TWO();
         $value2 = 'value2';
 
         $this->assertFalse($enumMap->contains($enum1));
@@ -50,25 +50,25 @@ class EnumMapTest extends TestCase
 
     public function testBasicWithConstantValuesAsEnums()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
-        $enum1  = EnumWithoutDefaultValue::ONE;
+        $enum1  = EnumBasic::ONE;
         $value1 = 'value1';
 
-        $enum2  = EnumWithoutDefaultValue::TWO;
+        $enum2  = EnumBasic::TWO;
         $value2 = 'value2';
 
         $this->assertFalse($enumMap->contains($enum1));
         $this->assertNull($enumMap->attach($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
         $this->assertSame($value1, $enumMap[$enum1]);
-        $this->assertSame(spl_object_hash(EnumWithoutDefaultValue::ONE()), $enumMap->getHash($enum1));
+        $this->assertSame(spl_object_hash(EnumBasic::ONE()), $enumMap->getHash($enum1));
 
         $this->assertFalse($enumMap->contains($enum2));
         $this->assertNull($enumMap->attach($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
         $this->assertSame($value2, $enumMap[$enum2]);
-        $this->assertSame(spl_object_hash(EnumWithoutDefaultValue::TWO()), $enumMap->getHash($enum2));
+        $this->assertSame(spl_object_hash(EnumBasic::TWO()), $enumMap->getHash($enum2));
 
         $this->assertNull($enumMap->detach($enum1));
         $this->assertFalse($enumMap->contains($enum1));
@@ -79,12 +79,12 @@ class EnumMapTest extends TestCase
 
     public function testIterate()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
-        $enum1  = EnumWithoutDefaultValue::ONE();
+        $enum1  = EnumBasic::ONE();
         $value1 = 'value1';
 
-        $enum2  = EnumWithoutDefaultValue::TWO();
+        $enum2  = EnumBasic::TWO();
         $value2 = 'value2';
 
         // an empty enum map needs to be invalid, starting by 0
@@ -124,23 +124,23 @@ class EnumMapTest extends TestCase
     public function testIterateWithFlags()
     {
         $enumMap = new EnumMap(
-            'MabeEnumTest\TestAsset\EnumWithoutDefaultValue',
+            'MabeEnumTest\TestAsset\EnumBasic',
             EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM
         );
 
-        $enumMap->attach(EnumWithoutDefaultValue::TWO(), 'first');
-        $enumMap->attach(EnumWithoutDefaultValue::ONE(), 'second');
+        $enumMap->attach(EnumBasic::TWO(), 'first');
+        $enumMap->attach(EnumBasic::ONE(), 'second');
 
         // EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM (first)
         $this->assertSame(EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM, $enumMap->getFlags());
 
         $enumMap->rewind();
         $this->assertSame(0, $enumMap->key());
-        $this->assertSame(EnumWithoutDefaultValue::TWO(), $enumMap->current());
+        $this->assertSame(EnumBasic::TWO(), $enumMap->current());
 
         $enumMap->next();
         $this->assertSame(1, $enumMap->key());
-        $this->assertSame(EnumWithoutDefaultValue::ONE(), $enumMap->current());
+        $this->assertSame(EnumBasic::ONE(), $enumMap->current());
 
         // EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA
         $enumMap->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
@@ -205,40 +205,40 @@ class EnumMapTest extends TestCase
 
     public function testArrayAccessWithObjects()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
-        $enumMap[EnumWithoutDefaultValue::ONE()] = 'first';
-        $enumMap[EnumWithoutDefaultValue::TWO()] = 'second';
+        $enumMap[EnumBasic::ONE()] = 'first';
+        $enumMap[EnumBasic::TWO()] = 'second';
 
-        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::ONE()]));
-        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::TWO()]));
+        $this->assertTrue(isset($enumMap[EnumBasic::ONE()]));
+        $this->assertTrue(isset($enumMap[EnumBasic::TWO()]));
 
-        $this->assertSame('first', $enumMap[EnumWithoutDefaultValue::ONE()]);
-        $this->assertSame('second', $enumMap[EnumWithoutDefaultValue::TWO()]);
+        $this->assertSame('first', $enumMap[EnumBasic::ONE()]);
+        $this->assertSame('second', $enumMap[EnumBasic::TWO()]);
 
-        unset($enumMap[EnumWithoutDefaultValue::ONE()], $enumMap[EnumWithoutDefaultValue::TWO()]);
+        unset($enumMap[EnumBasic::ONE()], $enumMap[EnumBasic::TWO()]);
 
-        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::ONE()]));
-        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::TWO()]));
+        $this->assertFalse(isset($enumMap[EnumBasic::ONE()]));
+        $this->assertFalse(isset($enumMap[EnumBasic::TWO()]));
     }
 
     public function testArrayAccessWithValues()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
-        $enumMap[EnumWithoutDefaultValue::ONE] = 'first';
-        $enumMap[EnumWithoutDefaultValue::TWO] = 'second';
+        $enumMap[EnumBasic::ONE] = 'first';
+        $enumMap[EnumBasic::TWO] = 'second';
 
-        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::ONE]));
-        $this->assertTrue(isset($enumMap[EnumWithoutDefaultValue::TWO]));
+        $this->assertTrue(isset($enumMap[EnumBasic::ONE]));
+        $this->assertTrue(isset($enumMap[EnumBasic::TWO]));
 
-        $this->assertSame('first', $enumMap[EnumWithoutDefaultValue::ONE]);
-        $this->assertSame('second', $enumMap[EnumWithoutDefaultValue::TWO]);
+        $this->assertSame('first', $enumMap[EnumBasic::ONE]);
+        $this->assertSame('second', $enumMap[EnumBasic::TWO]);
 
-        unset($enumMap[EnumWithoutDefaultValue::ONE], $enumMap[EnumWithoutDefaultValue::TWO]);
+        unset($enumMap[EnumBasic::ONE], $enumMap[EnumBasic::TWO]);
 
-        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::ONE]));
-        $this->assertFalse(isset($enumMap[EnumWithoutDefaultValue::TWO]));
+        $this->assertFalse(isset($enumMap[EnumBasic::ONE]));
+        $this->assertFalse(isset($enumMap[EnumBasic::TWO]));
     }
 
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
@@ -249,7 +249,7 @@ class EnumMapTest extends TestCase
 
     public function testSetFlagsThrowsInvalidArgumentExceptionOnUnsupportedKeyFlag()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
         $this->setExpectedException('InvalidArgumentException');
         $enumMap->setFlags(5);
@@ -257,8 +257,8 @@ class EnumMapTest extends TestCase
 
     public function testCurrentThrowsRuntimeExceptionOnInvalidFlag()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
-        $enumMap->attach(EnumWithoutDefaultValue::ONE());
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap->attach(EnumBasic::ONE());
         $enumMap->rewind();
 
         // change internal flags to an invalid current flag
@@ -273,8 +273,8 @@ class EnumMapTest extends TestCase
 
     public function testKeyThrowsRuntimeExceptionOnInvalidFlag()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
-        $enumMap->attach(EnumWithoutDefaultValue::ONE());
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap->attach(EnumBasic::ONE());
         $enumMap->rewind();
 
         // change internal flags to an invalid current flag
@@ -289,7 +289,7 @@ class EnumMapTest extends TestCase
 
     public function testSetFlagsThrowsInvalidArgumentExceptionOnUnsupportedCurrentFlag()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
         $this->setExpectedException('InvalidArgumentException');
         $enumMap->setFlags(48);
@@ -297,7 +297,7 @@ class EnumMapTest extends TestCase
 
     public function testInitEnumThrowsInvalidArgumentExceptionOnInvalidEnumGiven()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
         $this->setExpectedException('InvalidArgumentException');
         $enumMap->offsetSet(EnumInheritance::INHERITANCE(), 'test');
@@ -305,7 +305,7 @@ class EnumMapTest extends TestCase
 
     public function testContainsAndOffsetExistsReturnsFalseOnInvalidEnum()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumWithoutDefaultValue');
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
 
         $this->assertFalse($enumMap->contains(EnumInheritance::INHERITANCE()));
         $this->assertFalse($enumMap->contains(EnumInheritance::INHERITANCE));

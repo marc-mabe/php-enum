@@ -122,19 +122,22 @@ abstract class Enum
      */
     final static public function get($value)
     {
-        $class = get_called_class();
-        if (isset(self::$instances[$class][$value])) {
-            return self::$instances[$class][$value];
-        }
-
-        // find the real value
+        $class     = get_called_class();
         $constants = self::detectConstants($class);
-        $name      = array_search($value, $constants);
+        $name      = array_search($value, $constants, true);
         if ($name === false) {
-            throw new InvalidArgumentException("Unknown value '{$value}'");
+            if (is_scalar($value)) {
+                throw new InvalidArgumentException('Unknown value ' . var_export($value, true));
+            } else {
+                throw new InvalidArgumentException('Invalid value of type ' . gettype($value));
+            }
         }
 
-        return self::$instances[$class][$value] = new $class($constants[$name]);
+        if (isset(self::$instances[$class][$name])) {
+            return self::$instances[$class][$name];
+        }
+
+        return self::$instances[$class][$name] = new $class($constants[$name]);
     }
 
     /**
@@ -147,18 +150,18 @@ abstract class Enum
      */
     final public static function getByName($name)
     {
+        $name  = (string) $name;
         $class = get_called_class();
+        if (isset(self::$instances[$class][$name])) {
+            return self::$instances[$class][$name];
+        }
+
         $const = $class . '::' . $name;
         if (!defined($const)) {
             throw new InvalidArgumentException($const . ' not defined');
         }
 
-        $value = constant($const);
-        if (isset(self::$instances[$class][$value])) {
-            return self::$instances[$class][$value];
-        }
-
-        return self::$instances[$class][$value] = new $class($value);
+        return self::$instances[$class][$name] = new $class(constant($const));
     }
 
     /**
@@ -182,12 +185,12 @@ abstract class Enum
             ));
         }
 
-        $value = current($item);
-        if (isset(self::$instances[$class][$value])) {
-            return self::$instances[$class][$value];
+        $name = key($item);
+        if (isset(self::$instances[$class][$name])) {
+            return self::$instances[$class][$name];
         }
 
-        return self::$instances[$class][$value] = new $class($value, $ordinal);
+        return self::$instances[$class][$name] = new $class(current($item), $ordinal);
     }
 
     /**
@@ -226,19 +229,25 @@ abstract class Enum
             $reflection = new ReflectionClass($class);
             $constants  = $reflection->getConstants();
 
-            // Constant values needs to be unique
-            if (max(array_count_values($constants)) > 1) {
-                $ambiguous = array_map(function ($v) use ($constants) {
-                    return implode('/', array_keys($constants, $v)) . '=' . $v;
-                }, array_unique(array_diff_assoc($constants, array_unique($constants))));
-                throw new LogicException(sprintf(
-                    'All possible values needs to be unique. The following are ambiguous: %s',
-                    implode(', ', $ambiguous)
-                ));
+            // values needs to be unique
+            $ambiguous = array();
+            foreach ($constants as $value) {
+                $names = array_keys($constants, $value, true);
+                if (count($names) > 1) {
+                    $ambiguous[var_export($value, true)] = $names;
+                }
+            }
+            if ($ambiguous) {
+                throw new LogicException(
+                    'All possible values needs to be unique. The following are ambiguous: '
+                    . implode(', ', array_map(function ($names) use ($constants) {
+                        return implode('/', $names) . '=' . var_export($constants[$names[0]], true);
+                    }, $ambiguous))
+                );
             }
 
             // This is required to make sure that constants of base classes will be the first
-            while (($reflection = $reflection->getParentClass()) && $reflection->name != 'MabeEnum\Enum') {
+            while (($reflection = $reflection->getParentClass()) && $reflection->name != __CLASS__) {
                 $constants = $reflection->getConstants() + $constants;
             }
 
