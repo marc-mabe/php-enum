@@ -97,7 +97,7 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
     // create a new EnumMap
     $enumMap = new EnumMap('UserStatus');
 
-    // attach entries (by value of by instance)
+    // attach entries (by value or by instance)
     $enumMap->attach(UserStatus::INACTIVE, 'inaktiv');
     $enumMap->attach(UserStatus::ACTIVE(), 'aktiv');
     $enumMap->attach(UserStatus::DELETED(), 'gelöscht');
@@ -125,7 +125,7 @@ Internally it's based of a list (array) of ordinal values.
     // create a new EnumSet
     $enumSet = new EnumSet('UserStatus');
 
-    // attach entries (by value of by instance)
+    // attach entries (by value or by instance)
     $enumSet->attach(UserStatus::INACTIVE);
     $enumSet->attach(UserStatus::ACTIVE());
     $enumSet->attach(UserStatus::DELETED());
