@@ -24,10 +24,10 @@ class EnumBasic extends Enum
     const NINE  = 9;
     const ZERO  = 0;
 
-    const FLOATING_POINT_NUMBER = 0.123;
-    const STR                   = 'str';
-    const STR_EMPTY             = '';
-    const NIL                   = null;
-    const BOOLEAN_TRUE          = true;
-    const BOOLEAN_FALSE         = false;
+    const FLOAT         = 0.123;
+    const STR           = 'str';
+    const STR_EMPTY     = '';
+    const NIL           = null;
+    const BOOLEAN_TRUE  = true;
+    const BOOLEAN_FALSE = false;
 }

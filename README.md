@@ -23,6 +23,7 @@ It's an abstract class that needs to be extended to use it.
 > particular concrete representation in the computer's memory; compilers and
 > interpreters can represent them arbitrarily.
 
+
 # Usage
 
 ## Basics
@@ -35,6 +36,13 @@ It's an abstract class that needs to be extended to use it.
         const INACTIVE = 0;
         const ACTIVE   = 1;
         const DELETED  = 2;
+
+        // all scalar datatypes are supported
+        const NIL     = null;
+        const BOOLEAN = true;
+        const INT     = 1234;
+        const STR     = 'string';
+        const FLOAT   = 0.123;
     }
     
     // different ways to instantiate an enumeration
@@ -128,6 +136,7 @@ Internally it's based of a list (array) of ordinal values.
     
     // iterate
     var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
+
 
 # Why not ```SplEnum```
 
