@@ -23,4 +23,11 @@ class EnumBasic extends Enum
     const EIGHT = 8;
     const NINE  = 9;
     const ZERO  = 0;
+
+    const FLOATING_POINT_NUMBER = 0.123;
+    const STR                   = 'str';
+    const STR_EMPTY             = '';
+    const NIL                   = null;
+    const BOOLEAN_TRUE          = true;
+    const BOOLEAN_FALSE         = false;
 }
