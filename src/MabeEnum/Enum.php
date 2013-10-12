@@ -133,11 +133,11 @@ abstract class Enum
             }
         }
 
-        if (!isset(self::$instances[$class][$name])) {
-            self::$instances[$class][$name] = new $class($constants[$name]);
+        if (isset(self::$instances[$class][$name])) {
+            return self::$instances[$class][$name];
         }
 
-        return self::$instances[$class][$name];
+        return self::$instances[$class][$name] = new $class($constants[$name]);
     }
 
     /**
