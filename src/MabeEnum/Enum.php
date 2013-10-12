@@ -17,25 +17,29 @@ abstract class Enum
 {
     /**
      * The selected value
+     *
      * @var null|scalar
      */
     private $value;
 
     /**
      * The ordinal number of the value
+     *
      * @var null|int
      */
     private $ordinal;
 
     /**
      * An array of available constants by class
+     *
      * @var array ["$class" => ["$const" => $value, ...], ...]
      */
     private static $constants = array();
 
     /**
      * Already instantiated enums
-     * @param array ["$class.$value" => MabeEnum\Enum, ...]
+     *
+     * @var array ["$class" => ["$const" => $instance, ...], ...]
      */
     private static $instances = array();
 
@@ -53,6 +57,7 @@ abstract class Enum
 
     /**
      * Get the current selected constant name
+     *
      * @return string
      * @see getName()
      */
@@ -72,6 +77,7 @@ abstract class Enum
 
     /**
      * Get the current selected value
+     *
      * @return mixed
      */
     final public function getValue()
@@ -81,6 +87,7 @@ abstract class Enum
 
     /**
      * Get the current selected constant name
+     *
      * @return string
      */
     final public function getName()
@@ -90,6 +97,7 @@ abstract class Enum
 
     /**
      * Get the ordinal number of the selected value
+     *
      * @return int
      */
     final public function getOrdinal()
@@ -208,7 +216,8 @@ abstract class Enum
     }
 
     /**
-     * Get all available constants
+     * Get all available constants of the called class
+     *
      * @return array
      * @throws LogicException On ambiguous constant values
      */
@@ -219,6 +228,7 @@ abstract class Enum
 
     /**
      * Detect constants available by given class
+     *
      * @param string $class
      * @return array
      * @throws LogicException On ambiguous constant values
