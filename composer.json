@@ -5,6 +5,10 @@
     "keywords": [
         "enum",
         "enumeration",
+        "enumset",
+        "enum-set",
+        "enummap",
+        "enum-map",
         "typehint",
         "type-hint"
     ],
