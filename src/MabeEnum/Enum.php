@@ -206,7 +206,6 @@ abstract class Enum
      *
      * NOTE: This can break singleton behavior ... use it with caution!
      *
-     * @param null|string $class
      * @return void
      */
     final static public function clear()
