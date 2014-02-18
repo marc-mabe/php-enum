@@ -1,9 +1,9 @@
 # php-enum
 [![Build Status](https://secure.travis-ci.org/marc-mabe/php-enum.png?branch=master)](http://travis-ci.org/marc-mabe/php-enum)
+[![Quality Score](https://scrutinizer-ci.com/g/marc-mabe/php-enum/badges/quality-score.png?s=7dfddb19a12314ecc5f05eeb2b297bdde3ad2623)](https://scrutinizer-ci.com/g/marc-mabe/php-enum/)
 [![Coverage Status](https://coveralls.io/repos/marc-mabe/php-enum/badge.png?branch=master)](https://coveralls.io/r/marc-mabe/php-enum?branch=master)
 [![Total Downloads](https://poser.pugx.org/marc-mabe/php-enum/downloads.png)](https://packagist.org/packages/marc-mabe/php-enum)
-[![Latest Stable Version](https://poser.pugx.org/marc-mabe/php-enum/v/stable.png)](https://packagist.org/packages/marc-mabe/php-enum)
-[![Latest Unstable Version](https://poser.pugx.org/marc-mabe/php-enum/v/unstable.png)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Latest Stable](https://poser.pugx.org/marc-mabe/php-enum/v/stable.png)](https://packagist.org/packages/marc-mabe/php-enum)
 [![Dependency Status](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master/badge.png)](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master)
 
 This is a native PHP implementation to add enumeration support to PHP >= 5.3.
