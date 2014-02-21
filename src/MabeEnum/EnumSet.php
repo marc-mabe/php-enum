@@ -88,11 +88,10 @@ class EnumSet implements Iterator, Countable
     /**
      * Attach a new enumeration or overwrite an existing one
      * @param Enum|scalar $enum
-     * @param mixed       $data
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
      */
-    public function attach($enum, $data = null)
+    public function attach($enum)
     {
         $this->initEnum($enum);
         $ordinal = $enum->getOrdinal();
