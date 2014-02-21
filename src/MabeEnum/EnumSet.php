@@ -93,7 +93,7 @@ class EnumSet implements Iterator, Countable
      */
     public function attach($enum)
     {
-        $this->initEnum($enum);
+        $enum    = $this->initEnum($enum);
         $ordinal = $enum->getOrdinal();
 
         if (!($this->flags & self::UNIQUE) || !in_array($ordinal, $this->list, true)) {
@@ -112,7 +112,7 @@ class EnumSet implements Iterator, Countable
      */
     public function contains($enum)
     {
-        $this->initEnum($enum);
+        $enum = $this->initEnum($enum);
         return in_array($enum->getOrdinal(), $this->list, true);
     }
 
@@ -124,7 +124,7 @@ class EnumSet implements Iterator, Countable
      */
     public function detach($enum)
     {
-        $this->initEnum($enum);
+        $enum = $this->initEnum($enum);
 
         while (($index = array_search($enum->getOrdinal(), $this->list, true)) !== false) {
             unset($this->list[$index]);
@@ -187,20 +187,19 @@ class EnumSet implements Iterator, Countable
      * @return Enum
      * @throws InvalidArgumentException On an invalid given enum
      */
-    private function initEnum(&$enum)
+    private function initEnum($enum)
     {
         // auto instantiate
         if (is_scalar($enum)) {
             $enumClass = $this->enumClass;
-            $enum      = $enumClass::get($enum);
-            return;
+            return $enumClass::get($enum);
         }
 
         // allow only enums of the same type
         // (don't allow instance of)
         $enumClass = get_class($enum);
         if ($enumClass && strcasecmp($enumClass, $this->enumClass) === 0) {
-            return;
+            return $enum;
         }
 
         throw new InvalidArgumentException(sprintf(
