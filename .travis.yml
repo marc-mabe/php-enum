@@ -13,9 +13,9 @@ before_script:
  - composer install --dev -n $prefer_source
 
 script:
- - php vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml
- - composer require --dev $prefer_source "satooshi/php-coveralls dev-master"
- - php vendor/bin/coveralls -n -v
+ - php vendor/bin/phpunit --verbose --coverage-clover=coverage.clover
+ - wget "https://scrutinizer-ci.com/ocular.phar"
+ - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 notifications:
   email: false
