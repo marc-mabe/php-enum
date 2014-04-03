@@ -124,7 +124,7 @@ abstract class Enum
      * Get an enum of the given value
      *
      * @param null|boolean|int|float|string $value
-     * @return Enum
+     * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
@@ -152,7 +152,7 @@ abstract class Enum
      * Get an enum by the given name
      *
      * @param string $name The name to instantiate the enum by
-     * @return Enum
+     * @return static
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous constant values
      */
@@ -176,7 +176,7 @@ abstract class Enum
      * Get an enum by the given ordinal number
      *
      * @param int $ordinal The ordinal number to instantiate the enum by
-     * @return Enum
+     * @return static
      * @throws InvalidArgumentException On an invalid ordinal number
      * @throws LogicException           On ambiguous constant values
      */
@@ -274,7 +274,7 @@ abstract class Enum
      *
      * @param string $method The name to instantiate the enum by (called as method)
      * @param array  $args   There should be no arguments
-     * @return Enum
+     * @return static
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous constant values
      */
