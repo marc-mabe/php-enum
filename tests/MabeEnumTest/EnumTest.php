@@ -3,6 +3,7 @@
 namespace MabeEnumTest;
 
 use MabeEnumTest\TestAsset\EnumBasic;
+use MabeEnumTest\TestAsset\EnumBasic2;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -88,6 +89,37 @@ class EnumTest extends TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
         EnumBasic::get(array());
+    }
+
+    public function testGetByInstance()
+    {
+        $enum1 = EnumBasic::get(EnumBasic::ONE);
+        $enum2 = EnumBasic::get($enum1);
+        $this->assertSame($enum1, $enum2);
+    }
+
+    public function testGetByInheritInstance()
+    {
+        $enumInherit = EnumInheritance::get(EnumInheritance::ONE);
+        $enum1       = EnumBasic::get(EnumBasic::ONE);
+        $enum2       = EnumBasic::get($enumInherit);
+        $this->assertSame($enum1, $enum2);
+    }
+
+    public function testGetByInheritInstanceThrowsInvalidArgumentExceptionOnUnknownValue()
+    {
+        $enumInherit = EnumInheritance::get(EnumInheritance::INHERITANCE);
+
+        $this->setExpectedException('InvalidArgumentException');
+        EnumBasic::get($enumInherit);
+    }
+
+    public function testGetByInstanceOfDifferentBaseThrowsInvalidArgumentException()
+    {
+        $enumDiff = EnumBasic2::get(EnumBasic2::ONE);
+
+        $this->setExpectedException('InvalidArgumentException');
+        EnumBasic::get($enumDiff);
     }
 
     public function testGetAllValues()

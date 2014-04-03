@@ -123,13 +123,17 @@ abstract class Enum
     /**
      * Get an enum of the given value
      *
-     * @param null|boolean|int|float|string $value
+     * @param static|null|boolean|int|float|string $value
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
     final static public function get($value)
     {
+        if ($value instanceof static) {
+            $value = $value->getValue();
+        }
+
         $class     = get_called_class();
         $constants = self::detectConstants($class);
         $name      = array_search($value, $constants, true);
