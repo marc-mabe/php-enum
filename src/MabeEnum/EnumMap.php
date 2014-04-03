@@ -148,8 +148,8 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Attach a new enumeration or overwrite an existing one
-     * @param Enum|scalar $enum
-     * @param mixed       $data
+     * @param Enum|null|boolean|int|float|string $enum
+     * @param mixed                              $data
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
      */
@@ -160,7 +160,7 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Test if the given enumeration exists
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return boolean
      */
     public function contains($enum)
@@ -175,7 +175,7 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Detach an enumeration
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
      */
@@ -198,7 +198,7 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Test if the given enumeration exists
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return boolean
      * @see contains()
      */
@@ -209,7 +209,7 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Get mapped data for this given enum
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return mixed
      * @throws InvalidArgumentException On an invalid given enum
      */
@@ -220,8 +220,8 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Attach a new enumeration or overwrite an existing one
-     * @param Enum|scalar $enum
-     * @param mixed       $data
+     * @param Enum|null|boolean|int|float|string $enum
+     * @param mixed                              $data
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
      * @see attach()
@@ -233,7 +233,7 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Detach an existing enumeration
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
      * @see detach()
@@ -269,7 +269,7 @@ class EnumMap extends SplObjectStorage
     /**
      * Get the current item-key
      * The return value varied by the behaviour of the key flag
-     * @return scalar
+     * @return null|boolean|int|float|string
      */
     public function key()
     {
@@ -289,7 +289,7 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Initialize an enumeration
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return Enum
      * @throws InvalidArgumentException On an invalid given enum
      */

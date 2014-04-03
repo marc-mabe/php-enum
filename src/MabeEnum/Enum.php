@@ -18,7 +18,7 @@ abstract class Enum
     /**
      * The selected value
      *
-     * @var null|scalar
+     * @var null|boolean|int|float|string
      */
     private $value;
 
@@ -46,8 +46,8 @@ abstract class Enum
     /**
      * Constructor
      *
-     * @param scalar $value The value to select
-     * @param int|null $ordinal
+     * @param null|boolean|int|float|string $value   The value to select
+     * @param int|null                      $ordinal The ordinal number of the value
      */
     final private function __construct($value, $ordinal = null)
     {
@@ -78,7 +78,7 @@ abstract class Enum
     /**
      * Get the current selected value
      *
-     * @return mixed
+     * @return null|boolean|int|float|string
      */
     final public function getValue()
     {
@@ -123,7 +123,7 @@ abstract class Enum
     /**
      * Get an enum of the given value
      *
-     * @param scalar $value
+     * @param null|boolean|int|float|string $value
      * @return Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values

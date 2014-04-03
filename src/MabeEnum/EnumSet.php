@@ -87,7 +87,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Attach a new enumeration or overwrite an existing one
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
      */
@@ -107,7 +107,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Test if the given enumeration exists
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return boolean
      */
     public function contains($enum)
@@ -118,7 +118,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Detach all enumerations same as the given enum
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
      */
@@ -183,7 +183,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Initialize an enumeration
-     * @param Enum|scalar $enum
+     * @param Enum|null|boolean|int|float|string $enum
      * @return Enum
      * @throws InvalidArgumentException On an invalid given enum
      */
