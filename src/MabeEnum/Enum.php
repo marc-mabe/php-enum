@@ -128,7 +128,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final static public function get($value)
+    final public static function get($value)
     {
         if ($value instanceof static) {
             $value = $value->getValue();
@@ -212,7 +212,7 @@ abstract class Enum
      *
      * @return void
      */
-    final static public function clear()
+    final public static function clear()
     {
         $class = get_called_class();
         unset(self::$instances[$class], self::$constants[$class]);
@@ -224,7 +224,7 @@ abstract class Enum
      * @return array
      * @throws LogicException On ambiguous constant values
      */
-    final static public function getConstants()
+    final public static function getConstants()
     {
         return self::detectConstants(get_called_class());
     }
@@ -236,7 +236,7 @@ abstract class Enum
      * @return array
      * @throws LogicException On ambiguous constant values
      */
-    static private function detectConstants($class)
+    private static function detectConstants($class)
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
