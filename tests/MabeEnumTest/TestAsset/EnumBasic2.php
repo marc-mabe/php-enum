@@ -10,6 +10,23 @@ use MabeEnum\Enum;
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2013 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ *
+ * @method EnumBasic ONE()
+ * @method EnumBasic TWO()
+ * @method EnumBasic THREE()
+ * @method EnumBasic FOUR()
+ * @method EnumBasic FIVE()
+ * @method EnumBasic SIX()
+ * @method EnumBasic SEVEN()
+ * @method EnumBasic EIGHT()
+ * @method EnumBasic NINE()
+ * @method EnumBasic ZERO()
+ * @method EnumBasic FLOAT()
+ * @method EnumBasic STR()
+ * @method EnumBasic STR_EMPTY()
+ * @method EnumBasic NIL()
+ * @method EnumBasic BOOLEAN_TRUE()
+ * @method EnumBasic BOOLEAN_FALSE()
  */
 class EnumBasic2 extends Enum
 {
