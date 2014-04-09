@@ -93,8 +93,8 @@ class EnumSet implements Iterator, Countable
      */
     public function attach($enum)
     {
-        $enum    = $this->initEnum($enum);
-        $ordinal = $enum->getOrdinal();
+        $enumClass = $this->enumClass;
+        $ordinal   = $enumClass::get($enum)->getOrdinal();
 
         if (!($this->flags & self::UNIQUE) || !in_array($ordinal, $this->list, true)) {
             $this->list[] = $ordinal;
@@ -112,8 +112,8 @@ class EnumSet implements Iterator, Countable
      */
     public function contains($enum)
     {
-        $enum = $this->initEnum($enum);
-        return in_array($enum->getOrdinal(), $this->list, true);
+        $enumClass = $this->enumClass;
+        return in_array($enumClass::get($enum)->getOrdinal(), $this->list, true);
     }
 
     /**
@@ -124,9 +124,10 @@ class EnumSet implements Iterator, Countable
      */
     public function detach($enum)
     {
-        $enum = $this->initEnum($enum);
+        $enumClass = $this->enumClass;
+        $ordinal   = $enumClass::get($enum)->getOrdinal();
 
-        while (($index = array_search($enum->getOrdinal(), $this->list, true)) !== false) {
+        while (($index = array_search($ordinal, $this->list, true)) !== false) {
             unset($this->list[$index]);
         }
 
@@ -179,33 +180,5 @@ class EnumSet implements Iterator, Countable
     public function count()
     {
         return count($this->list);
-    }
-
-    /**
-     * Initialize an enumeration
-     * @param Enum|null|boolean|int|float|string $enum
-     * @return Enum
-     * @throws InvalidArgumentException On an invalid given enum
-     */
-    private function initEnum($enum)
-    {
-        // auto instantiate
-        if (is_scalar($enum)) {
-            $enumClass = $this->enumClass;
-            return $enumClass::get($enum);
-        }
-
-        // allow only enums of the same type
-        // (don't allow instance of)
-        $enumClass = get_class($enum);
-        if ($enumClass && strcasecmp($enumClass, $this->enumClass) === 0) {
-            return $enum;
-        }
-
-        throw new InvalidArgumentException(sprintf(
-            "The given enum of type '%s' isn't same as the required type '%s'",
-            get_class($enum) ?: gettype($enum),
-            $this->enumClass
-        ));
     }
 }

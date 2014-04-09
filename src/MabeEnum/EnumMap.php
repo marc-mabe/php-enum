@@ -123,7 +123,6 @@ class EnumMap extends SplObjectStorage
         } elseif (!$keyFlag) {
             $keyFlag = $this->flags & 7;
         }
-        
 
         $currentFlag = $flags & 56;
         if ($currentFlag > 40) {
@@ -155,7 +154,8 @@ class EnumMap extends SplObjectStorage
      */
     public function attach($enum, $data = null)
     {
-        parent::attach($this->initEnum($enum), $data);
+        $enumClass = $this->enumClass;
+        parent::attach($enumClass::get($enum), $data);
     }
 
     /**
@@ -166,7 +166,8 @@ class EnumMap extends SplObjectStorage
     public function contains($enum)
     {
         try {
-            return parent::contains($this->initEnum($enum));
+            $enumClass = $this->enumClass;
+            return parent::contains($enumClass::get($enum));
         } catch (InvalidArgumentException $e) {
             // On an InvalidArgumentException the given argument can't be contained in this map
             return false;
@@ -181,7 +182,8 @@ class EnumMap extends SplObjectStorage
      */
     public function detach($enum)
     {
-        parent::detach($this->initEnum($enum));
+        $enumClass = $this->enumClass;
+        parent::detach($enumClass::get($enum));
     }
 
     /**
@@ -193,7 +195,8 @@ class EnumMap extends SplObjectStorage
     public function getHash($enum)
     {
         // getHash is available since PHP 5.4
-        return spl_object_hash($this->initEnum($enum));
+        $enumClass = $this->enumClass;
+        return spl_object_hash($enumClass::get($enum));
     }
 
     /**
@@ -215,7 +218,8 @@ class EnumMap extends SplObjectStorage
      */
     public function offsetGet($enum)
     {
-        return parent::offsetGet($this->initEnum($enum));
+        $enumClass = $this->enumClass;
+        return parent::offsetGet($enumClass::get($enum));
     }
 
     /**
@@ -228,7 +232,8 @@ class EnumMap extends SplObjectStorage
      */
     public function offsetSet($enum, $data = null)
     {
-        parent::offsetSet($this->initEnum($enum), $data);
+        $enumClass = $this->enumClass;
+        parent::offsetSet($enumClass::get($enum), $data);
     }
 
     /**
@@ -240,7 +245,8 @@ class EnumMap extends SplObjectStorage
      */
     public function offsetUnset($enum)
     {
-        parent::offsetUnset($this->initEnum($enum));
+        $enumClass = $this->enumClass;
+        parent::offsetUnset($enumClass::get($enum));
     }
 
     /**
@@ -285,33 +291,5 @@ class EnumMap extends SplObjectStorage
             default:
                 throw new RuntimeException('Invalid key flag');
         }
-    }
-
-    /**
-     * Initialize an enumeration
-     * @param Enum|null|boolean|int|float|string $enum
-     * @return Enum
-     * @throws InvalidArgumentException On an invalid given enum
-     */
-    private function initEnum($enum)
-    {
-        // auto instantiate
-        if (is_scalar($enum)) {
-            $enumClass = $this->enumClass;
-            return $enumClass::get($enum);
-        }
-
-        // allow only enums of the same type
-        // (don't allow instance of)
-        $enumClass = get_class($enum);
-        if ($enumClass && strcasecmp($enumClass, $this->enumClass) === 0) {
-            return $enum;
-        }
-
-        throw new InvalidArgumentException(sprintf(
-            "The given enum of type '%s' isn't same as the required type '%s'",
-            get_class($enum) ?: gettype($enum),
-            $this->enumClass
-        ));
     }
 }
