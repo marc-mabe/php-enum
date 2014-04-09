@@ -48,7 +48,7 @@ class EnumSet implements Iterator, Countable
     /**
      * Constructor
      *
-     * @param string   $enumClass The classname of an enumeration the map is for
+     * @param string   $enumClass The classname of an enumeration the set is for
      * @param null|int $flags     Flags to define behaviours
      * @throws InvalidArgumentException
      */
@@ -56,7 +56,7 @@ class EnumSet implements Iterator, Countable
     {
         if (!is_subclass_of($enumClass, __NAMESPACE__ . '\Enum')) {
             throw new InvalidArgumentException(sprintf(
-                "This EnumMap can handle subclasses of '%s' only",
+                "This EnumSet can handle subclasses of '%s' only",
                 __NAMESPACE__ . '\Enum'
             ));
         }
@@ -68,7 +68,7 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Get the classname of enumeration this map is for
+     * Get the classname of enumeration this set is for
      * @return string
      */
     public function getEnumClass()
