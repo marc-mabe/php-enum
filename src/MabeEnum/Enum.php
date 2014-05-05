@@ -121,6 +121,17 @@ abstract class Enum
     }
 
     /**
+     * Compare this enum against another enum and check if it's the same value
+     *
+     * @param mixed $value
+     * @return boolean
+     */
+    final public function is($enum)
+    {
+        return $this->value === $enum || ($enum instanceof static && $this->value === $enum->getValue());
+    }
+
+    /**
      * Get an enum of the given value
      *
      * @param static|null|boolean|int|float|string $value
