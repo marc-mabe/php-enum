@@ -31,5 +31,11 @@
         "psr-0": {
             "MabeEnum\\": "src/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.2-dev"
+        }
     }
+}
 }
