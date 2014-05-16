@@ -21,7 +21,8 @@
     }],
     "license": "BSD-3-Clause",
     "require": {
-        "php": ">=5.3",
+        "php":            ">=5.3",
+        "hhvm":           ">=3.0",
         "ext-reflection": "*"
     },
     "require-dev": {
