@@ -65,8 +65,7 @@ It's an abstract class that needs to be extended to use it.
 ## Type-Hint
     
     use MabeEnum\Enum;
-    use UserStatus;
-    
+
     class User
     {
         protected $status;
@@ -86,13 +85,43 @@ It's an abstract class that needs to be extended to use it.
         }
     }
 
+### Type-Hint issue
+
+Because in normal OOP the above example allows `UserStatus` and types inherited from it.
+
+Please think about the following example:
+
+    class ExtendedUserStatus
+    {
+        const EXTENDED = 'extended';
+    }
+
+    $user->setStatus(ExtendedUserStatus::EXTENDED());
+
+Now the setter receives a status it doesn't know about but allows it.
+If your `User` class doesn't allow it the following is the recommanded way:
+
+    class User
+    {
+        // ...
+        public function setStatus($status)
+        {
+            $this->status = UserStatus::get($status);
+        }
+        // ...
+    }
+
+Now you are 100% sare to work with an exact instace of `UserStatus`.
+
+(If the setter receives an extended status the value will be used to receive the
+corresponding instance of `UserStatus` else an exception will be thrown.)
+
 ## EnumMap
 
 An ```EnumMap``` maps enumeration instances of exactly one type to data assigned to.
 Internally the ```EnumMap``` is based of ```SplObjectStorage```.
 
     use MabeEnum\EnumMap;
-    use UserStatus;
 
     // create a new EnumMap
     $enumMap = new EnumMap('UserStatus');
@@ -120,7 +149,6 @@ An ```EnumSet``` groups enumeration instances of exactly one type together.
 Internally it's based of a list (array) of ordinal values.
 
     use MabeEnum\EnumSet;
-    use UserStatus;
 
     // create a new EnumSet
     $enumSet = new EnumSet('UserStatus');
