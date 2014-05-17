@@ -61,6 +61,12 @@ It's an abstract class that needs to be extended to use it.
     UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
     UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
 
+    // simplified way to compare two enumerations
+    UserStatus::ACTIVE()->is(UserStatus::ACTIVE);     // true
+    UserStatus::ACTIVE()->is(UserStatus::ACTIVE());   // true
+    UserStatus::ACTIVE()->is(UserStatus::DELETED);    // false
+    UserStatus::ACTIVE()->is(UserStatus::DELETED());  // false
+
 
 ## Type-Hint
     
