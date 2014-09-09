@@ -147,7 +147,7 @@ abstract class Enum
     final public static function get($value, $tradeExtendedAsUnknown = true)
     {
         if ($value instanceof static) {
-            if ($tradeExtendedAsUnknown && !defined(get_called_class() . '::' . $value->getName())) {
+            if ($tradeExtendedAsUnknown && !defined('static::' . $value->getName())) {
                 throw new InvalidArgumentException(sprintf(
                     "%s::%s is not inherited from %s",
                     get_class($value),
