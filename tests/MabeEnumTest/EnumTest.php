@@ -224,4 +224,18 @@ class EnumTest extends TestCase
         $this->setExpectedException('LogicException');
         $reflectionMethod->invoke($enum);
     }
+
+    public function testNotSerializable()
+    {
+        $enum = EnumBasic::ONE();
+
+        $this->setExpectedException('LogicException');
+        serialize($enum);
+    }
+
+    public function testNotUnserializable()
+    {
+        $this->setExpectedException('LogicException');
+        unserialize("O:32:\"MabeEnumTest\TestAsset\EnumBasic\":0:{}");
+    }
 }
