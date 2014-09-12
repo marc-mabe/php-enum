@@ -271,7 +271,7 @@ abstract class Enum
             }
 
             // This is required to make sure that constants of base classes will be the first
-            while (($reflection = $reflection->getParentClass()) && $reflection->name != __CLASS__) {
+            while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__) {
                 $constants = $reflection->getConstants() + $constants;
             }
 
