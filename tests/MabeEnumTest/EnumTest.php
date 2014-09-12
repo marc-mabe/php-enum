@@ -147,6 +147,21 @@ class EnumTest extends TestCase
         $this->assertFalse($enum->is(EnumBasic2::ONE()));     // same value but different instance
     }
 
+    public function testIsExtended()
+    {
+        $enum1Basic     = EnumBasic::ONE();
+        $enum1Inherited = EnumInheritance::ONE();
+        $enumExtended   = EnumInheritance::INHERITANCE();
+
+        $this->assertTrue($enum1Basic->is($enum1Inherited));
+        $this->assertTrue($enum1Inherited->is($enum1Basic));
+
+        $this->assertFalse($enumExtended->is($enum1Basic));
+        $this->assertFalse($enumExtended->is($enum1Inherited));
+        $this->assertFalse($enum1Basic->is($enumExtended));
+        $this->assertFalse($enum1Inherited->is($enumExtended));
+    }
+
     public function testCallingGetOrdinalTwoTimesWillResultTheSameValue()
     {
         $enum = EnumBasic::get(EnumBasic::TWO);

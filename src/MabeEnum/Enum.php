@@ -128,7 +128,8 @@ abstract class Enum
      */
     final public function is($enum)
     {
-        return $this->value === $enum || ($enum instanceof static && $this->value === $enum->getValue());
+        return $this->value === $enum
+            || (($enum instanceof static || $this instanceof $enum) && $this->value === $enum->getValue());
     }
 
     /**
