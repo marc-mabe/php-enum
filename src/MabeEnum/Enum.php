@@ -76,6 +76,24 @@ abstract class Enum
     }
 
     /**
+     * @throws LogicException Enums are not serializable
+     *                        because instances are implemented as singletons
+     */
+    final public function __sleep()
+    {
+        throw new LogicException('Enums are not serializable');
+    }
+
+    /**
+     * @throws LogicException Enums are not serializable
+     *                        because instances are implemented as singletons
+     */
+    final public function __wakeup()
+    {
+        throw new LogicException('Enums are not serializable');
+    }
+
+    /**
      * Get the current selected value
      *
      * @return null|boolean|int|float|string
