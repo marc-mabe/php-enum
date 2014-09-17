@@ -15,8 +15,8 @@
     "homepage": "https://github.com/marc-mabe/php-enum",
     "authors": [{
         "name":     "Marc Bennewitz",
-        "email":    "php-enum@marc-bennewitz.de",
-        "homepage": "http://www.marc-bennewitz.de/",
+        "email":    "dev@mabe.berlin",
+        "homepage": "http://mabe.berlin/",
         "role":     "Lead"
     }],
     "license": "BSD-3-Clause",
