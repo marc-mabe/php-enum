@@ -219,7 +219,7 @@ abstract class Enum
         $ordinal   = (int) $ordinal;
         $class     = get_called_class();
         $constants = self::detectConstants($class);
-        $item      = array_slice($constants, $ordinal, 1, false);
+        $item      = array_slice($constants, $ordinal, 1, true);
         if (!$item) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid ordinal number, must between 0 and %s',
