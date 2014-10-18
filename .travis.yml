@@ -7,18 +7,26 @@ php:
  - 5.5
  - 5.6
  - hhvm
+ - hhvm-nightly
+
+matrix:
+ allow_failures:
+  - php: hhvm-nightly
 
 before_script:
-# On PHP 5.3.3 we require "--prefer-source" option because of missing openssl issue
- - if [ "$TRAVIS_PHP_VERSION" = "5.3.3" ]; then prefer_source="--prefer-source"; else prefer_source=""; fi
- - composer self-update -n
- - composer install --dev -n $prefer_source
+ - CODE_COVERAGE=`echo $TRAVIS_PHP_VERSION | grep -v "hhvm" | wc -l`
+
+ # Install dependencies and make sure we work with an up-to-date composer
+ # On PHP 5.3.3 we require "--prefer-source" option because of missing openssl issue
+ - composer self-update
+ - if [ "$TRAVIS_PHP_VERSION" = "5.3.3" ]; then composer install --dev -n --prefer-source; else composer install --dev -n; fi
 
 script:
-# Issue with ocular.phar together with HHVM
- - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php vendor/bin/phpunit --verbose --coverage-clover=coverage.clover; else php vendor/bin/phpunit --verbose; fi;
- - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then wget "https://scrutinizer-ci.com/ocular.phar"; fi;
- - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi;
+ - if [ "$CODE_COVERAGE" = "1" ]; then php vendor/bin/phpunit --verbose --coverage-clover=coverage.clover; else php vendor/bin/phpunit --verbose; fi
+
+after_script:
+ - if [ "$CODE_COVERAGE" = "1" ]; then wget "https://scrutinizer-ci.com/ocular.phar"; fi
+ - if [ "$CODE_COVERAGE" = "1" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
 
 matrix:
   fast_finish: true
