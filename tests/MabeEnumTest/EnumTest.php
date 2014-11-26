@@ -98,28 +98,35 @@ class EnumTest extends TestCase
         $this->assertSame($enum1, $enum2);
     }
 
-    public function testGetByInheritInstance()
+    public function testGetByExtendedInstanceOfKnownValue()
     {
-        $enumInherit = EnumInheritance::get(EnumInheritance::ONE);
-        $enum1       = EnumBasic::get(EnumBasic::ONE);
-        $enum2       = EnumBasic::get($enumInherit);
-        $this->assertSame($enum1, $enum2);
+        $enum = EnumInheritance::get(EnumInheritance::ONE);
+        $this->assertSame($enum, EnumBasic::get($enum));
     }
 
-    public function testGetByInheritInstanceThrowsInvalidArgumentExceptionOnUnknownValue()
+    public function testGetByExtendedInstanceOfUnknownValueExplicitAllowed()
     {
-        $enumInherit = EnumInheritance::get(EnumInheritance::INHERITANCE);
+        $enum = EnumInheritance::get(EnumInheritance::INHERITANCE);
+        $this->assertSame($enum, EnumBasic::get($enum, false));
+    }
 
-        $this->setExpectedException('InvalidArgumentException');
-        EnumBasic::get($enumInherit);
+    public function testGetByExtendedInstanceOfUnknownValueThrowsInvalidArgumentException()
+    {
+        $enum = EnumInheritance::get(EnumInheritance::INHERITANCE);
+
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'MabeEnumTest\TestAsset\EnumInheritance::INHERITANCE is not inherited from MabeEnumTest\TestAsset\EnumBasic'
+        );
+        EnumBasic::get($enum, true);
     }
 
     public function testGetByInstanceOfDifferentBaseThrowsInvalidArgumentException()
     {
-        $enumDiff = EnumBasic2::get(EnumBasic2::ONE);
+        $enum = EnumBasic2::get(EnumBasic2::ONE);
 
         $this->setExpectedException('InvalidArgumentException');
-        EnumBasic::get($enumDiff);
+        EnumBasic::get($enum);
     }
 
     public function testGetAllValues()

@@ -18,7 +18,7 @@ abstract class Enum
     /**
      * The selected value
      *
-     * @var null|boolean|int|float|string
+     * @var null|bool|int|float|string
      */
     private $value;
 
@@ -46,8 +46,8 @@ abstract class Enum
     /**
      * Constructor
      *
-     * @param null|boolean|int|float|string $value   The value to select
-     * @param int|null                      $ordinal The ordinal number of the value
+     * @param null|bool|int|float|string $value   The value to select
+     * @param int|null                   $ordinal The ordinal number of the value
      */
     final private function __construct($value, $ordinal = null)
     {
@@ -96,7 +96,7 @@ abstract class Enum
     /**
      * Get the current selected value
      *
-     * @return null|boolean|int|float|string
+     * @return null|bool|int|float|string
      */
     final public function getValue()
     {
@@ -142,7 +142,7 @@ abstract class Enum
      * Compare this enum against another enum and check if it's the same value
      *
      * @param mixed $value
-     * @return boolean
+     * @return bool
      */
     final public function is($enum)
     {
@@ -151,17 +151,30 @@ abstract class Enum
     }
 
     /**
-     * Get an enum of the given value
+     * Get an enum of the given value or instance
      *
-     * @param static|null|boolean|int|float|string $value
+     * On passing an extended instance the instance will be returned if the value
+     * is inherited by the called class or if $tradeExtendedAsUnknown is disabled
+     * else an InvalidArgumentException will be thrown.
+     *
+     * @param static|null|bool|int|float|string $value
+     * @param bool                              $tradeExtendedAsUnknown
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function get($value)
+    final public static function get($value, $tradeExtendedAsUnknown = true)
     {
         if ($value instanceof static) {
-            $value = $value->getValue();
+            if ($tradeExtendedAsUnknown && !defined('static::' . $value->getName())) {
+                throw new InvalidArgumentException(sprintf(
+                    "%s::%s is not inherited from %s",
+                    get_class($value),
+                    $value->getName(),
+                    get_called_class()
+                ));
+            }
+            return $value;
         }
 
         $class     = get_called_class();
