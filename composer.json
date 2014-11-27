@@ -28,8 +28,8 @@
         "phpunit/phpunit": ">=3.6"
     },
     "autoload": {
-        "psr-0": {
-            "MabeEnum\\": "src/"
+        "psr-4": {
+            "MabeEnum\\": "src/MabeEnum/"
         }
     },
     "extra": {
