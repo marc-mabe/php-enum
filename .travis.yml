@@ -1,3 +1,4 @@
+sudo: false
 language: php
 
 php:
@@ -9,17 +10,11 @@ php:
  - hhvm
  - hhvm-nightly
 
-matrix:
- allow_failures:
-  - php: hhvm-nightly
+install:
+ - composer install --dev -n --prefer-source
 
 before_script:
  - CODE_COVERAGE=`echo $TRAVIS_PHP_VERSION | grep -v "hhvm" | wc -l`
-
- # Install dependencies and make sure we work with an up-to-date composer
- # On PHP 5.3.3 we require "--prefer-source" option because of missing openssl issue
- - composer self-update
- - if [ "$TRAVIS_PHP_VERSION" = "5.3.3" ]; then composer install --dev -n --prefer-source; else composer install --dev -n; fi
 
 script:
  - if [ "$CODE_COVERAGE" = "1" ]; then php vendor/bin/phpunit --verbose --coverage-clover=coverage.clover; else php vendor/bin/phpunit --verbose; fi
@@ -29,7 +24,9 @@ after_script:
  - if [ "$CODE_COVERAGE" = "1" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
 
 matrix:
-  fast_finish: true
+ fast_finish: true
+ allow_failures:
+  - php: hhvm-nightly
 
 notifications:
-  email: false
+ email: false
