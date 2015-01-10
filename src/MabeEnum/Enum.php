@@ -54,7 +54,21 @@ abstract class Enum
         $this->value   = $value;
         $this->ordinal = $ordinal;
     }
+    
+    /**
+     * Returns a list of all enumeration instances of actual implementation 
+     * 
+     * @return Enum[]
+     */
+    public static function getAll()
+    {
+        $enums = [];
+        foreach (array_keys(self::getConstants()) as $v) {
+            $enums[] = self::getByName($v);
+        }
 
+        return $enums;
+    }
     /**
      * Get the current selected constant name
      *
