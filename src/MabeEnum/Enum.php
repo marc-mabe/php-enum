@@ -62,7 +62,7 @@ abstract class Enum
      */
     public static function getAll()
     {
-        $enums = [];
+        $enums = array();
         foreach (array_keys(self::getConstants()) as $v) {
             $enums[] = self::getByName($v);
         }
