@@ -141,7 +141,7 @@ abstract class Enum
     /**
      * Compare this enum against another enum and check if it's the same
      *
-     * @param mixed $value
+     * @param mixed $enum
      * @return bool
      */
     final public function is($enum)
