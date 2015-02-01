@@ -101,29 +101,6 @@ class EnumTest extends TestCase
     public function testGetByExtendedInstanceOfKnownValue()
     {
         $enum = EnumInheritance::get(EnumInheritance::ONE);
-        $this->assertSame($enum, EnumBasic::get($enum));
-    }
-
-    public function testGetByExtendedInstanceOfUnknownValueExplicitAllowed()
-    {
-        $enum = EnumInheritance::get(EnumInheritance::INHERITANCE);
-        $this->assertSame($enum, EnumBasic::get($enum, false));
-    }
-
-    public function testGetByExtendedInstanceOfUnknownValueThrowsInvalidArgumentException()
-    {
-        $enum = EnumInheritance::get(EnumInheritance::INHERITANCE);
-
-        $this->setExpectedException(
-            'InvalidArgumentException',
-            'MabeEnumTest\TestAsset\EnumInheritance::INHERITANCE is not inherited from MabeEnumTest\TestAsset\EnumBasic'
-        );
-        EnumBasic::get($enum, true);
-    }
-
-    public function testGetByInstanceOfDifferentBaseThrowsInvalidArgumentException()
-    {
-        $enum = EnumBasic2::get(EnumBasic2::ONE);
 
         $this->setExpectedException('InvalidArgumentException');
         EnumBasic::get($enum);
@@ -148,25 +125,9 @@ class EnumTest extends TestCase
         $this->assertFalse($enum->is('1'));             // wrong value by strict comparison
 
         // by instance
-        $this->assertTrue($enum->is(EnumBasic::ONE()));       // same
-        $this->assertFalse($enum->is(EnumBasic::TWO()));      // not the same
-        $this->assertTrue($enum->is(EnumInheritance::ONE())); // same by extended instance
-        $this->assertFalse($enum->is(EnumBasic2::ONE()));     // same value but different instance
-    }
-
-    public function testIsExtended()
-    {
-        $enum1Basic     = EnumBasic::ONE();
-        $enum1Inherited = EnumInheritance::ONE();
-        $enumExtended   = EnumInheritance::INHERITANCE();
-
-        $this->assertTrue($enum1Basic->is($enum1Inherited));
-        $this->assertTrue($enum1Inherited->is($enum1Basic));
-
-        $this->assertFalse($enumExtended->is($enum1Basic));
-        $this->assertFalse($enumExtended->is($enum1Inherited));
-        $this->assertFalse($enum1Basic->is($enumExtended));
-        $this->assertFalse($enum1Inherited->is($enumExtended));
+        $this->assertTrue($enum->is(EnumBasic::ONE()));        // same
+        $this->assertFalse($enum->is(EnumBasic::TWO()));       // different enumerators
+        $this->assertFalse($enum->is(EnumInheritance::ONE())); // different enumeration type
     }
 
     public function testCallingGetOrdinalTwoTimesWillResultTheSameValue()

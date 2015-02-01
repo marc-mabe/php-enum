@@ -32,14 +32,14 @@ abstract class Enum
     /**
      * An array of available constants by class
      *
-     * @var array ["$class" => ["$const" => $value, ...], ...]
+     * @var array ["$class" => ["$name" => $value, ...], ...]
      */
     private static $constants = array();
 
     /**
      * Already instantiated enumerators
      *
-     * @var array ["$class" => ["$const" => $instance, ...], ...]
+     * @var array ["$class" => ["$name" => $instance, ...], ...]
      */
     private static $instances = array();
 
@@ -139,41 +139,27 @@ abstract class Enum
     }
 
     /**
-     * Compare this enumerator against another enumerator and check if it's the same
+     * Compare this enumerator against another and check if it's the same.
      *
      * @param mixed $enum
      * @return bool
      */
     final public function is($enum)
     {
-        return $this->value === $enum
-            || (($enum instanceof static || $this instanceof $enum) && $this->value === $enum->getValue());
+        return $this === $enum || $this->value === $enum;
     }
 
     /**
-     * Instantiate an enumerator of the given value or instance
-     *
-     * On passing an extended instance the instance will be returned if the value
-     * is inherited by the called class or if $tradeExtendedAsUnknown is disabled
-     * else an InvalidArgumentException will be thrown.
+     * Get an enumerator instance of the given value or instance
      *
      * @param static|null|bool|int|float|string $value
-     * @param bool                              $tradeExtendedAsUnknown
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
     final public static function get($value, $tradeExtendedAsUnknown = true)
     {
-        if ($value instanceof static) {
-            if ($tradeExtendedAsUnknown && !defined('static::' . $value->getName())) {
-                throw new InvalidArgumentException(sprintf(
-                    "%s::%s is not inherited from %s",
-                    get_class($value),
-                    $value->getName(),
-                    get_called_class()
-                ));
-            }
+        if ($value instanceof static && get_class($value) === get_called_class()) {
             return $value;
         }
 
@@ -184,19 +170,22 @@ abstract class Enum
             if (is_scalar($value)) {
                 throw new InvalidArgumentException('Unknown value ' . var_export($value, true));
             } else {
-                throw new InvalidArgumentException('Invalid value of type ' . gettype($value));
+                throw new InvalidArgumentException(sprintf(
+                    'Invalid value of type %s',
+                    is_object($value) ? get_class($value) : gettype($value)
+                ));
             }
         }
 
-        if (isset(self::$instances[$class][$name])) {
-            return self::$instances[$class][$name];
+        if (!isset(self::$instances[$class][$name])) {
+            self::$instances[$class][$name] = new $class($constants[$name]);
         }
 
-        return self::$instances[$class][$name] = new $class($constants[$name]);
+        return self::$instances[$class][$name];
     }
 
     /**
-     * Instantiate an enumarator by the given name
+     * Get an enumarator instance by the given name
      *
      * @param string $name The name of the enumerator
      * @return static
@@ -220,7 +209,7 @@ abstract class Enum
     }
 
     /**
-     * Instantiate an enumeration by the given ordinal number
+     * Get an enumeration instance by the given ordinal number
      *
      * @param int $ordinal The ordinal number or the enumerator
      * @return static
@@ -314,7 +303,7 @@ abstract class Enum
     }
 
     /**
-     * Instantiate an enumarator by the given name.
+     * Get an enumarator instance by the given name.
      *
      * This will be called automatically on calling a method
      * with the same name of a defined enumerator.
