@@ -157,7 +157,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function get($value, $tradeExtendedAsUnknown = true)
+    final public static function get($value)
     {
         if ($value instanceof static && get_class($value) === get_called_class()) {
             return $value;
