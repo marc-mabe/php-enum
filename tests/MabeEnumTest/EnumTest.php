@@ -3,7 +3,6 @@
 namespace MabeEnumTest;
 
 use MabeEnumTest\TestAsset\EnumBasic;
-use MabeEnumTest\TestAsset\EnumBasic2;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
 use PHPUnit_Framework_TestCase as TestCase;
