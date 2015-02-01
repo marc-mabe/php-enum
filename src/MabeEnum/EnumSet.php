@@ -7,7 +7,7 @@ use Countable;
 use InvalidArgumentException;
 
 /**
- * EnumSet implementation in base of SplObjectStorage
+ * EnumSet implementation in base of an array
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2015 Marc Bennewitz
@@ -16,12 +16,12 @@ use InvalidArgumentException;
 class EnumSet implements Iterator, Countable
 {
     /**
-     * Flag for a unique set of enumerations
+     * Flag for a unique set of enumerators
      */
     const UNIQUE  = 1;
 
     /**
-     * Flag for an ordered set of enumerations by ordinal
+     * Flag for an ordered set of enumerators by ordinal
      */
     const ORDERED = 2;
 
@@ -68,7 +68,7 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Get the classname of enumeration this set is for
+     * Get the classname of the enumeration this set is for
      * @return string
      */
     public function getEnumClass()
@@ -86,7 +86,7 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Attach a new enumeration or overwrite an existing one
+     * Attach a new enumerator or overwrite an existing one
      * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
@@ -106,7 +106,7 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Test if the given enumeration exists
+     * Test if the given enumerator exists
      * @param Enum|null|boolean|int|float|string $enum
      * @return boolean
      */
@@ -117,7 +117,7 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Detach all enumerations same as the given enum
+     * Detach all enumerators same as the given enumerator
      * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
@@ -138,8 +138,8 @@ class EnumSet implements Iterator, Countable
     /* Iterator */
 
     /**
-     * Get the current Enum
-     * @return Enum|null Returns the current Enum or NULL on an invalid iterator position
+     * Get the current enumerator
+     * @return Enum|null Returns the current enumerator or NULL on an invalid iterator position
      */
     public function current()
     {

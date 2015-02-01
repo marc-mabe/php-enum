@@ -45,7 +45,7 @@ It's an abstract class that needs to be extended to use it.
         const FLOAT   = 0.123;
     }
     
-    // different ways to instantiate an enumeration
+    // different ways to instantiate an enumerator
     $status = UserStatus::get(UserStatus::ACTIVE);
     $status = UserStatus::ACTIVE();
     $status = UserStatus::getByName('ACTIVE');
@@ -57,11 +57,11 @@ It's an abstract class that needs to be extended to use it.
     $status->getOrdinal(); // returns the ordinal number of the selected constant
     (string) $status;      // returns the selected constant name
     
-    // same enumerations of the same class holds the same instance
+    // same enumerators (of the same enumeration class) holds the same instance
     UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
     UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
 
-    // simplified way to compare two enumerations
+    // simplified way to compare two enumerators
     UserStatus::ACTIVE()->is(UserStatus::ACTIVE);     // true
     UserStatus::ACTIVE()->is(UserStatus::ACTIVE());   // true
     UserStatus::ACTIVE()->is(UserStatus::DELETED);    // false
@@ -84,7 +84,7 @@ It's an abstract class that needs to be extended to use it.
         public function getStatus()
         {
             if (!$this->status) {
-                // initialize a default value
+                // initialize the default enumerator
                 $this->status = UserStatus::get(UserStatus::INACTIVE);
             }
             return $this->status;
@@ -124,7 +124,7 @@ corresponding instance of `UserStatus` else an exception will be thrown.)
 
 ## EnumMap
 
-An ```EnumMap``` maps enumeration instances of exactly one type to data assigned to.
+An ```EnumMap``` maps enumerators of the same type to data assigned to.
 Internally the ```EnumMap``` is based of ```SplObjectStorage```.
 
     use MabeEnum\EnumMap;
@@ -151,7 +151,7 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
 
 ## EnumSet
 
-An ```EnumSet``` groups enumeration instances of exactly one type together.
+An ```EnumSet``` groups enumerators of the same type together.
 Internally it's based of a list (array) of ordinal values.
 
     use MabeEnum\EnumSet;

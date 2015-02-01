@@ -16,14 +16,14 @@ use LogicException;
 abstract class Enum
 {
     /**
-     * The selected value
+     * The selected enumerator value
      *
      * @var null|bool|int|float|string
      */
     private $value;
 
     /**
-     * The ordinal number of the value
+     * The ordinal number of the enumerator
      *
      * @var null|int
      */
@@ -37,7 +37,7 @@ abstract class Enum
     private static $constants = array();
 
     /**
-     * Already instantiated enums
+     * Already instantiated enumerators
      *
      * @var array ["$class" => ["$const" => $instance, ...], ...]
      */
@@ -46,8 +46,8 @@ abstract class Enum
     /**
      * Constructor
      *
-     * @param null|bool|int|float|string $value   The value to select
-     * @param int|null                   $ordinal The ordinal number of the value
+     * @param null|bool|int|float|string $value   The value of the enumerator
+     * @param int|null                   $ordinal The ordinal number of the enumerator
      */
     final private function __construct($value, $ordinal = null)
     {
@@ -56,7 +56,7 @@ abstract class Enum
     }
 
     /**
-     * Get the current selected constant name
+     * Get the name of the enumerator
      *
      * @return string
      * @see getName()
@@ -94,7 +94,7 @@ abstract class Enum
     }
 
     /**
-     * Get the current selected value
+     * Get the value of the enumerator
      *
      * @return null|bool|int|float|string
      */
@@ -104,7 +104,7 @@ abstract class Enum
     }
 
     /**
-     * Get the current selected constant name
+     * Get the name of the enumarator
      *
      * @return string
      */
@@ -114,7 +114,7 @@ abstract class Enum
     }
 
     /**
-     * Get the ordinal number of the selected value
+     * Get the ordinal number of the enumerator
      *
      * @return int
      */
@@ -139,7 +139,7 @@ abstract class Enum
     }
 
     /**
-     * Compare this enum against another enum and check if it's the same
+     * Compare this enumerator against another enumerator and check if it's the same
      *
      * @param mixed $enum
      * @return bool
@@ -151,7 +151,7 @@ abstract class Enum
     }
 
     /**
-     * Get an enum of the given value or instance
+     * Instantiate an enumerator of the given value or instance
      *
      * On passing an extended instance the instance will be returned if the value
      * is inherited by the called class or if $tradeExtendedAsUnknown is disabled
@@ -196,12 +196,12 @@ abstract class Enum
     }
 
     /**
-     * Get an enum by the given name
+     * Instantiate an enumarator by the given name
      *
-     * @param string $name The name to instantiate the enum by
+     * @param string $name The name of the enumerator
      * @return static
      * @throws InvalidArgumentException On an invalid or unknown name
-     * @throws LogicException           On ambiguous constant values
+     * @throws LogicException           On ambiguous values
      */
     final public static function getByName($name)
     {
@@ -220,12 +220,12 @@ abstract class Enum
     }
 
     /**
-     * Get an enum by the given ordinal number
+     * Instantiate an enumeration by the given ordinal number
      *
-     * @param int $ordinal The ordinal number to instantiate the enum by
+     * @param int $ordinal The ordinal number or the enumerator
      * @return static
      * @throws InvalidArgumentException On an invalid ordinal number
-     * @throws LogicException           On ambiguous constant values
+     * @throws LogicException           On ambiguous values
      */
     final public static function getByOrdinal($ordinal)
     {
@@ -249,7 +249,7 @@ abstract class Enum
     }
 
     /**
-     * Clears all instantiated enums
+     * Clear all instantiated enumerators of the called class
      *
      * NOTE: This can break singleton behavior ... use it with caution!
      *
@@ -273,7 +273,7 @@ abstract class Enum
     }
 
     /**
-     * Detect constants available by given class
+     * Detect all available constants by the given class
      *
      * @param string $class
      * @return array
@@ -314,12 +314,12 @@ abstract class Enum
     }
 
     /**
-     * Instantiate an enum by a name of a constant.
+     * Instantiate an enumarator by the given name.
      *
      * This will be called automatically on calling a method
-     * with the same name of a defined constant.
+     * with the same name of a defined enumerator.
      *
-     * @param string $method The name to instantiate the enum by (called as method)
+     * @param string $method The name of the enumeraotr (called as method)
      * @param array  $args   There should be no arguments
      * @return static
      * @throws InvalidArgumentException On an invalid or unknown name

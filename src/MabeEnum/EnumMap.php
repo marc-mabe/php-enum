@@ -17,47 +17,47 @@ class EnumMap extends SplObjectStorage
 {
 
     /**
-     * key()-behaviour: return the current iterator position
+     * key()-behaviour: return the iterator position
      */
     const KEY_AS_INDEX   = 1;
 
     /**
-     * key()-behaviour: return the current enum name
+     * key()-behaviour: return the name of the current element
      */
     const KEY_AS_NAME    = 2;
 
     /**
-     * key()-behaviour: return the current enum value
+     * key()-behaviour: return the value of the current element
      */
     const KEY_AS_VALUE   = 3;
 
     /**
-     * key()-behaviour: return the current enum ordinal
+     * key()-behaviour: return the ordinal number of the current element
      */
     const KEY_AS_ORDINAL = 4;
 
     /**
-     * current()-behaviour: return the current enum object
+     * current()-behaviour: return the instance of the enumerator
      */
     const CURRENT_AS_ENUM    = 8;
 
     /**
-     * current()-behaviour: return data mapped the current enum
+     * current()-behaviour: return the data mapped the enumerator
      */
     const CURRENT_AS_DATA    = 16;
 
     /**
-     * current()-behaviour: return the current enum name
+     * current()-behaviour: return the name of the enumerator
      */
     const CURRENT_AS_NAME    = 24;
 
     /**
-     * current()-behaviour: return the current enum value
+     * current()-behaviour: return the value of the enumerator
      */
     const CURRENT_AS_VALUE   = 32;
 
     /**
-     * current()-behaviour: return the current enum ordinal
+     * current()-behaviour: return the ordinal number of the enumerator
      */
     const CURRENT_AS_ORDINAL = 40;
 
@@ -96,7 +96,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Get the classname of enumeration this map is for
+     * Get the classname of the enumeration this map is for
      * @return string
      */
     public function getEnumClass()
@@ -146,7 +146,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Attach a new enumeration or overwrite an existing one
+     * Attach a new enumerator or overwrite an existing one
      * @param Enum|null|boolean|int|float|string $enum
      * @param mixed                              $data
      * @return void
@@ -159,7 +159,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Test if the given enumeration exists
+     * Test if the given enumerator exists
      * @param Enum|null|boolean|int|float|string $enum
      * @return boolean
      */
@@ -175,7 +175,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Detach an enumeration
+     * Detach an enumerator
      * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
@@ -187,7 +187,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Get a unique identifier for the given enumeration
+     * Get a unique identifier for the given enumerator
      * @param Enum|scalar $enum
      * @return string
      * @throws InvalidArgumentException On an invalid given enum
@@ -200,7 +200,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Test if the given enumeration exists
+     * Test if the given enumerator exists
      * @param Enum|null|boolean|int|float|string $enum
      * @return boolean
      * @see contains()
@@ -211,7 +211,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Get mapped data for this given enum
+     * Get mapped data for the given enumerator
      * @param Enum|null|boolean|int|float|string $enum
      * @return mixed
      * @throws InvalidArgumentException On an invalid given enum
@@ -223,7 +223,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Attach a new enumeration or overwrite an existing one
+     * Attach a new enumerator or overwrite an existing one
      * @param Enum|null|boolean|int|float|string $enum
      * @param mixed                              $data
      * @return void
@@ -237,7 +237,7 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Detach an existing enumeration
+     * Detach an existing enumerator
      * @param Enum|null|boolean|int|float|string $enum
      * @return void
      * @throws InvalidArgumentException On an invalid given enum
