@@ -5,6 +5,7 @@ namespace MabeEnumTest;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
+use MabeEnumTest\TestAsset\EnumExtendedAmbiguous;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
 
@@ -169,10 +170,16 @@ class EnumTest extends TestCase
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
 
-    public function testAmbuguousConstantsThrowsLogicException()
+    public function testAmbiguousConstantsThrowsLogicException()
     {
         $this->setExpectedException('LogicException');
         EnumAmbiguous::get('unknown');
+    }
+
+    public function testExtendedAmbiguousCanstantsThrowsLogicException()
+    {
+        $this->setExpectedException('LogicException');
+        EnumExtendedAmbiguous::get('unknown');
     }
 
     public function testSingleton()

@@ -6,6 +6,8 @@ use MabeEnum\Enum;
 use MabeEnum\EnumSet;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
+use MabeEnumTest\TestAsset\Enum32;
+use MabeEnumTest\TestAsset\Enum64;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -21,7 +23,6 @@ class EnumSetTest extends TestCase
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
         $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumSet->getEnumClass());
-        $this->assertSame(EnumSet::UNIQUE, $enumSet->getFlags());
 
         $enum1  = EnumBasic::ONE();
         $enum2  = EnumBasic::TWO();
@@ -65,8 +66,7 @@ class EnumSetTest extends TestCase
 
     public function testUnique()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::UNIQUE);
-        $this->assertSame(EnumSet::UNIQUE, $enumSet->getFlags());
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
 
         $enumSet->attach(EnumBasic::ONE());
         $enumSet->attach(EnumBasic::ONE);
@@ -75,73 +75,11 @@ class EnumSetTest extends TestCase
         $enumSet->attach(EnumBasic::TWO);
 
         $this->assertSame(2, $enumSet->count());
-    }
-
-    public function testNotUnique()
-    {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', 0);
-        $this->assertSame(0, $enumSet->getFlags());
-
-        $enumSet->attach(EnumBasic::ONE());
-        $enumSet->attach(EnumBasic::ONE);
-
-        $enumSet->attach(EnumBasic::TWO());
-        $enumSet->attach(EnumBasic::TWO);
-
-        $this->assertSame(4, $enumSet->count());
-
-        // detch remove all
-        $enumSet->detach(EnumBasic::ONE);
-        $this->assertSame(2, $enumSet->count());
-    }
-
-    public function testIterateUnordered()
-    {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::UNIQUE);
-
-        $enum1  = EnumBasic::ONE();
-        $enum2  = EnumBasic::TWO();
-
-        // an empty enum set needs to be invalid, starting by 0
-        $this->assertSame(0, $enumSet->count());
-        $this->assertFalse($enumSet->valid());
-        $this->assertNull($enumSet->current());
-
-        // attach
-        $enumSet->attach($enum1);
-        $enumSet->attach($enum2);
-
-        // a not empty enum map should be valid, starting by 0 (if not iterated)
-        $this->assertSame(2, $enumSet->count());
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(0, $enumSet->key());
-        $this->assertSame($enum1, $enumSet->current());
-
-        // go to the next element (last)
-        $this->assertNull($enumSet->next());
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(1, $enumSet->key());
-        $this->assertSame($enum2, $enumSet->current());
-
-        // go to the next element (out of range)
-        $this->assertNull($enumSet->next());
-        $this->assertFalse($enumSet->valid());
-        $this->assertSame(2, $enumSet->key());
-        $this->assertNull($enumSet->current());
-
-        // rewind will set the iterator position back to 0
-        $enumSet->rewind();
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(0, $enumSet->key());
-        $this->assertSame($enum1, $enumSet->current());
     }
 
     public function testIterateOrdered()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::UNIQUE | EnumSet::ORDERED);
-
-        $enum1 = EnumBasic::ONE();
-        $enum2 = EnumBasic::TWO();
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
 
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
@@ -149,80 +87,27 @@ class EnumSetTest extends TestCase
         $this->assertNull($enumSet->current());
 
         // attach
-        $enumSet->attach($enum2);
+        $enum1 = EnumBasic::ONE();
+        $enum2 = EnumBasic::TWO();
         $enumSet->attach($enum1);
+        $enumSet->attach($enum2);
 
-        // a not empty enum map should be valid, starting by 0 (if not iterated)
+        // a not empty enum set should be valid, starting by 0 (if not iterated)
+        $enumSet->rewind();
         $this->assertSame(2, $enumSet->count());
         $this->assertTrue($enumSet->valid());
-        $this->assertSame(0, $enumSet->key());
+        $this->assertSame($enum1->getOrdinal(), $enumSet->key());
         $this->assertSame($enum1, $enumSet->current());
 
         // go to the next element (last)
         $this->assertNull($enumSet->next());
         $this->assertTrue($enumSet->valid());
-        $this->assertSame(1, $enumSet->key());
+        $this->assertSame($enum2->getOrdinal(), $enumSet->key());
         $this->assertSame($enum2, $enumSet->current());
 
         // go to the next element (out of range)
         $this->assertNull($enumSet->next());
         $this->assertFalse($enumSet->valid());
-        $this->assertSame(2, $enumSet->key());
-        $this->assertNull($enumSet->current());
-
-        // rewind will set the iterator position back to 0
-        $enumSet->rewind();
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(0, $enumSet->key());
-        $this->assertSame($enum1, $enumSet->current());
-    }
-
-    public function testIterateOrderedNotUnique()
-    {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic', EnumSet::ORDERED);
-
-        $enum1 = EnumBasic::ONE();
-        $enum2 = EnumBasic::TWO();
-
-        // an empty enum set needs to be invalid, starting by 0
-        $this->assertSame(0, $enumSet->count());
-        $this->assertFalse($enumSet->valid());
-        $this->assertNull($enumSet->current());
-
-        // attach
-        $enumSet->attach($enum2);
-        $enumSet->attach($enum1);
-        $enumSet->attach($enum2);
-        $enumSet->attach($enum1);
-
-        // index 0
-        $this->assertSame(4, $enumSet->count());
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(0, $enumSet->key());
-        $this->assertSame($enum1, $enumSet->current());
-
-        // index 1
-        $this->assertNull($enumSet->next());
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(1, $enumSet->key());
-        $this->assertSame($enum1, $enumSet->current());
-
-        // index 2
-        $this->assertNull($enumSet->next());
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(2, $enumSet->key());
-        $this->assertSame($enum2, $enumSet->current());
-
-        // index 3 (last)
-        $this->assertNull($enumSet->next());
-        $this->assertTrue($enumSet->valid());
-        $this->assertSame(3, $enumSet->key());
-        $this->assertSame($enum2, $enumSet->current());
-
-        // go to the next element (out of range)
-        $this->assertNull($enumSet->next());
-        $this->assertFalse($enumSet->valid());
-        $this->assertSame(4, $enumSet->key());
         $this->assertNull($enumSet->current());
 
         // rewind will set the iterator position back to 0
@@ -245,18 +130,25 @@ class EnumSetTest extends TestCase
         $enumSet->attach($enum2);
         $enumSet->attach($enum3);
 
-        // index 1
+        // go to the next entry
         $enumSet->next();
         $this->assertSame($enum2, $enumSet->current());
 
-        // detach enum of current index
-        $enumSet->detach($enumSet->current());
-        $this->assertSame($enum3, $enumSet->current());
-
-        // detach enum of current index if the last index
+        // detach current entry
         $enumSet->detach($enumSet->current());
         $this->assertFalse($enumSet->valid());
         $this->assertNull($enumSet->current());
+        $this->assertSame($enum2->getOrdinal(), $enumSet->key());
+
+        // go to the next entry should be the last entry
+        $enumSet->next();
+        $this->assertSame($enum3, $enumSet->current());
+
+        // detech the last entry
+        $enumSet->detach($enumSet->current());
+        $this->assertFalse($enumSet->valid());
+        $this->assertNull($enumSet->current());
+        $this->assertSame($enum3->getOrdinal(), $enumSet->key());
     }
 
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
@@ -271,4 +163,73 @@ class EnumSetTest extends TestCase
         $this->setExpectedException('InvalidArgumentException');
         $this->assertFalse($enumSet->contains(EnumInheritance::INHERITANCE()));
     }
+
+    public function testIterateOutOfRangeIfLastOrdinalEnumIsSet()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enum    = EnumBasic::getByOrdinal(count(EnumBasic::getConstants()) - 1);
+
+        $enumSet->attach($enum);
+        $enumSet->rewind();
+        $this->assertSame($enum, $enumSet->current());
+
+        // go to the next entry results in out of range
+        $enumSet->next();
+        $this->assertFalse($enumSet->valid());
+        $this->assertSame($enum->getOrdinal() + 1, $enumSet->key());
+
+        // go more over doesn't change iterator position
+        $enumSet->next();
+        $this->assertFalse($enumSet->valid());
+        $this->assertSame($enum->getOrdinal() + 1, $enumSet->key());
+    }
+
+    public function test32EnumerationsSet()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        foreach (Enum32::getConstants() as $name => $value) {
+            $this->assertFalse($enumSet->contains($value));
+            $enumSet->attach($value);
+            $this->assertTrue($enumSet->contains($value));
+        }
+
+        $this->assertSame(32, $enumSet->count());
+
+        $expectedOrdinal = 0;
+        foreach ($enumSet as $ordinal => $enum) {
+            $this->assertSame($expectedOrdinal, $ordinal);
+            $this->assertSame($expectedOrdinal, $enum->getOrdinal());
+            $expectedOrdinal++;
+        }
+    }
+
+    public function test64EnumerationsSet()
+    {
+        if (PHP_INT_SIZE === 4) {
+            $this->setExpectedException('OutOfRangeException');
+        }
+
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum64');
+        foreach (Enum64::getConstants() as $name => $value) {
+            $this->assertFalse($enumSet->contains($value));
+            $enumSet->attach($value);
+            $this->assertTrue($enumSet->contains($value));
+        }
+
+        $this->assertSame(64, $enumSet->count());
+
+        $expectedOrdinal = 0;
+        foreach ($enumSet as $ordinal => $enum) {
+            $this->assertSame($expectedOrdinal, $ordinal);
+            $this->assertSame($expectedOrdinal, $enum->getOrdinal());
+            $expectedOrdinal++;
+        }
+    }
+
+    public function test65EnumerationsSet()
+    {
+        $this->setExpectedException('OutOfRangeException');
+        new EnumSet('MabeEnumTest\TestAsset\Enum65');
+    }
 }
+

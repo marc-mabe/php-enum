@@ -125,6 +125,7 @@ corresponding instance of `UserStatus` else an exception will be thrown.)
 ## EnumMap
 
 An ```EnumMap``` maps enumerators of the same type to data assigned to.
+
 Internally the ```EnumMap``` is based of ```SplObjectStorage```.
 
     use MabeEnum\EnumMap;
@@ -145,14 +146,19 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
     var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
 
     // define key and value used for iteration
-    $enumSet->setFlags(EnumSet::KEY_AS_NAME | EnumSet::CURRENT_AS_DATA);
+    $enumSet->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
     var_dump(iterator_to_array($enumSet)); // array('ACTIVE' => 'aktiv');
 
 
 ## EnumSet
 
-An ```EnumSet``` groups enumerators of the same type together.
-Internally it's based of a list (array) of ordinal values.
+An ```EnumSet``` groups enumerators of the same enumeration type together.
+
+Internally it's based of an integer bit set.
+
+The maximun number of enumerators are limited by the size of an integer.
+
+Enumerators will be ordered by the ordinal number.
 
     use MabeEnum\EnumSet;
 
