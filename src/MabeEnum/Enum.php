@@ -251,6 +251,16 @@ abstract class Enum
     }
 
     /**
+     * Get a list of enumerator instances ordered by ordinal number
+     *
+     * @return static[]
+     */
+    final public static function getEnumerators()
+    {
+        return array_map('self::getByName', array_keys(self::detectConstants(get_called_class())));
+    }
+
+    /**
      * Get all available constants of the called class
      *
      * @return array

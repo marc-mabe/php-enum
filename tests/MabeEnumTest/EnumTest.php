@@ -106,6 +106,22 @@ class EnumTest extends TestCase
         EnumBasic::get($enum);
     }
 
+    public function testGetEnumerators()
+    {
+        $constants   = EnumInheritance::getConstants();
+        $enumerators = EnumInheritance::getEnumerators();
+
+        $this->assertSame(count($constants), count($enumerators));
+        for ($i = 0; $i < count($enumerators); ++$i) {
+            $this->assertArrayHasKey($i, $enumerators);
+            $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enumerators[$i]);
+
+            $enumerator = $enumerators[$i];
+            $this->assertArrayHasKey($enumerator->getName(), $constants);
+            $this->assertSame($constants[$enumerator->getName()], $enumerator->getValue());
+        }
+    }
+
     public function testGetAllValues()
     {
         $constants = EnumBasic::getConstants();
