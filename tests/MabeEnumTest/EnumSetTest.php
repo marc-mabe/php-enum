@@ -232,4 +232,3 @@ class EnumSetTest extends TestCase
         new EnumSet('MabeEnumTest\TestAsset\Enum65');
     }
 }
-
