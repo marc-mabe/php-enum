@@ -22,7 +22,7 @@ class EnumSetTest extends TestCase
     public function testBasic()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumSet->getEnumClass());
+        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumSet->getEnumeration());
 
         $enum1  = EnumBasic::ONE();
         $enum2  = EnumBasic::TWO();
@@ -40,6 +40,12 @@ class EnumSetTest extends TestCase
 
         $this->assertNull($enumSet->detach($enum2));
         $this->assertFalse($enumSet->contains($enum2));
+    }
+
+    public function testDeprecatedGetEnumClass()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumSet->getEnumClass());
     }
 
     public function testBasicWithConstantValuesAsEnums()

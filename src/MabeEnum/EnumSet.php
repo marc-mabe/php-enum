@@ -17,10 +17,10 @@ use OutOfRangeException;
 class EnumSet implements Iterator, Countable
 {
     /**
-     * Enumeration class
+     * The classname of the Enumeration
      * @var string
      */
-    private $enumClass;
+    private $enumeration;
 
     /**
      * BitSet of all attached enumerations
@@ -43,27 +43,27 @@ class EnumSet implements Iterator, Countable
     /**
      * Constructor
      *
-     * @param string $enumClass Classname of an enumeration the set is for
+     * @param string $enumeration The classname of the enumeration
      * @throws InvalidArgumentException
      */
-    public function __construct($enumClass)
+    public function __construct($enumeration)
     {
-        if (!is_subclass_of($enumClass, __NAMESPACE__ . '\Enum')) {
+        if (!is_subclass_of($enumeration, __NAMESPACE__ . '\Enum')) {
             throw new InvalidArgumentException(sprintf(
                 "This EnumSet can handle subclasses of '%s' only",
                 __NAMESPACE__ . '\Enum'
             ));
         }
 
-        $this->enumClass  = $enumClass;
-        $this->ordinalMax = count($enumClass::getConstants());
+        $this->enumeration = $enumeration;
+        $this->ordinalMax  = count($enumeration::getConstants());
 
         if (PHP_INT_SIZE * 8 < $this->ordinalMax) {
             throw new OutOfRangeException(sprintf(
-                "Your system can handle up to %u enumeration values within an EnumSet"
-                . " but the given enumeration class '%s' has defined %u enumeration values",
+                "Your system can handle up to %u enumerators within an EnumSet"
+                . " but the given enumeration '%s' has defined %u enumerators",
                 PHP_INT_SIZE * 8,
-                $enumClass,
+                $enumeration,
                 $this->ordinalMax
             ));
         }
@@ -72,65 +72,75 @@ class EnumSet implements Iterator, Countable
     /**
      * Get the classname of enumeration this set is for
      * @return string
+     * @deprecated Please use getEnumeration() instead
      */
     public function getEnumClass()
     {
-        return $this->enumClass;
+        return $this->getEnumeration();
     }
 
     /**
-     * Attach a new enumeration or overwrite an existing one
-     * @param Enum|null|boolean|int|float|string $enum
-     * @return void
-     * @throws InvalidArgumentException On an invalid given enum
+     * Get the classname of the enumeration
+     * @return string
      */
-    public function attach($enum)
+    public function getEnumeration()
     {
-        $enumClass = $this->enumClass;
-        $this->bitset |= 1 << $enumClass::get($enum)->getOrdinal();
+        return $this->enumeration;
     }
 
     /**
-     * Detach all enumerations same as the given enum
-     * @param Enum|null|boolean|int|float|string $enum
+     * Attach a new enumerator or overwrite an existing one
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return void
-     * @throws InvalidArgumentException On an invalid given enum
+     * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function detach($enum)
+    public function attach($enumerator)
     {
-        $enumClass = $this->enumClass;
-        $this->bitset &= ~(1 << $enumClass::get($enum)->getOrdinal());
+        $enumeration = $this->enumeration;
+        $this->bitset |= 1 << $enumeration::get($enumerator)->getOrdinal();
     }
 
     /**
-     * Test if the given enumeration exists
-     * @param Enum|null|boolean|int|float|string $enum
+     * Detach the given enumerator
+     * @param Enum|null|boolean|int|float|string $enumerator
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enumerator
+     */
+    public function detach($enumerator)
+    {
+        $enumeration = $this->enumeration;
+        $this->bitset &= ~(1 << $enumeration::get($enumerator)->getOrdinal());
+    }
+
+    /**
+     * Test if the given enumerator was attached
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return boolean
      */
-    public function contains($enum)
+    public function contains($enumerator)
     {
-        $enumClass = $this->enumClass;
-        return (bool)($this->bitset & (1 << $enumClass::get($enum)->getOrdinal()));
+        $enumeration = $this->enumeration;
+        return (bool)($this->bitset & (1 << $enumeration::get($enumerator)->getOrdinal()));
     }
 
     /* Iterator */
 
     /**
-     * Get current Enum
-     * @return Enum|null Returns current Enum or NULL on an invalid iterator position
+     * Get the current enumerator
+     * @return Enum|null Returns the current enumerator or NULL on an invalid iterator position
      */
     public function current()
     {
         if ($this->valid()) {
-            $enumClass = $this->enumClass;
-            return $enumClass::getByOrdinal($this->ordinal);
+            $enumeration = $this->enumeration;
+            return $enumeration::getByOrdinal($this->ordinal);
         }
 
         return null;
     }
 
     /**
-     * Get ordinal number of current iterator position
+     * Get the ordinal number of the current iterator position
      * @return int
      */
     public function key()

@@ -38,7 +38,6 @@ class EnumTest extends TestCase
 
     public function testEnumInheritance()
     {
-        $enum = EnumInheritance::get(EnumInheritance::ONE);
         $this->assertSame(array(
             'ONE'           => 1,
             'TWO'           => 2,
@@ -57,7 +56,9 @@ class EnumTest extends TestCase
             'BOOLEAN_TRUE'  => true,
             'BOOLEAN_FALSE' => false,
             'INHERITANCE'   => 'Inheritance',
-        ), $enum::getConstants());
+        ), EnumInheritance::getConstants());
+
+        $enum = EnumInheritance::get(EnumInheritance::ONE);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
         $this->assertSame(0, $enum->getOrdinal());
 

@@ -141,12 +141,12 @@ abstract class Enum
     /**
      * Compare this enumerator against another and check if it's the same.
      *
-     * @param mixed $enum
+     * @param mixed $enumerator
      * @return bool
      */
-    final public function is($enum)
+    final public function is($enumerator)
     {
-        return $this === $enum || $this->value === $enum;
+        return $this === $enumerator || $this->value === $enumerator;
     }
 
     /**

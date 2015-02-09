@@ -21,7 +21,7 @@ class EnumMapTest extends TestCase
     public function testBasic()
     {
         $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
-        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumMap->getEnumClass());
+        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumMap->getEnumeration());
 
         $enum1  = EnumBasic::ONE();
         $value1 = 'value1';
@@ -46,6 +46,12 @@ class EnumMapTest extends TestCase
 
         $this->assertNull($enumMap->detach($enum2));
         $this->assertFalse($enumMap->contains($enum2));
+    }
+
+    public function testDeprecatedGetEnumClass()
+    {
+        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumMap->getEnumClass());
     }
 
     public function testBasicWithConstantValuesAsEnums()

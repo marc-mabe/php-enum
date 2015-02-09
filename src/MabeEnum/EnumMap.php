@@ -62,10 +62,10 @@ class EnumMap extends SplObjectStorage
     const CURRENT_AS_ORDINAL = 40;
 
     /**
-     * The classname of an enumeration this map is for
+     * The classname of the enumeration type
      * @var string
      */
-    private $enumClass;
+    private $enumeration;
 
     /**
      * Flags to define behaviors
@@ -76,19 +76,19 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Constructor
-     * @param string   $enumClass The classname of an enumeration the map is for
-     * @param int|null $flags     Behaviour flags, see KEY_AS_* and CURRENT_AS_* constants
+     * @param string   $enumeration The classname of the enumeration type
+     * @param int|null $flags       Behaviour flags, see KEY_AS_* and CURRENT_AS_* constants
      * @throws InvalidArgumentException
      */
-    public function __construct($enumClass, $flags = null)
+    public function __construct($enumeration, $flags = null)
     {
-        if (!is_subclass_of($enumClass, __NAMESPACE__ . '\Enum')) {
+        if (!is_subclass_of($enumeration, __NAMESPACE__ . '\Enum')) {
             throw new InvalidArgumentException(sprintf(
                 "This EnumMap can handle subclasses of '%s' only",
                 __NAMESPACE__ . '\Enum'
             ));
         }
-        $this->enumClass = $enumClass;
+        $this->enumeration = $enumeration;
 
         if ($flags !== null) {
             $this->setFlags($flags);
@@ -96,12 +96,22 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Get the classname of the enumeration this map is for
+     * Get the classname of the enumeration
      * @return string
+     * @deprecated Please use getEnumeration() instead
      */
     public function getEnumClass()
     {
-        return $this->enumClass;
+        return $this->getEnumeration();
+    }
+
+    /**
+     * Get the classname of the enumeration
+     * @return string
+     */
+    public function getEnumeration()
+    {
+        return $this->enumeration;
     }
 
     /**
@@ -147,27 +157,27 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Attach a new enumerator or overwrite an existing one
-     * @param Enum|null|boolean|int|float|string $enum
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @param mixed                              $data
      * @return void
-     * @throws InvalidArgumentException On an invalid given enum
+     * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function attach($enum, $data = null)
+    public function attach($enumerator, $data = null)
     {
-        $enumClass = $this->enumClass;
-        parent::attach($enumClass::get($enum), $data);
+        $enumeration = $this->enumeration;
+        parent::attach($enumeration::get($enumerator), $data);
     }
 
     /**
      * Test if the given enumerator exists
-     * @param Enum|null|boolean|int|float|string $enum
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return boolean
      */
-    public function contains($enum)
+    public function contains($enumerator)
     {
         try {
-            $enumClass = $this->enumClass;
-            return parent::contains($enumClass::get($enum));
+            $enumeration = $this->enumeration;
+            return parent::contains($enumeration::get($enumerator));
         } catch (InvalidArgumentException $e) {
             // On an InvalidArgumentException the given argument can't be contained in this map
             return false;
@@ -176,77 +186,77 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Detach an enumerator
-     * @param Enum|null|boolean|int|float|string $enum
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return void
-     * @throws InvalidArgumentException On an invalid given enum
+     * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function detach($enum)
+    public function detach($enumerator)
     {
-        $enumClass = $this->enumClass;
-        parent::detach($enumClass::get($enum));
+        $enumeration = $this->enumeration;
+        parent::detach($enumeration::get($enumerator));
     }
 
     /**
      * Get a unique identifier for the given enumerator
-     * @param Enum|scalar $enum
+     * @param Enum|scalar $enumerator
      * @return string
-     * @throws InvalidArgumentException On an invalid given enum
+     * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function getHash($enum)
+    public function getHash($enumerator)
     {
         // getHash is available since PHP 5.4
-        $enumClass = $this->enumClass;
-        return spl_object_hash($enumClass::get($enum));
+        $enumeration = $this->enumeration;
+        return spl_object_hash($enumeration::get($enumerator));
     }
 
     /**
      * Test if the given enumerator exists
-     * @param Enum|null|boolean|int|float|string $enum
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return boolean
      * @see contains()
      */
-    public function offsetExists($enum)
+    public function offsetExists($enumerator)
     {
-        return $this->contains($enum);
+        return $this->contains($enumerator);
     }
 
     /**
      * Get mapped data for the given enumerator
-     * @param Enum|null|boolean|int|float|string $enum
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return mixed
-     * @throws InvalidArgumentException On an invalid given enum
+     * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function offsetGet($enum)
+    public function offsetGet($enumerator)
     {
-        $enumClass = $this->enumClass;
-        return parent::offsetGet($enumClass::get($enum));
+        $enumeration = $this->enumeration;
+        return parent::offsetGet($enumeration::get($enumerator));
     }
 
     /**
      * Attach a new enumerator or overwrite an existing one
-     * @param Enum|null|boolean|int|float|string $enum
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @param mixed                              $data
      * @return void
-     * @throws InvalidArgumentException On an invalid given enum
+     * @throws InvalidArgumentException On an invalid given enumerator
      * @see attach()
      */
-    public function offsetSet($enum, $data = null)
+    public function offsetSet($enumerator, $data = null)
     {
-        $enumClass = $this->enumClass;
-        parent::offsetSet($enumClass::get($enum), $data);
+        $enumeration = $this->enumeration;
+        parent::offsetSet($enumeration::get($enumerator), $data);
     }
 
     /**
      * Detach an existing enumerator
-     * @param Enum|null|boolean|int|float|string $enum
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return void
-     * @throws InvalidArgumentException On an invalid given enum
+     * @throws InvalidArgumentException On an invalid given enumerator
      * @see detach()
      */
-    public function offsetUnset($enum)
+    public function offsetUnset($enumerator)
     {
-        $enumClass = $this->enumClass;
-        parent::offsetUnset($enumClass::get($enum));
+        $enumeration = $this->enumeration;
+        parent::offsetUnset($enumeration::get($enumerator));
     }
 
     /**
