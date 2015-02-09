@@ -8,7 +8,10 @@
         processIsolation="false"
         backupGlobals="false"
         syntaxCheck="true"
-        strict="true"
+        beStrictAboutTestsThatDoNotTestAnything="true"
+        beStrictAboutOutputDuringTests="true"
+        beStrictAboutTestSize="true"
+        checkForUnintentionallyCoveredCode="true"
         >
     <testsuite name="php-enum Test-Suite">
         <directory>./tests</directory>
