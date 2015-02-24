@@ -11,7 +11,7 @@ php:
  - hhvm-nightly
 
 install:
- - composer install --dev -n --prefer-source
+ - composer install -n --prefer-source
 
 before_script:
  - CODE_COVERAGE=`echo $TRAVIS_PHP_VERSION | grep -v "hhvm" | wc -l`
