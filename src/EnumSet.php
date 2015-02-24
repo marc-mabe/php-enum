@@ -38,7 +38,7 @@ class EnumSet implements Iterator, Countable
      * Highest possible ordinal number
      * @var int
      */
-    private $ordinalMax = 0;
+    private $ordinalMax;
 
     /**
      * Constructor
@@ -149,32 +149,33 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Go to the next iterator position
+     * Go to the next valid iterator position.
+     * If no valid iterator position is found the iterator position will be the last possible + 1.
      * @return void
      */
     public function next()
     {
-        if ($this->ordinal !== $this->ordinalMax) {
-            do {
-                if (++$this->ordinal === $this->ordinalMax) {
-                    return;
-                }
-            } while (!($this->bitset & (1 << $this->ordinal)));
-        }
+        do {
+            if (++$this->ordinal >= $this->ordinalMax) {
+                $this->ordinal = $this->ordinalMax;
+                return;
+            }
+        } while (!($this->bitset & (1 << $this->ordinal)));
     }
 
     /**
-     * Go to the first iterator position
+     * Go to the first valid iterator position.
+     * If no valid iterator position in found the iterator position will be 0.
      * @return void
      */
     public function rewind()
     {
-        $this->ordinal = -1;
-        do {
-            if (++$this->ordinal === $this->ordinalMax) {
-                return;
-            }
-        } while (!($this->bitset & (1 << $this->ordinal)));
+        if ($this->bitset) {
+            $this->ordinal = -1;
+            $this->next();
+        } else {
+            $this->ordinal = 0;
+        }
     }
 
     /**
