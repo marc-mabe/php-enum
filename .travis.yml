@@ -17,7 +17,7 @@ before_script:
  - CODE_COVERAGE=`echo $TRAVIS_PHP_VERSION | grep -v "hhvm" | wc -l`
 
 script:
- - if [ "$CODE_COVERAGE" = "1" ]; then php vendor/bin/phpunit --verbose --coverage-clover=coverage.clover; else php vendor/bin/phpunit --verbose; fi
+ - if [ "$CODE_COVERAGE" = "1" ]; then php vendor/bin/phpunit --verbose --coverage-text --coverage-clover=coverage.clover; else php vendor/bin/phpunit --verbose; fi
 
 after_script:
  - if [ "$CODE_COVERAGE" = "1" ]; then wget "https://scrutinizer-ci.com/ocular.phar"; fi
