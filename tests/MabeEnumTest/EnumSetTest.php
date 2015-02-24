@@ -190,6 +190,19 @@ class EnumSetTest extends TestCase
         $this->assertSame($enum->getOrdinal() + 1, $enumSet->key());
     }
 
+    public function testRewindFirstOnEmptySet()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+
+        $enumSet->attach(EnumBasic::TWO);
+        $enumSet->rewind();
+        $this->assertGreaterThan(0, $enumSet->key());
+
+        $enumSet->detach(EnumBasic::TWO);
+        $enumSet->rewind();
+        $this->assertSame(0, $enumSet->key());
+    }
+
     public function test32EnumerationsSet()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum32');
