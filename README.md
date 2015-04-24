@@ -28,6 +28,7 @@ It's an abstract class that needs to be extended to use it.
 
 ## Basics
 
+```php
     use MabeEnum\Enum;
 
     // define an own enumeration class
@@ -44,19 +45,19 @@ It's an abstract class that needs to be extended to use it.
         const STR     = 'string';
         const FLOAT   = 0.123;
     }
-    
+
     // different ways to instantiate an enumerator
     $status = UserStatus::get(UserStatus::ACTIVE);
     $status = UserStatus::ACTIVE();
     $status = UserStatus::getByName('ACTIVE');
     $status = UserStatus::getByOrdinal(1);
-    
+
     // available methods to get the selected entry
     $status->getValue();   // returns the selected constant value
     $status->getName();    // returns the selected constant name
     $status->getOrdinal(); // returns the ordinal number of the selected constant
     (string) $status;      // returns the selected constant name
-    
+
     // same enumerators (of the same enumeration class) holds the same instance
     UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
     UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
@@ -66,10 +67,11 @@ It's an abstract class that needs to be extended to use it.
     UserStatus::ACTIVE()->is(UserStatus::ACTIVE());   // true
     UserStatus::ACTIVE()->is(UserStatus::DELETED);    // false
     UserStatus::ACTIVE()->is(UserStatus::DELETED());  // false
-
+```
 
 ## Type-Hint
-    
+
+```php    
     use MabeEnum\Enum;
 
     class User
@@ -90,6 +92,7 @@ It's an abstract class that needs to be extended to use it.
             return $this->status;
         }
     }
+```
 
 ### Type-Hint issue
 
@@ -97,16 +100,19 @@ Because in normal OOP the above example allows `UserStatus` and types inherited 
 
 Please think about the following example:
 
+```php
     class ExtendedUserStatus
     {
         const EXTENDED = 'extended';
     }
 
     $user->setStatus(ExtendedUserStatus::EXTENDED());
+```
 
 Now the setter receives a status it doesn't know about but allows it.
 If your `User` class doesn't allow it the following is the recommanded way:
 
+```php
     class User
     {
         // ...
@@ -116,6 +122,7 @@ If your `User` class doesn't allow it the following is the recommanded way:
         }
         // ...
     }
+```
 
 Now you are 100% sure to work with an exact instace of `UserStatus`.
 
@@ -128,6 +135,7 @@ An ```EnumMap``` maps enumerators of the same type to data assigned to.
 
 Internally the ```EnumMap``` is based of ```SplObjectStorage```.
 
+```php
     use MabeEnum\EnumMap;
 
     // create a new EnumMap
@@ -148,7 +156,7 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
     // define key and value used for iteration
     $enumSet->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
     var_dump(iterator_to_array($enumSet)); // array('ACTIVE' => 'aktiv');
-
+```
 
 ## EnumSet
 
@@ -160,6 +168,7 @@ The maximun number of enumerators are limited by the size of an integer.
 
 Enumerators will be ordered by the ordinal number.
 
+```php
     use MabeEnum\EnumSet;
 
     // create a new EnumSet
@@ -176,7 +185,7 @@ Enumerators will be ordered by the ordinal number.
     
     // iterate
     var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
-
+```
 
 # Why not ```SplEnum```
 
