@@ -45,19 +45,19 @@ It's an abstract class that needs to be extended to use it.
         const STR     = 'string';
         const FLOAT   = 0.123;
     }
-
+    
     // different ways to instantiate an enumerator
     $status = UserStatus::get(UserStatus::ACTIVE);
     $status = UserStatus::ACTIVE();
     $status = UserStatus::getByName('ACTIVE');
     $status = UserStatus::getByOrdinal(1);
-
+    
     // available methods to get the selected entry
     $status->getValue();   // returns the selected constant value
     $status->getName();    // returns the selected constant name
     $status->getOrdinal(); // returns the ordinal number of the selected constant
     (string) $status;      // returns the selected constant name
-
+    
     // same enumerators (of the same enumeration class) holds the same instance
     UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
     UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
