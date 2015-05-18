@@ -124,7 +124,7 @@ If your `User` class doesn't allow it the following is the recommanded way:
     }
 ```
 
-Now you are 100% sure to work with an exact instace of `UserStatus`.
+Now you are 100% sure to work with an exact instance of `UserStatus`.
 
 (If the setter receives an extended status the value will be used to receive the
 corresponding instance of `UserStatus` else an exception will be thrown.)
