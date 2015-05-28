@@ -205,4 +205,22 @@ class EnumSet implements Iterator, Countable
 
         return $cnt;
     }
+
+    /**
+     * Get the bitset
+     * @return int
+     */
+    public function getBitset() {
+        return $this->bitset;
+    }
+
+    /**
+     * Set the bitset, it resets the current position of the iterator
+     * @param int $bitset
+     * @return void
+     */
+    public function setBitset($bitset) {
+        $this->bitset=$bitset;
+        $this->rewind();
+    }
 }
