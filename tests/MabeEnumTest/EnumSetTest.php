@@ -8,6 +8,7 @@ use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\Enum32;
 use MabeEnumTest\TestAsset\Enum64;
+use MabeEnumTest\TestAsset\Enum65;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -224,10 +225,6 @@ class EnumSetTest extends TestCase
 
     public function test64EnumerationsSet()
     {
-        if (PHP_INT_SIZE === 4) {
-            $this->setExpectedException('OutOfRangeException');
-        }
-
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum64');
         foreach (Enum64::getConstants() as $name => $value) {
             $this->assertFalse($enumSet->contains($value));
@@ -247,7 +244,45 @@ class EnumSetTest extends TestCase
 
     public function test65EnumerationsSet()
     {
-        $this->setExpectedException('OutOfRangeException');
-        new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+
+        $this->assertNull($enum->attach(Enum65::getByOrdinal(64)));
+        $enum->next();
+        $this->assertTrue($enum->valid());
+    }
+
+    public function testBitset()
+    {
+        $enumSet1 = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        
+        $enum1 = Enum65::ONE;
+        $enum2 = Enum65::TWO;
+        $enum3 = Enum65::SIXTYFIVE;
+        $enum4 = Enum65::SIXTYFOUR;
+        
+        $this->assertNull($enumSet1->attach($enum1));
+        $this->assertNull($enumSet1->attach($enum2));
+        $this->assertNull($enumSet1->attach($enum3));
+        $this->assertNull($enumSet1->attach($enum4));
+        
+        $this->assertNull($enumSet1->detach($enum1));
+        $bitset = $enumSet1->getBitset();
+        $this->assertTrue(strlen($bitset) > 8);
+        $enumSet2 = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet2->setBitset($bitset);
+        
+        $this->assertFalse($enumSet2->contains($enum1));
+        $this->assertTrue($enumSet2->contains($enum2));
+        $this->assertTrue($enumSet2->contains($enum3));
+        $this->assertTrue($enumSet2->contains($enum4));
+        $this->assertTrue($enumSet2->count() == 3);
+    }
+
+    public function testFalseBitsetArgumentExceptionIfNotString()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        
+        $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enum->setBitset(0);
     }
 }
