@@ -5,7 +5,6 @@ namespace MabeEnum;
 use Iterator;
 use Countable;
 use InvalidArgumentException;
-use OutOfRangeException;
 
 /**
  * EnumSet implementation in base of an integer bit set
@@ -23,10 +22,10 @@ class EnumSet implements Iterator, Countable
     private $enumeration;
 
     /**
-     * BitSet of all attached enumerations
-     * @var int
+     * BitSet of all attached enumerations in little endian
+     * @var string
      */
-    private $bitset = 0;
+    private $bitset;
 
     /**
      * Ordinal number of current iterator position
@@ -54,19 +53,12 @@ class EnumSet implements Iterator, Countable
                 __NAMESPACE__ . '\Enum'
             ));
         }
-
+        
         $this->enumeration = $enumeration;
         $this->ordinalMax  = count($enumeration::getConstants());
-
-        if (PHP_INT_SIZE * 8 < $this->ordinalMax) {
-            throw new OutOfRangeException(sprintf(
-                "Your system can handle up to %u enumerators within an EnumSet"
-                . " but the given enumeration '%s' has defined %u enumerators",
-                PHP_INT_SIZE * 8,
-                $enumeration,
-                $this->ordinalMax
-            ));
-        }
+        
+        // init the bitset with zeros
+        $this->bitset = str_repeat("\0", ceil($this->ordinalMax / 8));
     }
 
     /**
@@ -97,7 +89,7 @@ class EnumSet implements Iterator, Countable
     public function attach($enumerator)
     {
         $enumeration = $this->enumeration;
-        $this->bitset |= 1 << $enumeration::get($enumerator)->getOrdinal();
+        $this->setBit($enumeration::get($enumerator)->getOrdinal());
     }
 
     /**
@@ -109,7 +101,7 @@ class EnumSet implements Iterator, Countable
     public function detach($enumerator)
     {
         $enumeration = $this->enumeration;
-        $this->bitset &= ~(1 << $enumeration::get($enumerator)->getOrdinal());
+        $this->unsetBit($enumeration::get($enumerator)->getOrdinal());
     }
 
     /**
@@ -120,7 +112,7 @@ class EnumSet implements Iterator, Countable
     public function contains($enumerator)
     {
         $enumeration = $this->enumeration;
-        return (bool)($this->bitset & (1 << $enumeration::get($enumerator)->getOrdinal()));
+        return $this->getBit($enumeration::get($enumerator)->getOrdinal());
     }
 
     /* Iterator */
@@ -156,11 +148,11 @@ class EnumSet implements Iterator, Countable
     public function next()
     {
         do {
-            if (++$this->ordinal >= $this->ordinalMax) {
+            if (++ $this->ordinal >= $this->ordinalMax) {
                 $this->ordinal = $this->ordinalMax;
                 return;
             }
-        } while (!($this->bitset & (1 << $this->ordinal)));
+        } while (!$this->getBit($this->ordinal));
     }
 
     /**
@@ -170,7 +162,7 @@ class EnumSet implements Iterator, Countable
      */
     public function rewind()
     {
-        if ($this->bitset) {
+        if (trim($this->bitset, "\0") !== '') {
             $this->ordinal = -1;
             $this->next();
         } else {
@@ -184,7 +176,7 @@ class EnumSet implements Iterator, Countable
      */
     public function valid()
     {
-        return $this->bitset & (1 << $this->ordinal) && $this->ordinal !== $this->ordinalMax;
+        return $this->ordinal !== $this->ordinalMax && $this->getBit($this->ordinal);
     }
 
     /* Countable */
@@ -198,11 +190,88 @@ class EnumSet implements Iterator, Countable
         $cnt = 0;
         $ord = 0;
         do {
-            if ($this->bitset & (1 << $ord++)) {
+            if ($this->getBit($ord++)) {
                 ++$cnt;
             }
         } while ($ord !== $this->ordinalMax);
 
         return $cnt;
+    }
+
+    /**
+     * Get the binary bitset
+     * 
+     * @return string Returns the binary bitset in big-endian order
+     */
+    public function getBitset()
+    {
+        return strrev($this->bitset);
+    }
+
+    /**
+     * Set the bitset.
+     * NOTE: It resets the current position of the iterator
+     * 
+     * @param string $bitset The binary bitset in big-endian order
+     * @return void
+     * @throws InvalidArgumentException On a non string is given as Parameter
+     */
+    public function setBitset($bitset)
+    {
+        if (! is_string($bitset)) {
+            throw new InvalidArgumentException("bitset must be a string");
+        }
+        
+        $bitset = strrev($bitset);
+        $size   = ceil($this->ordinalMax / 8);
+        $sizeIn = strlen($bitset);
+        
+        if ($sizeIn < $size) {
+            // add "\0" if the given bitset is not long enough
+            $bitset .= str_repeat("\0", $size - $sizeIn);
+        } elseif ($sizeIn > $size) {
+            $bitset = substr($bitset, 0, $size);
+        }
+        
+        $this->bitset = $bitset;
+        
+        $this->rewind();
+    }
+
+    /**
+     * get a bit at the given ordinal
+     * 
+     * @param $ordinal int Number of bit to get
+     * @return boolean
+     */
+    private function getBit($ordinal)
+    {
+        return (ord($this->bitset[(int) ($ordinal / 8)]) & 1 << ($ordinal % 8)) !== 0;
+    }
+
+    /**
+     * set a bit at the given ordinal
+     * 
+     * @param $ordinal int
+     *            number of bit to manipulate
+     * @return void
+     */
+    private function setBit($ordinal)
+    {
+        $byte = (int) ($ordinal / 8);
+        $this->bitset[$byte] = $this->bitset[$byte] | chr(1 << ($ordinal % 8));
+    }
+
+    /**
+     * reset a bit at the given ordinal
+     * 
+     * @param $ordinal int
+     *            number of bit to set to false
+     * @return void
+     */
+    private function unsetBit($ordinal)
+    {
+        $byte = (int) ($ordinal / 8);
+        $this->bitset[$byte] = $this->bitset[$byte] & chr(~ (1 << ($ordinal % 8)));
     }
 }
