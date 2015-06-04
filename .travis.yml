@@ -9,7 +9,6 @@ php:
  - 5.6
  - nightly
  - hhvm
- - hhvm-nightly
 
 install:
  - composer install -n --prefer-source
@@ -28,7 +27,6 @@ matrix:
  fast_finish: true
  allow_failures:
   - php: nightly
-  - php: hhvm-nightly
 
 notifications:
  email: false
