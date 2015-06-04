@@ -148,7 +148,7 @@ class EnumSet implements Iterator, Countable
     public function next()
     {
         do {
-            if (++ $this->ordinal >= $this->ordinalMax) {
+            if (++$this->ordinal >= $this->ordinalMax) {
                 $this->ordinal = $this->ordinalMax;
                 return;
             }
@@ -218,8 +218,8 @@ class EnumSet implements Iterator, Countable
      */
     public function setBitset($bitset)
     {
-        if (! is_string($bitset)) {
-            throw new InvalidArgumentException("bitset must be a string");
+        if (!is_string($bitset)) {
+            throw new InvalidArgumentException('Bitset must be a string');
         }
         
         $bitset = strrev($bitset);
@@ -239,9 +239,9 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * get a bit at the given ordinal
+     * Get a bit at the given ordinal number
      * 
-     * @param $ordinal int Number of bit to get
+     * @param $ordinal int Ordinal number of bit to get
      * @return boolean
      */
     private function getBit($ordinal)
@@ -250,10 +250,9 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * set a bit at the given ordinal
+     * Set a bit at the given ordinal number
      * 
-     * @param $ordinal int
-     *            number of bit to manipulate
+     * @param $ordinal int Ordnal number of bit to set
      * @return void
      */
     private function setBit($ordinal)
@@ -263,15 +262,14 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * reset a bit at the given ordinal
+     * Unset a bit at the given ordinal number
      * 
-     * @param $ordinal int
-     *            number of bit to set to false
+     * @param $ordinal int Ordinal number of bit to unset
      * @return void
      */
     private function unsetBit($ordinal)
     {
         $byte = (int) ($ordinal / 8);
-        $this->bitset[$byte] = $this->bitset[$byte] & chr(~ (1 << ($ordinal % 8)));
+        $this->bitset[$byte] = $this->bitset[$byte] & chr(~(1 << ($ordinal % 8)));
     }
 }
