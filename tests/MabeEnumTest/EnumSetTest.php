@@ -261,25 +261,25 @@ class EnumSetTest extends TestCase
         $enum4 = Enum65::SIXTYFOUR;
 
         $this->assertNull($enumSet->attach($enum1));
-        $this->assertSame('000000000000000001', bin2hex($enumSet->getBitset()));
+        $this->assertSame('000000000000000001', \bin2hex($enumSet->getBitset()));
         $this->assertTrue($enumSet->contains($enum1));
 
         $this->assertNull($enumSet->attach($enum2));
-        $this->assertSame('000000000000000003', bin2hex($enumSet->getBitset()));
+        $this->assertSame('000000000000000003', \bin2hex($enumSet->getBitset()));
         $this->assertTrue($enumSet->contains($enum2));
 
         $this->assertNull($enumSet->attach($enum3));
-        $this->assertSame('010000000000000003', bin2hex($enumSet->getBitset()));
+        $this->assertSame('010000000000000003', \bin2hex($enumSet->getBitset()));
         $this->assertTrue($enumSet->contains($enum3));
 
         $this->assertNull($enumSet->attach($enum4));
-        $this->assertSame('018000000000000003', bin2hex($enumSet->getBitset()));
+        $this->assertSame('018000000000000003', \bin2hex($enumSet->getBitset()));
         $this->assertTrue($enumSet->contains($enum4));
         
         $this->assertSame(4, $enumSet->count());
 
         $this->assertNull($enumSet->detach($enum2));
-        $this->assertSame('018000000000000001', bin2hex($enumSet->getBitset()));
+        $this->assertSame('018000000000000001', \bin2hex($enumSet->getBitset()));
         $this->assertFalse($enumSet->contains($enum2));
         
         $this->assertSame(3, $enumSet->count());
@@ -288,7 +288,7 @@ class EnumSetTest extends TestCase
     public function testSetBitset()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
-        $enumSet->setBitset(hex2bin('018000000000000001'));
+        $enumSet->setBitset(\hex2bin('018000000000000001'));
 
         $this->assertTrue($enumSet->contains(Enum65::ONE));
         $this->assertFalse($enumSet->contains(Enum65::TWO));
@@ -300,15 +300,15 @@ class EnumSetTest extends TestCase
     public function testSetBitsetShort()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
-        $enumSet->setBitset(hex2bin('0A'));
-        $this->assertSame('00000000000000000a', bin2hex($enumSet->getBitset()));
+        $enumSet->setBitset(\hex2bin('0A'));
+        $this->assertSame('00000000000000000a', \bin2hex($enumSet->getBitset()));
     }
 
     public function testSetBitsetLong()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $enumSet->setBitset(hex2bin('FFFFFFFFFF0A'));
-        $this->assertSame('ff0a', bin2hex($enumSet->getBitset()));
+        $enumSet->setBitset(\hex2bin('FFFFFFFFFF0A'));
+        $this->assertSame('ff0a', \bin2hex($enumSet->getBitset()));
     }
 
     public function testFalseBitsetArgumentExceptionIfNotString()
