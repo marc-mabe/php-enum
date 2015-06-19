@@ -39,7 +39,7 @@ trait EnumSerializableTrait
     /**
      * Unserializes a given serialized value and push it into the current instance
      * This will be called automatically on `unserialize()` if the enumeration implements the `Serializable` interface
-     * @param string
+     * @param string $serialized
      * @throws RuntimeException On an unknown or invalid value
      * @throws LogicException   On changing numeration value by calling this directly
      */
