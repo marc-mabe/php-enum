@@ -24,6 +24,9 @@
         "php":            ">=5.3",
         "ext-reflection": "*"
     },
+    "suggest": {
+        "php": "PHP>=5.4 will be required for using trait EnumSerializableTrait"
+    },
     "require-dev": {
         "phpunit/phpunit": "~4.0"
     },
