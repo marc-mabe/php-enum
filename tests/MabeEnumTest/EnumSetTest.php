@@ -2,7 +2,6 @@
 
 namespace MabeEnumTest;
 
-use MabeEnum\Enum;
 use MabeEnum\EnumSet;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
