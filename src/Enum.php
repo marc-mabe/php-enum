@@ -167,14 +167,10 @@ abstract class Enum
         $constants = self::detectConstants($class);
         $name      = array_search($value, $constants, true);
         if ($name === false) {
-            if (is_scalar($value)) {
-                throw new InvalidArgumentException('Unknown value ' . var_export($value, true));
-            } else {
-                throw new InvalidArgumentException(sprintf(
-                    'Invalid value of type %s',
-                    is_object($value) ? get_class($value) : gettype($value)
-                ));
-            }
+            $message = is_scalar($value)
+                ? 'Unknown value ' . var_export($value, true)
+                : 'Invalid value of type ' . (is_object($value) ? get_class($value) : gettype($value));
+            throw new InvalidArgumentException($message);
         }
 
         if (!isset(self::$instances[$class][$name])) {
