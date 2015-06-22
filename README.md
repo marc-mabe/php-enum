@@ -212,8 +212,8 @@ be unserialized **before** it will be instantiated normally.
         use EnumSerializableTrait;
     
         const NORTH = 'n';
-        const EAST = 'e';
-        const WEST = 'w';
+        const EAST  = 'e';
+        const WEST  = 'w';
         const SOUTH = 's';
     }
     
