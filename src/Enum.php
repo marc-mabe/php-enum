@@ -222,7 +222,7 @@ abstract class Enum
         $class     = get_called_class();
         $constants = self::detectConstants($class);
         $item      = array_slice($constants, $ordinal, 1, true);
-        if (!$item) {
+        if (empty($item)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid ordinal number, must between 0 and %s',
                 count($constants) - 1
@@ -292,7 +292,7 @@ abstract class Enum
                     $ambiguous[var_export($value, true)] = $names;
                 }
             }
-            if ($ambiguous) {
+            if (!empty($ambiguous)) {
                 throw new LogicException(
                     'All possible values needs to be unique. The following are ambiguous: '
                     . implode(', ', array_map(function ($names) use ($constants) {

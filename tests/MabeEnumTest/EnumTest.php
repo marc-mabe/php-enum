@@ -111,9 +111,10 @@ class EnumTest extends TestCase
     {
         $constants   = EnumInheritance::getConstants();
         $enumerators = EnumInheritance::getEnumerators();
+        $count       = count($enumerators);
 
-        $this->assertSame(count($constants), count($enumerators));
-        for ($i = 0; $i < count($enumerators); ++$i) {
+        $this->assertSame(count($constants), $count);
+        for ($i = 0; $i < $count; ++$i) {
             $this->assertArrayHasKey($i, $enumerators);
             $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enumerators[$i]);
 
