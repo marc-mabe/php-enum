@@ -187,6 +187,43 @@ Enumerators will be ordered by the ordinal number.
     var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
 ```
 
+## Serializing
+
+Because this enumeration implementation is based on a singleton pattern and in PHP
+it's currently impossible to unserialize a singleton without creating a new instance
+this feature isn't supported without any additional work.
+
+As of it's an often requested feature there is a trait that can be added to your
+enumeration definition. This trait adds this functionallity and does some magic stuff
+to reduce singleton breakage but it can only avoid such beak if an enumerator will
+be unserialized **before** it will be instantiated normally.
+
+**Use it with caution!**
+
+### Example of using EnumSerializableTrait
+
+```php
+    use MabeEnum\Enum;
+    use MabeEnum\EnumSerializableTrait;
+    use Serializable;
+    
+    class CardinalDirection extends Enum implements Serializable
+    {
+        use EnumSerializableTrait;
+    
+        const NORTH = 'n';
+        const EAST = 'e';
+        const WEST = 'w';
+        const SOUTH = 's';
+    }
+    
+    $north1 = CardinalDirection::NORTH();
+    $north2 = unserialize(serialize($north1));
+    
+    // The following could be FALSE as described above
+    var_dump($north1 === $north2);
+```
+
 # Why not ```SplEnum```
 
 * ```SplEnum``` is not build-in into PHP and requires pecl extension installed.
