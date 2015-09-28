@@ -268,6 +268,47 @@ abstract class Enum
     }
 
     /**
+     * @param static|null|bool|int|float|string $value
+     * @return bool
+     */
+    final public static function isValid($value)
+    {
+        if ($value instanceof static && get_class($value) === get_called_class()) {
+            return true;
+        }
+
+        $class     = get_called_class();
+        $constants = self::detectConstants($class);
+        $name      = array_search($value, $constants, true);
+        return $name !== false;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    final public static function isValidName($name)
+    {
+        $name  = (string) $name;
+        $class = get_called_class();
+        $const = $class . '::' . $name;
+        return defined($const);
+    }
+
+    /**
+     * @param int $ordinal
+     * @return bool
+     */
+    final public static function isValidOrdinal($ordinal)
+    {
+        $ordinal   = (int) $ordinal;
+        $class     = get_called_class();
+        $constants = self::detectConstants($class);
+        $item      = array_slice($constants, $ordinal, 1, true);
+        return !empty($item);
+    }
+
+    /**
      * Detect all available constants by the given class
      *
      * @param string $class
