@@ -245,4 +245,15 @@ class EnumTest extends TestCase
         $this->setExpectedException('LogicException');
         unserialize("O:32:\"MabeEnumTest\TestAsset\EnumBasic\":0:{}");
     }
+
+    public function testHas()
+    {
+        $enum = EnumBasic::ONE();
+
+        $this->assertFalse($enum->has('invalid'));
+        $this->assertFalse($enum->has(EnumInheritance::ONE()));
+        $this->assertTrue($enum->has(1));
+        $this->assertTrue($enum->has(EnumBasic::ONE()));
+        $this->assertTrue($enum->has(EnumBasic::ONE));
+    }
 }
