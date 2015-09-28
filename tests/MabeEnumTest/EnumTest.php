@@ -263,7 +263,7 @@ class EnumTest extends TestCase
         $this->assertTrue($enum->isValidName('ONE'));
     }
 
-    public function testValidOrginal()
+    public function testValidOrdinal()
     {
         $enum = EnumBasic::ONE();
 
