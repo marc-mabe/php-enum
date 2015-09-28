@@ -259,6 +259,27 @@ abstract class Enum
     }
 
     /**
+     * Check for given value
+     *
+     * @param static|null|bool|int|float|string $value
+     * @return bool
+     */
+    final public static function has($value)
+    {
+        if ($value instanceof static) {
+            if (get_class($value) === get_called_class()) {
+                return true;
+            }
+            $value = $value->getValue();
+        }
+
+        $class     = get_called_class();
+        $constants = self::detectConstants($class);
+
+        return in_array($value, $constants, true);
+    }
+
+    /**
      * Detect constants available by given class
      *
      * @param string $class
