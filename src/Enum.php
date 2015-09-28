@@ -279,8 +279,8 @@ abstract class Enum
 
         $class     = get_called_class();
         $constants = self::detectConstants($class);
-        $name      = array_search($value, $constants, true);
-        return $name !== false;
+
+        return in_array($value, $constants, true);
     }
 
     /**

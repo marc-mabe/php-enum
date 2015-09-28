@@ -253,5 +253,6 @@ class EnumTest extends TestCase
         $this->assertFalse($enum->has('invalid'));
         $this->assertTrue($enum->has(1));
         $this->assertTrue($enum->has(EnumBasic::ONE()));
+        $this->assertTrue($enum->has(EnumBasic::ONE));
     }
 }
