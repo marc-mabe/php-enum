@@ -248,8 +248,11 @@ abstract class Enum
      */
     final public static function has($value)
     {
-        if ($value instanceof static && get_class($value) === get_called_class()) {
-            return true;
+        if ($value instanceof static) {
+            if (get_class($value) === get_called_class()) {
+                return true;
+            }
+            $value = $value->getValue();
         }
 
         $class     = get_called_class();
