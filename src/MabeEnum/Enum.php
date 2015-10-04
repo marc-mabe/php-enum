@@ -259,7 +259,7 @@ abstract class Enum
     }
 
     /**
-     * Check for given value
+     * Is the given enumerator part of this enumeration
      *
      * @param static|null|bool|int|float|string $value
      * @return bool
