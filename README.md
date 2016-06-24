@@ -152,11 +152,11 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
     $enumMap->detach(UserStatus::DELETED());
     
     // iterate
-    var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
+    var_dump(iterator_to_array($enumMap)); // array(0 => UserStatus{$value=1});
 
     // define key and value used for iteration
-    $enumSet->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
-    var_dump(iterator_to_array($enumSet)); // array('ACTIVE' => 'aktiv');
+    $enumMap->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
+    var_dump(iterator_to_array($enumMap)); // array('ACTIVE' => 'aktiv');
 ```
 
 ## EnumSet
