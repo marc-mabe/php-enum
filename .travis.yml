@@ -11,7 +11,7 @@ php:
  - hhvm
 
 install:
- - if [ "$TRAVIS_PHP_VERSION" = "5.3.3" ]; then composer config -g disable-tls true; fi
+ - if [ "$TRAVIS_PHP_VERSION" = "5.3.3" ]; then composer config -g disable-tls true; composer config -g secure-http false; fi
  - composer install -n --prefer-source
 
 before_script:
