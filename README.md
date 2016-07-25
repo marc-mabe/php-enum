@@ -163,9 +163,7 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
 
 An ```EnumSet``` groups enumerators of the same enumeration type together.
 
-Internally it's based of an integer bit set.
-
-The maximun number of enumerators are limited by the size of an integer.
+Internally it's based on a bit set of a binary string.
 
 Enumerators will be ordered by the ordinal number.
 
