@@ -104,7 +104,7 @@ abstract class Enum
     }
 
     /**
-     * Get the name of the enumarator
+     * Get the name of the enumerator
      *
      * @return string
      */
@@ -181,7 +181,7 @@ abstract class Enum
     }
 
     /**
-     * Get an enumarator instance by the given name
+     * Get an enumerator instance by the given name
      *
      * @param string $name The name of the enumerator
      * @return static
@@ -327,7 +327,7 @@ abstract class Enum
     }
 
     /**
-     * Get an enumarator instance by the given name.
+     * Get an enumerator instance by the given name.
      *
      * This will be called automatically on calling a method
      * with the same name of a defined enumerator.
