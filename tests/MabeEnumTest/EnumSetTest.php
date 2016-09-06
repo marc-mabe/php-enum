@@ -3,6 +3,7 @@
 namespace MabeEnumTest;
 
 use MabeEnum\EnumSet;
+use MabeEnumTest\TestAsset\EmptyEnum;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\Enum32;
@@ -316,5 +317,11 @@ class EnumSetTest extends TestCase
         
         $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
         $enum->setBitset(0);
+    }
+
+    public function testCountingEmptyEnumEmptySet()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EmptyEnum');
+        $this->assertSame(0, $set->count());
     }
 }
