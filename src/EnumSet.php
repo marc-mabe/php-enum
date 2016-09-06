@@ -189,11 +189,12 @@ class EnumSet implements Iterator, Countable
     {
         $cnt = 0;
         $ord = 0;
-        do {
+
+        while ($ord !== $this->ordinalMax) {
             if ($this->getBit($ord++)) {
                 ++$cnt;
             }
-        } while ($ord !== $this->ordinalMax);
+        }
 
         return $cnt;
     }
