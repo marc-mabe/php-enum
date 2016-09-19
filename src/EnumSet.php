@@ -200,30 +200,30 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Get the binary bitset
+     * Get binary bitset in little-endian order
      * 
-     * @return string Returns the binary bitset in big-endian order
+     * @return string
      */
-    public function getBitset()
+    public function getBinaryBitsetLe()
     {
-        return strrev($this->bitset);
+        return $this->bitset;
     }
 
     /**
-     * Set the bitset.
+     * Set binary bitset in little-endian order
+     *
      * NOTE: It resets the current position of the iterator
      * 
-     * @param string $bitset The binary bitset in big-endian order
+     * @param string $bitset
      * @return void
      * @throws InvalidArgumentException On a non string is given as Parameter
      */
-    public function setBitset($bitset)
+    public function setBinaryBitsetLe($bitset)
     {
         if (!is_string($bitset)) {
             throw new InvalidArgumentException('Bitset must be a string');
         }
         
-        $bitset = strrev($bitset);
         $size   = ceil($this->ordinalMax / 8);
         $sizeIn = strlen($bitset);
         
@@ -237,6 +237,59 @@ class EnumSet implements Iterator, Countable
         $this->bitset = $bitset;
         
         $this->rewind();
+    }
+
+    /**
+     * Get binary bitset in big-endian order
+     * 
+     * @return string
+     */
+    public function getBinaryBitsetBe()
+    {
+        return strrev($this->bitset);
+    }
+
+    /**
+     * Set binary bitset in big-endian order
+     *
+     * NOTE: It resets the current position of the iterator
+     * 
+     * @param string $bitset
+     * @return void
+     * @throws InvalidArgumentException On a non string is given as Parameter
+     */
+    public function setBinaryBitsetBe($bitset)
+    {
+        if (!is_string($bitset)) {
+            throw new InvalidArgumentException('Bitset must be a string');
+        }
+        
+	$this->setBinaryBitsetLe(strrev($bitset));
+    }
+
+    /**
+     * Get the binary bitset
+     * 
+     * @return string Returns the binary bitset in big-endian order
+     * @deprecated Please use getBinaryBitsetBe() instead
+     */
+    public function getBitset()
+    {
+        return $this->getBinaryBitsetBe();
+    }
+
+    /**
+     * Set the bitset.
+     * NOTE: It resets the current position of the iterator
+     * 
+     * @param string $bitset The binary bitset in big-endian order
+     * @return void
+     * @throws InvalidArgumentException On a non string is given as Parameter
+     * @deprecated Please use setBinaryBitsetBe() instead
+     */
+    public function setBitset($bitset)
+    {
+        $this->setBinaryBitsetBE($bitset);
     }
 
     /**
