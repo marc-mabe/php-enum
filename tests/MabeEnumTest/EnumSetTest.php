@@ -430,4 +430,140 @@ class EnumSetTest extends TestCase
         $set = new EnumSet('MabeEnumTest\TestAsset\EmptyEnum');
         $this->assertSame(0, $set->count());
     }
+
+    public function testIsEqual()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertTrue($set1->isEqual($set2));
+
+        foreach (EnumBasic::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $this->assertFalse($set1->isEqual($set2));
+
+            $set2->attach($enumerator);
+            $this->assertTrue($set1->isEqual($set2));
+        }
+    }
+
+    public function testIsEqualWrongInstance()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumInheritance');
+        $this->assertFalse($set1->isEqual($set2));
+
+        foreach (EnumBasic::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $this->assertFalse($set1->isEqual($set2));
+
+            $set2->attach($enumerator->getValue());
+            $this->assertFalse($set1->isEqual($set2));
+        }
+    }
+
+    /**
+     * if $A->isEqual($B) is true then $A->isSubsetOf($B) is also true
+     */
+    public function testIsSubsetEqual()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $this->assertTrue($set1->isSubset($set2));
+
+        foreach (Enum32::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $set2->attach($enumerator);
+            $this->assertTrue($set1->isSubset($set2));
+        }
+    }
+
+    public function testIsSubsetFull()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        foreach (Enum32::getEnumerators() as $enumerator) {
+            $set2->attach($enumerator);
+            $this->assertTrue($set1->isSubset($set2));
+        }
+    }
+
+    public function testIsSubsetFalse()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        foreach (Enum32::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $this->assertFalse($set1->isSubset($set2));
+        }
+    }
+
+    public function testIsSubsetWrongInstance()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumInheritance');
+        $this->assertFalse($set1->isSubset($set2));
+
+        foreach (EnumBasic::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $this->assertFalse($set1->isSubset($set2));
+
+            $set2->attach($enumerator->getValue());
+            $this->assertFalse($set1->isSubset($set2));
+        }
+    }
+
+    /**
+     * if $A->isEqual($B) is true then $A->isSuperset($B) is also true
+     */
+    public function testIsSsetEqual()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $this->assertTrue($set1->isSuperset($set2));
+
+        foreach (Enum32::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $set2->attach($enumerator);
+            $this->assertTrue($set1->isSuperset($set2));
+        }
+    }
+
+    public function testIsSupersetFull()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        foreach (Enum32::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $this->assertTrue($set1->isSuperset($set2));
+        }
+    }
+
+    public function testIsSupersetFalse()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        foreach (Enum32::getEnumerators() as $enumerator) {
+            $set2->attach($enumerator);
+            $this->assertFalse($set1->isSuperset($set2));
+        }
+    }
+
+    public function testIsSupersetWrongInstance()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumInheritance');
+        $this->assertFalse($set1->isSuperset($set2));
+
+        foreach (EnumBasic::getEnumerators() as $enumerator) {
+            $set1->attach($enumerator);
+            $this->assertFalse($set1->isSuperset($set2));
+
+            $set2->attach($enumerator->getValue());
+            $this->assertFalse($set1->isSuperset($set2));
+        }
+    }
 }
