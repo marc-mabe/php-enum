@@ -250,6 +250,77 @@ class EnumSetTest extends TestCase
         $this->assertTrue($enum->valid());
     }
 
+    public function testGetBinaryBitsetLe()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        
+        $enum1 = Enum65::ONE;
+        $enum2 = Enum65::TWO;
+        $enum3 = Enum65::SIXTYFIVE;
+        $enum4 = Enum65::SIXTYFOUR;
+
+        $this->assertNull($enumSet->attach($enum1));
+        $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x00\x00", $enumSet->getBinaryBitsetLe());
+        $this->assertTrue($enumSet->contains($enum1));
+
+        $this->assertNull($enumSet->attach($enum2));
+        $this->assertSame("\x03\x00\x00\x00\x00\x00\x00\x00\x00", $enumSet->getBinaryBitsetLe());
+        $this->assertTrue($enumSet->contains($enum2));
+
+        $this->assertNull($enumSet->attach($enum3));
+        $this->assertSame("\x03\x00\x00\x00\x00\x00\x00\x00\x01", $enumSet->getBinaryBitsetLe());
+        $this->assertTrue($enumSet->contains($enum3));
+
+        $this->assertNull($enumSet->attach($enum4));
+        $this->assertSame("\x03\x00\x00\x00\x00\x00\x00\x80\x01", $enumSet->getBinaryBitsetLe());
+        $this->assertTrue($enumSet->contains($enum4));
+        
+        $this->assertSame(4, $enumSet->count());
+
+        $this->assertNull($enumSet->detach($enum2));
+        $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x80\x01", $enumSet->getBinaryBitsetLe());
+        $this->assertFalse($enumSet->contains($enum2));
+        
+        $this->assertSame(3, $enumSet->count());
+    }
+
+    public function testGetBinaryBitsetBe()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        
+        $enum1 = Enum65::ONE;
+        $enum2 = Enum65::TWO;
+        $enum3 = Enum65::SIXTYFIVE;
+        $enum4 = Enum65::SIXTYFOUR;
+
+        $this->assertNull($enumSet->attach($enum1));
+        $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x01", $enumSet->getBinaryBitsetBe());
+        $this->assertTrue($enumSet->contains($enum1));
+
+        $this->assertNull($enumSet->attach($enum2));
+        $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x03", $enumSet->getBinaryBitsetBe());
+        $this->assertTrue($enumSet->contains($enum2));
+
+        $this->assertNull($enumSet->attach($enum3));
+        $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x00\x03", $enumSet->getBinaryBitsetBe());
+        $this->assertTrue($enumSet->contains($enum3));
+
+        $this->assertNull($enumSet->attach($enum4));
+        $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x03", $enumSet->getBinaryBitsetBe());
+        $this->assertTrue($enumSet->contains($enum4));
+        
+        $this->assertSame(4, $enumSet->count());
+
+        $this->assertNull($enumSet->detach($enum2));
+        $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x01", $enumSet->getBinaryBitsetBe());
+        $this->assertFalse($enumSet->contains($enum2));
+        
+        $this->assertSame(3, $enumSet->count());
+    }
+
+    /**
+     * @deprecated
+     */
     public function testGetBitset()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
@@ -264,7 +335,7 @@ class EnumSetTest extends TestCase
         $this->assertTrue($enumSet->contains($enum1));
 
         $this->assertNull($enumSet->attach($enum2));
-        $this->assertSame('000000000000000003', \bin2hex($enumSet->getBitset()));
+        $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x03", $enumSet->getBitset());
         $this->assertTrue($enumSet->contains($enum2));
 
         $this->assertNull($enumSet->attach($enum3));
@@ -284,6 +355,33 @@ class EnumSetTest extends TestCase
         $this->assertSame(3, $enumSet->count());
     }
 
+    public function testSetBinaryBitsetLe()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet->setBinaryBitsetLe("\x01\x00\x00\x00\x00\x00\x00\x80\x01");
+
+        $this->assertTrue($enumSet->contains(Enum65::ONE));
+        $this->assertFalse($enumSet->contains(Enum65::TWO));
+        $this->assertTrue($enumSet->contains(Enum65::SIXTYFIVE));
+        $this->assertTrue($enumSet->contains(Enum65::SIXTYFOUR));
+        $this->assertTrue($enumSet->count() == 3);
+    }
+
+    public function testSetBinaryBitsetBe()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet->setBinaryBitsetBe("\x01\x80\x00\x00\x00\x00\x00\x00\x01");
+
+        $this->assertTrue($enumSet->contains(Enum65::ONE));
+        $this->assertFalse($enumSet->contains(Enum65::TWO));
+        $this->assertTrue($enumSet->contains(Enum65::SIXTYFIVE));
+        $this->assertTrue($enumSet->contains(Enum65::SIXTYFOUR));
+        $this->assertTrue($enumSet->count() == 3);
+    }
+
+    /**
+     * @deprecated
+     */
     public function testSetBitset()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
@@ -296,25 +394,33 @@ class EnumSetTest extends TestCase
         $this->assertTrue($enumSet->count() == 3);
     }
 
-    public function testSetBitsetShort()
+    public function testSetBinaryBitsetLeShort()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
-        $enumSet->setBitset("\x0A");
-        $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x0A", $enumSet->getBitset());
+        $enumSet->setBinaryBitsetLe("\x0A");
+        $this->assertSame("\x0A\x00\x00\x00\x00\x00\x00\x00\x00", $enumSet->getBinaryBitsetLe());
     }
 
-    public function testSetBitsetLong()
+    public function testSetBinaryBitsetLeLong()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $enumSet->setBitset("\xFF\xFF\xFF\xFF\xFF\x0A");
-        $this->assertSame("\xFF\x0A", $enumSet->getBitset());
+        $enumSet->setBinaryBitsetLe("\x0A\xFF\xFF\xFF\xFF\xFF");
+        $this->assertSame("\x0A\xFF", $enumSet->getBinaryBitsetLe());
     }
 
-    public function testFalseBitsetArgumentExceptionIfNotString()
+    public function testSetBinaryBitsetLeArgumentExceptionIfNotString()
     {
         $this->setExpectedException('InvalidArgumentException');
         
         $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
-        $enum->setBitset(0);
+        $enum->setBinaryBitsetLe(0);
+    }
+
+    public function testSetBinaryBitsetBeArgumentExceptionIfNotString()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        
+        $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enum->setBinaryBitsetBe(0);
     }
 }
