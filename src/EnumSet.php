@@ -200,6 +200,47 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
+     * Check if this EnumSet is the same as other
+     * @param EnumSet $other
+     * @return bool
+     */
+    public function isEqual(EnumSet $other)
+    {
+        return $this->getEnumeration() === $other->getEnumeration()
+            && $this->getBinaryBitsetLe() === $other->getBinaryBitsetLe();
+    }
+
+    /**
+     * Check if this EnumSet is a subset of other
+     * @param EnumSet $other
+     * @return bool
+     */
+    public function isSubset(EnumSet $other)
+    {
+        if ($this->getEnumeration() !== $other->getEnumeration()) {
+            return false;
+        }
+
+        $thisBitset = $this->getBinaryBitsetLe();
+        return ($thisBitset & $other->getBinaryBitsetLe()) === $thisBitset;
+    }
+
+    /**
+     * Check if this EnumSet is a superset of other
+     * @param EnumSet $other
+     * @return bool
+     */
+    public function isSuperset(EnumSet $other)
+    {
+        if ($this->getEnumeration() !== $other->getEnumeration()) {
+            return false;
+        }
+
+        $thisBitset = $this->getBinaryBitsetLe();
+        return ($thisBitset | $other->getBinaryBitsetLe()) === $thisBitset;
+    }
+
+    /**
      * Get binary bitset in little-endian order
      * 
      * @return string
