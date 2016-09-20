@@ -241,6 +241,45 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
+     * Get values of the defined enumerators as array
+     * @return null[]|bool[]|int[]|float[]|string[]
+     */
+    public function getValues()
+    {
+        $values = array();
+        foreach ($this as $enumerator) {
+            $values[] = $enumerator->getValue();
+        }
+        return $values;
+    }
+
+    /**
+     * Get names of the defined enumerators as array
+     * @return string[]
+     */
+    public function getNames()
+    {
+        $names = array();
+        foreach ($this as $enumerator) {
+            $names[] = $enumerator->getName();
+        }
+        return $names;
+    }
+
+    /**
+     * Get the defined enumerators as array
+     * @return Enum[]
+     */
+    public function getEnumerators()
+    {
+        $enumerators = array();
+        foreach ($this as $enumerator) {
+            $enumerators[] = $enumerator->getName();
+        }
+        return $enumerators;
+    }
+
+    /**
      * Get binary bitset in little-endian order
      * 
      * @return string
