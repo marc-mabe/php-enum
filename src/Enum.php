@@ -296,9 +296,27 @@ abstract class Enum
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
-            $constants  = $reflection->getConstants();
+            $constants  = array();
 
-            // values needs to be unique
+            do {
+                $scopeConstants = array();
+                if (PHP_VERSION_ID >= 70100) {
+                    // Since PHP-7.1 visibility modifiers are allowed for class constants
+                    // for enumerations we are only interested in public once.
+                    foreach ($reflection->getReflectionConstants() as $reflConstant) {
+                        if ($reflConstant->isPublic()) {
+                            $scopeConstants[ $reflConstant->getName() ] = $reflConstant->getValue();
+                        }
+                    }
+                } else {
+                    // In PHP < 7.1 all class constants were public by definition
+                    $scopeConstants = $reflection->getConstants();
+                }
+
+                $constants = $scopeConstants + $constants;
+            } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
+
+            // Detect ambiguous values and report names
             $ambiguous = array();
             foreach ($constants as $value) {
                 $names = array_keys($constants, $value, true);
@@ -313,11 +331,6 @@ abstract class Enum
                         return implode('/', $names) . '=' . var_export($constants[$names[0]], true);
                     }, $ambiguous))
                 );
-            }
-
-            // This is required to make sure that constants of base classes will be the first
-            while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__) {
-                $constants = $reflection->getConstants() + $constants;
             }
 
             self::$constants[$class] = $constants;

@@ -6,6 +6,8 @@ use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
 use MabeEnumTest\TestAsset\EnumExtendedAmbiguous;
+use MabeEnumTest\TestAsset\ConstVisibilityEnum;
+use MabeEnumTest\TestAsset\ConstVisibilityEnumExtended;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
 
@@ -254,5 +256,33 @@ class EnumTest extends TestCase
         $this->assertFalse($enum->has(EnumInheritance::ONE()));
         $this->assertTrue($enum->has(EnumBasic::ONE()));
         $this->assertTrue($enum->has(EnumBasic::ONE));
+    }
+    
+    public function testConstVisibility()
+    {
+        if (PHP_VERSION_ID < 70100) {
+            $this->markTestSkipped('This test is for PHP-7.1 and upper only');
+        }
+
+        $constants = ConstVisibilityEnum::getConstants();
+        $this->assertSame(array(
+            'IPUB' => ConstVisibilityEnum::IPUB,
+            'PUB'  => ConstVisibilityEnum::PUB,
+        ), $constants);
+    }
+    
+    public function testConstVisibilityExtended()
+    {
+        if (PHP_VERSION_ID < 70100) {
+            $this->markTestSkipped('This test is for PHP-7.1 and upper only');
+        }
+
+        $constants = ConstVisibilityEnumExtended::getConstants();
+        $this->assertSame(array(
+            'IPUB'  => ConstVisibilityEnumExtended::IPUB,
+            'PUB'   => ConstVisibilityEnumExtended::PUB,
+            'IPUB2' => ConstVisibilityEnumExtended::IPUB2,
+            'PUB2'  => ConstVisibilityEnumExtended::PUB2,
+        ), $constants);
     }
 }
