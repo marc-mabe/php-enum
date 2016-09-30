@@ -566,4 +566,96 @@ class EnumSetTest extends TestCase
             $this->assertFalse($set1->isSuperset($set2));
         }
     }
+
+    public function testGetOrdinals()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame(array(), $set->getOrdinals());
+
+        foreach (EnumBasic::getConstants() as $value) {
+            $set->attach($value);
+        }
+
+        $this->assertSame(range(0, count(EnumBasic::getConstants()) - 1), $set->getOrdinals());
+    }
+
+    public function testGetOrdinalsDoesNotEffectIteratorPosition()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set->attach(EnumBasic::ONE);
+        $set->attach(EnumBasic::TWO);
+        $set->next();
+
+        $set->getOrdinals();
+        $this->assertSame(EnumBasic::TWO, $set->current()->getValue());
+    }
+
+    public function testGetEnumerators()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame(array(), $set->getEnumerators());
+
+        foreach (EnumBasic::getConstants() as $value) {
+            $set->attach($value);
+        }
+
+        $this->assertSame(EnumBasic::getEnumerators(), $set->getEnumerators());
+    }
+
+    public function testGetEnumeratorsDoesNotEffectIteratorPosition()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set->attach(EnumBasic::ONE);
+        $set->attach(EnumBasic::TWO);
+        $set->next();
+
+        $set->getEnumerators();
+        $this->assertSame(EnumBasic::TWO, $set->current()->getValue());
+    }
+
+    public function testGetValues()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame(array(), $set->getValues());
+
+        foreach (EnumBasic::getConstants() as $value) {
+            $set->attach($value);
+        }
+
+        $this->assertSame(array_values(EnumBasic::getConstants()), $set->getValues());
+    }
+
+    public function testGetValuesDoesNotEffectIteratorPosition()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set->attach(EnumBasic::ONE);
+        $set->attach(EnumBasic::TWO);
+        $set->next();
+
+        $set->getValues();
+        $this->assertSame(EnumBasic::TWO, $set->current()->getValue());
+    }
+
+    public function testGetNames()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $this->assertSame(array(), $set->getNames());
+
+        foreach (EnumBasic::getConstants() as $value) {
+            $set->attach($value);
+        }
+
+        $this->assertSame(array_keys(EnumBasic::getConstants()), $set->getNames());
+    }
+
+    public function testGetNamesDoesNotEffectIteratorPosition()
+    {
+        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set->attach(EnumBasic::ONE);
+        $set->attach(EnumBasic::TWO);
+        $set->next();
+
+        $set->getNames();
+        $this->assertSame(EnumBasic::TWO, $set->current()->getValue());
+    }
 }

@@ -241,6 +241,70 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
+     * Get ordinal numbers of the defined enumerators as array
+     * @return int[]
+     */
+    public function getOrdinals()
+    {
+        $ordinals = array();
+        $byteLen  = strlen($this->bitset);
+
+	for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
+            if ($this->bitset[$bytePos] === "\0") {
+                continue; // fast skip null byte
+            }
+
+            for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
+                if ((ord($this->bitset[$bytePos]) & (1 << $bitPos)) !== 0) {
+                    $ordinals[] = $bytePos * 8 + $bitPos;
+                }
+            }
+        }
+
+        return $ordinals;
+    }
+
+    /**
+     * Get values of the defined enumerators as array
+     * @return null[]|bool[]|int[]|float[]|string[]
+     */
+    public function getValues()
+    {
+        $values = array();
+        foreach ($this->getEnumerators() as $enumerator) {
+            $values[] = $enumerator->getValue();
+        }
+        return $values;
+    }
+
+    /**
+     * Get names of the defined enumerators as array
+     * @return string[]
+     */
+    public function getNames()
+    {
+        $names = array();
+        foreach ($this->getEnumerators() as $enumerator) {
+            $names[] = $enumerator->getName();
+        }
+        return $names;
+    }
+
+    /**
+     * Get the defined enumerators as array
+     * @return Enum[]
+     */
+    public function getEnumerators()
+    {
+        $enumeration = $this->enumeration;
+        $enumerators = array();
+        foreach ($this->getOrdinals() as $ord) {
+            $enumerators[] = $enumeration::getByOrdinal($ord);
+        }
+        return $enumerators;
+    }
+
+    /**
      * Get binary bitset in little-endian order
      * 
      * @return string
