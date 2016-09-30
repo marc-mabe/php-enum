@@ -241,13 +241,37 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
+     * Get ordinal numbers of the defined enumerators as array
+     * @return int[]
+     */
+    public function getOrdinals()
+    {
+        $ordinals = array();
+        $byteLen  = strlen($this->bitset);
+
+	for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
+            if ($this->bitset[$bytePos] === "\0") {
+                continue; // fast skip null byte
+            }
+
+            for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
+                if ((ord($this->bitset[$bytePos]) & (1 << $bitPos)) !== 0) {
+                    $ordinals[] = $bytePos * 8 + $bitPos;
+                }
+            }
+        }
+
+        return $ordinals;
+    }
+
+    /**
      * Get values of the defined enumerators as array
      * @return null[]|bool[]|int[]|float[]|string[]
      */
     public function getValues()
     {
         $values = array();
-        foreach ($this as $enumerator) {
+        foreach ($this->getEnumerators() as $enumerator) {
             $values[] = $enumerator->getValue();
         }
         return $values;
@@ -260,7 +284,7 @@ class EnumSet implements Iterator, Countable
     public function getNames()
     {
         $names = array();
-        foreach ($this as $enumerator) {
+        foreach ($this->getEnumerators() as $enumerator) {
             $names[] = $enumerator->getName();
         }
         return $names;
@@ -272,9 +296,10 @@ class EnumSet implements Iterator, Countable
      */
     public function getEnumerators()
     {
+        $enumeration = $this->enumeration;
         $enumerators = array();
-        foreach ($this as $enumerator) {
-            $enumerators[] = $enumerator->getName();
+        foreach ($this->getOrdinals() as $ord) {
+            $enumerators[] = $enumeration::getByOrdinal($ord);
         }
         return $enumerators;
     }
