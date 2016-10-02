@@ -368,6 +368,20 @@ class EnumSetTest extends TestCase
         $this->assertTrue($enumSet->count() == 3);
     }
 
+    public function testSetBinaryBitsetLeTruncateHighBits()
+    {
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        foreach (Enum65::getEnumerators() as $enumerator) {
+            $enumSet->attach($enumerator);
+        }
+
+        $bitset    = $enumSet->getBinaryBitsetLe();
+        $newBitset = substr($bitset, 0, -1) . "\xff\xff";
+        $enumSet->setBinaryBitsetLe($newBitset);
+
+        $this->assertSame(bin2hex($bitset), bin2hex($enumSet->getBinaryBitsetLe()));
+    }
+
     public function testSetBinaryBitsetBe()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
