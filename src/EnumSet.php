@@ -333,19 +333,27 @@ class EnumSet implements Iterator, Countable
         if (!is_string($bitset)) {
             throw new InvalidArgumentException('Bitset must be a string');
         }
-        
-        $size   = ceil($this->ordinalMax / 8);
+
+        $size   = strlen($this->bitset);
         $sizeIn = strlen($bitset);
-        
+
         if ($sizeIn < $size) {
             // add "\0" if the given bitset is not long enough
             $bitset .= str_repeat("\0", $size - $sizeIn);
         } elseif ($sizeIn > $size) {
             $bitset = substr($bitset, 0, $size);
         }
-        
-        $this->bitset = $bitset;
-        
+
+        // truncate out-of-range bits of last byte
+        $lastByteMaxOrd = $this->ordinalMax % 8;
+        if ($lastByteMaxOrd === 0) {
+            $this->bitset = $bitset;
+        } else {
+            $lastByte     = chr($lastByteMaxOrd) & $bitset[$size - 1];
+            $this->bitset = substr($bitset, 0, -1) . $lastByte;
+        }
+
+        // reset the iterator position
         $this->rewind();
     }
 
