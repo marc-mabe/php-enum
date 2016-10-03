@@ -246,6 +246,106 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
+     * Produce a new set with enumerators from both this and other (this | other)
+     * @param EnumSet ...$other Other EnumSet(s) of the same enumeration to produce the union
+     * @return EnumSet
+     */
+    public function union(EnumSet $other)
+    {
+        $bitset = $this->bitset;
+        foreach (func_get_args() as $other) {
+            if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
+                throw new InvalidArgumentException(sprintf(
+                    "Others should be an instance of %s of the same enumeration as this %s",
+                    __CLASS__,
+                    $this->enumeration
+                ));
+            }
+
+            $bitset |= $other->bitset;
+        }
+
+        $clone = clone $this;
+        $clone->bitset = $bitset;
+        return $clone;
+    }
+
+    /**
+     * Produce a new set with enumerators common to both this and other (this & other)
+     * @param EnumSet ...$other Other EnumSet(s) of the same enumeration to produce the union
+     * @return EnumSet
+     */
+    public function intersect(EnumSet $other)
+    {
+        $bitset = $this->bitset;
+        foreach (func_get_args() as $other) {
+            if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
+                throw new InvalidArgumentException(sprintf(
+                    "Others should be an instance of %s of the same enumeration as this %s",
+                    __CLASS__,
+                    $this->enumeration
+                ));
+            }
+
+            $bitset &= $other->bitset;
+        }
+
+        $clone = clone $this;
+        $clone->bitset = $bitset;
+        return $clone;
+    }
+
+    /**
+     * Produce a new set with enumerators in this but not in other (this - other)
+     * @param EnumSet ...$other Other EnumSet(s) of the same enumeration to produce the union
+     * @return EnumSet
+     */
+    public function diff(EnumSet $other)
+    {
+        $bitset = '';
+        foreach (func_get_args() as $other) {
+            if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
+                throw new InvalidArgumentException(sprintf(
+                    "Others should be an instance of %s of the same enumeration as this %s",
+                    __CLASS__,
+                    $this->enumeration
+                ));
+            }
+
+            $bitset |= $other->bitset;
+        }
+
+        $clone = clone $this;
+        $clone->bitset = $this->bitset & ~$bitset;
+        return $clone;
+    }
+
+    /**
+     * Produce a new set with enumerators in either this and other but not in both (this ^ (other | other))
+     * @param EnumSet ...$other Other EnumSet(s) of the same enumeration to produce the union
+     * @return EnumSet
+     */
+    public function symDiff(EnumSet $other)
+    {
+        $bitset = '';
+        foreach (func_get_args() as $other) {
+            if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
+                throw new InvalidArgumentException(sprintf(
+                    "Others should be an instance of %s of the same enumeration as this %s",
+                    __CLASS__,
+                    $this->enumeration
+                ));
+            }
+
+            $bitset |= $other->bitset;
+        }
+
+        $clone = clone $this;
+        $clone->bitset = $this->bitset ^ $bitset;
+        return $clone;
+    }
+
+    /**
      * Get ordinal numbers of the defined enumerators as array
      * @return int[]
      */
