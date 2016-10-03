@@ -187,16 +187,21 @@ class EnumSet implements Iterator, Countable
      */
     public function count()
     {
-        $cnt = 0;
-        $ord = 0;
+        $count   = 0;
+        $byteLen = strlen($this->bitset);
+        for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
+            if ($this->bitset[$bytePos] === "\0") {
+                continue; // fast skip null byte
+            }
 
-        while ($ord !== $this->ordinalMax) {
-            if ($this->getBit($ord++)) {
-                ++$cnt;
+            for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
+                if ((ord($this->bitset[$bytePos]) & (1 << $bitPos)) !== 0) {
+                    ++$count;
+                }
             }
         }
 
-        return $cnt;
+        return $count;
     }
 
     /**
@@ -249,7 +254,7 @@ class EnumSet implements Iterator, Countable
         $ordinals = array();
         $byteLen  = strlen($this->bitset);
 
-	for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
+        for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
             if ($this->bitset[$bytePos] === "\0") {
                 continue; // fast skip null byte
             }
