@@ -672,4 +672,134 @@ class EnumSetTest extends TestCase
         $set->getNames();
         $this->assertSame(EnumBasic::TWO, $set->current()->getValue());
     }
+
+    public function testUnion()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1->attach(EnumBasic::ONE);
+        $set1->attach(EnumBasic::TWO);
+
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2->attach(EnumBasic::TWO);
+        $set2->attach(EnumBasic::THREE);
+
+        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3->attach(EnumBasic::THREE);
+        $set3->attach(EnumBasic::FOUR);
+
+        $rs = $set1->union($set2, $set3);
+        $this->assertSame(array(
+            EnumBasic::ONE,
+            EnumBasic::TWO,
+            EnumBasic::THREE,
+            EnumBasic::FOUR,
+        ), $rs->getValues());
+    }
+
+    public function testUnionThrowsInvalidArgumentException()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        $this->setExpectedException('InvalidArgumentException');
+        $set1->union($set2);
+    }
+
+    public function testIntersect()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1->attach(EnumBasic::ONE);
+        $set1->attach(EnumBasic::TWO);
+        $set1->attach(EnumBasic::THREE);
+
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2->attach(EnumBasic::TWO);
+        $set2->attach(EnumBasic::THREE);
+        $set2->attach(EnumBasic::FOUR);
+
+        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3->attach(EnumBasic::THREE);
+        $set3->attach(EnumBasic::FOUR);
+        $set3->attach(EnumBasic::FIVE);
+
+        $rs = $set1->intersect($set2, $set3);
+        $this->assertSame(array(
+            EnumBasic::THREE,
+        ), $rs->getValues());
+    }
+
+    public function testIntersectThrowsInvalidArgumentException()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        $this->setExpectedException('InvalidArgumentException');
+        $set1->intersect($set2);
+    }
+
+    public function testDiff()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1->attach(EnumBasic::ONE);
+        $set1->attach(EnumBasic::TWO);
+        $set1->attach(EnumBasic::THREE);
+
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2->attach(EnumBasic::TWO);
+        $set2->attach(EnumBasic::THREE);
+        $set2->attach(EnumBasic::FOUR);
+
+        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3->attach(EnumBasic::THREE);
+        $set3->attach(EnumBasic::FOUR);
+        $set3->attach(EnumBasic::FIVE);
+
+        $rs = $set1->diff($set2, $set3);
+        $this->assertSame(array(
+            EnumBasic::ONE,
+        ), $rs->getValues());
+    }
+
+    public function testDiffThrowsInvalidArgumentException()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        $this->setExpectedException('InvalidArgumentException');
+        $set1->diff($set2);
+    }
+
+    public function testSymDiff()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1->attach(EnumBasic::ONE);
+        $set1->attach(EnumBasic::TWO);
+        $set1->attach(EnumBasic::THREE);
+
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2->attach(EnumBasic::TWO);
+        $set2->attach(EnumBasic::THREE);
+        $set2->attach(EnumBasic::FOUR);
+
+        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3->attach(EnumBasic::THREE);
+        $set3->attach(EnumBasic::FOUR);
+        $set3->attach(EnumBasic::FIVE);
+
+        $rs = $set1->symDiff($set2, $set3);
+        $this->assertSame(array(
+            EnumBasic::ONE,
+            EnumBasic::FOUR,
+            EnumBasic::FIVE,
+        ), $rs->getValues());
+    }
+
+    public function testSymDiffThrowsInvalidArgumentException()
+    {
+        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+
+        $this->setExpectedException('InvalidArgumentException');
+        $set1->symDiff($set2);
+    }
 }
