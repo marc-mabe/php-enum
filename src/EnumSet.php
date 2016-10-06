@@ -211,8 +211,8 @@ class EnumSet implements Iterator, Countable
      */
     public function isEqual(EnumSet $other)
     {
-        return $this->getEnumeration() === $other->getEnumeration()
-            && $this->getBinaryBitsetLe() === $other->getBinaryBitsetLe();
+        return $this->enumeration === $other->enumeration
+            && $this->bitset === $other->bitset;
     }
 
     /**
@@ -222,12 +222,11 @@ class EnumSet implements Iterator, Countable
      */
     public function isSubset(EnumSet $other)
     {
-        if ($this->getEnumeration() !== $other->getEnumeration()) {
+        if ($this->enumeration !== $other->enumeration) {
             return false;
         }
 
-        $thisBitset = $this->getBinaryBitsetLe();
-        return ($thisBitset & $other->getBinaryBitsetLe()) === $thisBitset;
+        return ($this->bitset & $other->bitset) === $this->bitset;
     }
 
     /**
@@ -237,12 +236,11 @@ class EnumSet implements Iterator, Countable
      */
     public function isSuperset(EnumSet $other)
     {
-        if ($this->getEnumeration() !== $other->getEnumeration()) {
+        if ($this->enumeration !== $other->enumeration) {
             return false;
         }
 
-        $thisBitset = $this->getBinaryBitsetLe();
-        return ($thisBitset | $other->getBinaryBitsetLe()) === $thisBitset;
+        return ($this->bitset | $other->bitset) === $this->bitset;
     }
 
     /**
@@ -375,9 +373,10 @@ class EnumSet implements Iterator, Countable
      */
     public function getValues()
     {
-        $values = array();
-        foreach ($this->getEnumerators() as $enumerator) {
-            $values[] = $enumerator->getValue();
+        $enumeration = $this->enumeration;
+        $values      = array();
+        foreach ($this->getOrdinals() as $ord) {
+            $values[] = $enumeration::getByOrdinal($ord)->getValue();
         }
         return $values;
     }
@@ -388,9 +387,10 @@ class EnumSet implements Iterator, Countable
      */
     public function getNames()
     {
-        $names = array();
-        foreach ($this->getEnumerators() as $enumerator) {
-            $names[] = $enumerator->getName();
+        $enumeration = $this->enumeration;
+        $names       = array();
+        foreach ($this->getOrdinals() as $ord) {
+            $names[] = $enumeration::getByOrdinal($ord)->getName();
         }
         return $names;
     }
