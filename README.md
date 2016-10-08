@@ -26,6 +26,10 @@ It's an abstract class that needs to be extended to use it.
 
 # Usage
 
+## PHPDoc
+
+You can find auto-generated PHP documentation in the [wiki](https://github.com/marc-mabe/php-enum/wiki).
+
 ## Basics
 
 ```php
@@ -72,7 +76,7 @@ It's an abstract class that needs to be extended to use it.
 
 ## Type-Hint
 
-```php    
+```php
     use MabeEnum\Enum;
 
     class User
@@ -163,7 +167,7 @@ Internally the ```EnumMap``` is based of ```SplObjectStorage```.
 
 An ```EnumSet``` groups enumerators of the same enumeration type together.
 
-Internally it's based on a bit set of a binary string.
+Internally it's based on a bitset of a binary string.
 
 Enumerators will be ordered by the ordinal number.
 

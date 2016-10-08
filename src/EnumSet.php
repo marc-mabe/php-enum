@@ -7,7 +7,7 @@ use Countable;
 use InvalidArgumentException;
 
 /**
- * EnumSet implementation in base of an integer bit set
+ * This EnumSet is based on a bitset of a binary string.
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2015 Marc Bennewitz
