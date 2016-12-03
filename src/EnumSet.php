@@ -481,8 +481,7 @@ class EnumSet implements Iterator, Countable
         if (!is_string($bitset)) {
             throw new InvalidArgumentException('Bitset must be a string');
         }
-        
-	$this->setBinaryBitsetLe(strrev($bitset));
+        $this->setBinaryBitsetLe(strrev($bitset));
     }
 
     /**

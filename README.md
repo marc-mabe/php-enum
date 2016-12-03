@@ -33,70 +33,92 @@ You can find auto-generated PHP documentation in the [wiki](https://github.com/m
 ## Basics
 
 ```php
-    use MabeEnum\Enum;
+use MabeEnum\Enum;
 
-    // define an own enumeration class
-    class UserStatus extends Enum
-    {
-        const INACTIVE = 0;
-        const ACTIVE   = 1;
-        const DELETED  = 2;
+// define an own enumeration class
+class UserStatus extends Enum
+{
+    const INACTIVE = 0;
+    const ACTIVE   = 1;
+    const DELETED  = 2;
 
-        // all scalar datatypes are supported
-        const NIL     = null;
-        const BOOLEAN = true;
-        const INT     = 1234;
-        const STR     = 'string';
-        const FLOAT   = 0.123;
-    }
-    
-    // different ways to instantiate an enumerator
-    $status = UserStatus::get(UserStatus::ACTIVE);
-    $status = UserStatus::ACTIVE();
-    $status = UserStatus::getByName('ACTIVE');
-    $status = UserStatus::getByOrdinal(1);
-    
-    // available methods to get the selected entry
-    $status->getValue();   // returns the selected constant value
-    $status->getName();    // returns the selected constant name
-    $status->getOrdinal(); // returns the ordinal number of the selected constant
-    (string) $status;      // returns the selected constant name
-    
-    // same enumerators (of the same enumeration class) holds the same instance
-    UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
-    UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
+    // all scalar datatypes are supported
+    const NIL     = null;
+    const BOOLEAN = true;
+    const INT     = 1234;
+    const STR     = 'string';
+    const FLOAT   = 0.123;
 
-    // simplified way to compare two enumerators
-    $status = UserStatus::ACTIVE();
-    $status->is(UserStatus::ACTIVE);     // true
-    $status->is(UserStatus::ACTIVE());   // true
-    $status->is(UserStatus::DELETED);    // false
-    $status->is(UserStatus::DELETED());  // false
+    // Arrays are supported since PHP-5.6
+    const ARR = array('this', 'is', array('an', 'array'));
+
+    // Enumerators will be generated from public constants only
+    public    const PUBLIC_CONST    = 'public constant';    // this will be an enumerator
+    protected const PROTECTED_CONST = 'protected constant'; // this will NOT be an enumerator
+    private   const PRIVATE_CONST   = 'private constant';   // this will NOT be an enumerator
+
+    // works since PHP-7.0 - see https://wiki.php.net/rfc/context_sensitive_lexer
+    const TRUE      = true;
+    const FALSE     = false;
+    const NULL      = null;
+    const PUBLIC    = 'public';
+    const PRIVATE   = 'private';
+    const PROTECTED = 'protected';
+    const FUNCTION  = 'function';
+    const TRAIT     = 'trait';
+    const INTERFACE = 'interface';
+
+    // Doesn't work - see https://wiki.php.net/rfc/class_name_scalars
+    // const CLASS = 'class';
+}
+
+// different ways to instantiate an enumerator
+$status = UserStatus::get(UserStatus::ACTIVE);
+$status = UserStatus::ACTIVE();
+$status = UserStatus::getByName('ACTIVE');
+$status = UserStatus::getByOrdinal(1);
+
+// available methods to get the selected entry
+$status->getValue();   // returns the selected constant value
+$status->getName();    // returns the selected constant name
+$status->getOrdinal(); // returns the ordinal number of the selected constant
+(string) $status;      // returns the selected constant name
+
+// same enumerators (of the same enumeration class) holds the same instance
+UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
+UserStatus::get(UserStatus::DELETED) != UserStatus::INACTIVE()
+
+// simplified way to compare two enumerators
+$status = UserStatus::ACTIVE();
+$status->is(UserStatus::ACTIVE);     // true
+$status->is(UserStatus::ACTIVE());   // true
+$status->is(UserStatus::DELETED);    // false
+$status->is(UserStatus::DELETED());  // false
 ```
 
 ## Type-Hint
 
 ```php
-    use MabeEnum\Enum;
+use MabeEnum\Enum;
 
-    class User
+class User
+{
+    protected $status;
+
+    public function setStatus(UserStatus $status)
     {
-        protected $status;
-    
-        public function setStatus(UserStatus $status)
-        {
-            $this->status = $status;
-        }
-    
-        public function getStatus()
-        {
-            if (!$this->status) {
-                // initialize the default enumerator
-                $this->status = UserStatus::get(UserStatus::INACTIVE);
-            }
-            return $this->status;
-        }
+        $this->status = $status;
     }
+
+    public function getStatus()
+    {
+        if (!$this->status) {
+            // initialize the default enumerator
+            $this->status = UserStatus::get(UserStatus::INACTIVE);
+        }
+        return $this->status;
+    }
+}
 ```
 
 ### Type-Hint issue
@@ -106,88 +128,113 @@ Because in normal OOP the above example allows `UserStatus` and types inherited 
 Please think about the following example:
 
 ```php
-    class ExtendedUserStatus
-    {
-        const EXTENDED = 'extended';
-    }
+class ExtendedUserStatus
+{
+    const EXTENDED = 'extended';
+}
 
-    $user->setStatus(ExtendedUserStatus::EXTENDED());
+$user->setStatus(ExtendedUserStatus::EXTENDED());
 ```
 
 Now the setter receives a status it doesn't know about but allows it.
 If your `User` class doesn't allow it the following is the recommanded way:
 
 ```php
-    class User
+class User
+{
+    // ...
+    public function setStatus($status)
     {
-        // ...
-        public function setStatus($status)
-        {
-            $this->status = UserStatus::get($status);
-        }
-        // ...
+        $this->status = UserStatus::get($status);
     }
+    // ...
+}
 ```
 
 Now you are 100% sure to work with an exact instance of `UserStatus`.
 
-(If the setter receives an extended status the value will be used to receive the
-corresponding instance of `UserStatus` else an exception will be thrown.)
+If the setter receives an `ExtendedUserStatus` an exception will be thrown
+because inheritance is not allowed with `Enum::get`.
 
-## EnumMap
-
-An ```EnumMap``` maps enumerators of the same type to data assigned to.
-
-Internally the ```EnumMap``` is based of ```SplObjectStorage```.
-
-```php
-    use MabeEnum\EnumMap;
-
-    // create a new EnumMap
-    $enumMap = new EnumMap('UserStatus');
-
-    // attach entries (by value or by instance)
-    $enumMap->attach(UserStatus::INACTIVE, 'inaktiv');
-    $enumMap->attach(UserStatus::ACTIVE(), 'aktiv');
-    $enumMap->attach(UserStatus::DELETED(), 'gelöscht');
-    
-    // detach entries (by value or by instance)
-    $enumMap->detach(UserStatus::INACTIVE);
-    $enumMap->detach(UserStatus::DELETED());
-    
-    // iterate
-    var_dump(iterator_to_array($enumMap)); // array(0 => UserStatus{$value=1});
-
-    // define key and value used for iteration
-    $enumMap->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
-    var_dump(iterator_to_array($enumMap)); // array('ACTIVE' => 'aktiv');
-```
+On the same time this method will accept scalar values matching one of the
+defined values of `UserStatus` and returns an instance of it.
 
 ## EnumSet
 
-An ```EnumSet``` groups enumerators of the same enumeration type together.
+An `EnumSet` groups enumerators of the same enumeration type together.
 
-Internally it's based on a bitset of a binary string.
+It implements `Iterator` and `Countable` so it's simple to iterate the set
+or count all attached enumerators of it with `foreach` and `count()`.
 
-Enumerators will be ordered by the ordinal number.
+Internally it's based on a bitset of a binary string so the order will be
+by the ordinal number by design.
 
 ```php
-    use MabeEnum\EnumSet;
+use MabeEnum\EnumSet;
 
-    // create a new EnumSet
-    $enumSet = new EnumSet('UserStatus');
+// create a new EnumSet
+$enumSet = new EnumSet('UserStatus');
 
-    // attach entries (by value or by instance)
-    $enumSet->attach(UserStatus::INACTIVE);
-    $enumSet->attach(UserStatus::ACTIVE());
-    $enumSet->attach(UserStatus::DELETED());
-    
-    // detach entries (by value or by instance)
-    $enumSet->detach(UserStatus::INACTIVE);
-    $enumSet->detach(UserStatus::DELETED());
-    
-    // iterate
-    var_dump(iterator_to_array($enumSet)); // array(0 => UserStatus{$value=1});
+// attach enumerators (by value or by instance)
+$enumSet->attach(UserStatus::INACTIVE);
+$enumSet->attach(UserStatus::ACTIVE());
+$enumSet->attach(UserStatus::DELETED());
+
+// detach enumerators (by value or by instance)
+$enumSet->detach(UserStatus::INACTIVE);
+$enumSet->detach(UserStatus::DELETED());
+
+// contains enumerators (by value or by instance)
+$enumSet->contains(UserStatus::INACTIVE); // bool
+
+// count number of attached enumerations
+$enumSet->count();
+count($enumSet);
+
+// convert to array
+$enumSet->getValues();      // List of enumerator values
+$enumSet->getEnumerators(); // List of enumerator instances
+$enumSet->getNames();       // List of enumerator names
+$enumSet->getOrdinals();    // List of ordinal numbers
+
+// compare two EnumSets
+$enumSet->isEqual($other);    // Check if the EnumSet is the same as other
+$enumSet->isSubset($other);   // Check if the EnumSet is a subset of other
+$enumSet->isSuperset($other); // Check if the EnumSet is a superset of other
+
+$enumSet->union($other[, ...]);     // Produce a new set with enumerators from both this and other (this | other)
+$enumSet->intersect($other[, ...]); // Produce a new set with enumerators common to both this and other (this & other)
+$enumSet->diff($other[, ...]);      // Produce a new set with enumerators in this but not in other (this - other)
+$enumSet->symDiff($other[, ...]);   // Produce a new set with enumerators in either this and other but not in both (this ^ (other | other))
+```
+
+## EnumMap
+
+An `EnumMap` maps enumerators of the same type to data assigned to.
+
+Internally an `EnumMap` is based of `SplObjectStorage`.
+
+```php
+use MabeEnum\EnumMap;
+
+// create a new EnumMap
+$enumMap = new EnumMap('UserStatus');
+
+// attach entries (by value or by instance)
+$enumMap->attach(UserStatus::INACTIVE, 'inaktiv');
+$enumMap->attach(UserStatus::ACTIVE(), 'aktiv');
+$enumMap->attach(UserStatus::DELETED(), 'gelöscht');
+
+// detach entries (by value or by instance)
+$enumMap->detach(UserStatus::INACTIVE);
+$enumMap->detach(UserStatus::DELETED());
+
+// iterate
+var_dump(iterator_to_array($enumMap)); // array(0 => UserStatus{$value=1});
+
+// define key and value used for iteration
+$enumMap->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
+var_dump(iterator_to_array($enumMap)); // array('ACTIVE' => 'aktiv');
 ```
 
 ## Serializing
@@ -197,53 +244,54 @@ it's currently impossible to unserialize a singleton without creating a new inst
 this feature isn't supported without any additional work.
 
 As of it's an often requested feature there is a trait that can be added to your
-enumeration definition. This trait adds this functionallity and does some magic stuff
-to reduce singleton breakage but it can only avoid such beak if an enumerator will
-be unserialized **before** it will be instantiated normally.
+enumeration definition. The trait adds serialization functionallity and injects
+the unserialized enumeration instance in case it's the first one.
+This reduces singleton behavior breakage but still it beaks if it's not the first
+instance and you could result in two different instance of the same enumeration.
 
 **Use it with caution!**
 
 ### Example of using EnumSerializableTrait
 
 ```php
-    use MabeEnum\Enum;
-    use MabeEnum\EnumSerializableTrait;
-    use Serializable;
-    
-    class CardinalDirection extends Enum implements Serializable
-    {
-        use EnumSerializableTrait;
-    
-        const NORTH = 'n';
-        const EAST  = 'e';
-        const WEST  = 'w';
-        const SOUTH = 's';
-    }
-    
-    $north1 = CardinalDirection::NORTH();
-    $north2 = unserialize(serialize($north1));
-    
-    // The following could be FALSE as described above
-    var_dump($north1 === $north2);
+use MabeEnum\Enum;
+use MabeEnum\EnumSerializableTrait;
+use Serializable;
+
+class CardinalDirection extends Enum implements Serializable
+{
+    use EnumSerializableTrait;
+
+    const NORTH = 'n';
+    const EAST  = 'e';
+    const WEST  = 'w';
+    const SOUTH = 's';
+}
+
+$north1 = CardinalDirection::NORTH();
+$north2 = unserialize(serialize($north1));
+
+// The following could be FALSE as described above
+var_dump($north1 === $north2);
 ```
 
-# Why not ```SplEnum```
+# Why not `SplEnum`
 
-* ```SplEnum``` is not build-in into PHP and requires pecl extension installed.
-* Instances of the same value of an ```SplEnum``` are not the same instance.
-* ```SplEnum``` doesn't have implemented ```EnumMap``` or ```EnumSet```.
+* `SplEnum` is not build-in into PHP and requires pecl extension installed.
+* Instances of the same value of an `SplEnum` are not the same instance.
+* `SplEnum` doesn't have implemented `EnumMap` or `EnumSet`.
 
 
 # Install
 
 ## Composer
 
-Add ```marc-mabe/php-enum``` to the project's composer.json dependencies and run
-```php composer.phar install```
+Add `marc-mabe/php-enum` to the project's composer.json dependencies and run
+`php composer.phar install`
 
 ## GIT
 
-```git clone git://github.com/marc-mabe/php-enum.git```
+`git clone git://github.com/marc-mabe/php-enum.git`
 
 ## ZIP / TAR
 
