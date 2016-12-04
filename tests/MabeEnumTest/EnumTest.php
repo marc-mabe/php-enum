@@ -8,6 +8,7 @@ use MabeEnumTest\TestAsset\EnumAmbiguous;
 use MabeEnumTest\TestAsset\EnumExtendedAmbiguous;
 use MabeEnumTest\TestAsset\ConstVisibilityEnum;
 use MabeEnumTest\TestAsset\ConstVisibilityEnumExtended;
+use MabeEnumTest\TestAsset\SerializableEnum;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
 
@@ -284,5 +285,18 @@ class EnumTest extends TestCase
             'IPUB2' => ConstVisibilityEnumExtended::IPUB2,
             'PUB2'  => ConstVisibilityEnumExtended::PUB2,
         ), $constants);
+    }
+
+    public function testIsSerializableIssue()
+    {
+        if (PHP_VERSION_ID < 50400) {
+            $this->markTestSkipped('This test is for PHP-5.4 and upper only');
+        }
+
+        $enum1 = SerializableEnum::INT();
+        $enum2 = unserialize(serialize($enum1));
+
+        $this->assertFalse($enum1 === $enum2, 'Wrong test implementation');
+        $this->assertTrue($enum1->is($enum2), 'Two different instances of exact the same enumerator should be equal');
     }
 }
