@@ -126,6 +126,45 @@ class EnumTest extends TestCase
         }
     }
 
+    public function testGetValues()
+    {
+        $expectedValues = array_values(EnumInheritance::getConstants());
+        $values         = EnumInheritance::getValues();
+        $count          = count($values);
+
+        $this->assertSame(count($expectedValues), $count);
+        for ($i = 0; $i < $count; ++$i) {
+            $this->assertArrayHasKey($i, $values);
+            $this->assertSame($expectedValues[$i], $values[$i]);
+        }
+    }
+
+    public function testGetNames()
+    {
+        $expectedNames = array_keys(EnumInheritance::getConstants());
+        $names         = EnumInheritance::getNames();
+        $count         = count($names);
+
+        $this->assertSame(count($expectedNames), $count);
+        for ($i = 0; $i < $count; ++$i) {
+            $this->assertArrayHasKey($i, $names);
+            $this->assertSame($expectedNames[$i], $names[$i]);
+        }
+    }
+
+    public function testGetOrdinals()
+    {
+        $constants = EnumInheritance::getConstants();
+        $ordinals  = EnumInheritance::getOrdinals();
+        $count     = count($ordinals);
+
+        $this->assertSame(count($constants), $count);
+        for ($i = 0; $i < $count; ++$i) {
+            $this->assertArrayHasKey($i, $ordinals);
+            $this->assertSame($i, $ordinals[$i]);
+        }
+    }
+
     public function testGetAllValues()
     {
         $constants = EnumBasic::getConstants();

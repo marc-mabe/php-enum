@@ -257,6 +257,36 @@ abstract class Enum
     }
 
     /**
+     * Get a list of enumerator values ordered by ordinal number
+     *
+     * @return mixed[]
+     */
+    final public static function getValues()
+    {
+        return array_values(self::detectConstants(get_called_class()));
+    }
+
+    /**
+     * Get a list of enumerator names ordered by ordinal number
+     *
+     * @return string[]
+     */
+    final public static function getNames()
+    {
+        return array_keys(self::detectConstants(get_called_class()));
+    }
+    /*
+     * Get a list of enumerator ordinal numbers
+     *
+     * @return int[]
+     */
+    final public static function getOrdinals()
+    {
+        $count = count(self::detectConstants(get_called_class()));
+        return $count === 0 ? array() : range(0, $count - 1);
+    }
+
+    /**
      * Get all available constants of the called class
      *
      * @return array
