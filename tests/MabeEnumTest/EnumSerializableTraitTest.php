@@ -4,6 +4,7 @@ namespace MabeEnumTest;
 
 use MabeEnumTest\TestAsset\SerializableEnum;
 use PHPUnit_Framework_TestCase as TestCase;
+use ReflectionClass;
 
 /**
  * Unit tests for the trait MabeEnum\EnumSerializableTrait
@@ -16,11 +17,9 @@ class EnumSerializableTraitTest extends TestCase
 {
     public function setUp()
     {
-        if (version_compare(PHP_VERSION, '5.4', '<')) {
+        if (PHP_VERSION_ID < 50400) {
             $this->markTestSkipped('Traits require PHP-5.4');
         }
-
-        SerializableEnum::clear();
     }
 
     public function testSerializeSerializableEnum()
@@ -38,7 +37,7 @@ class EnumSerializableTraitTest extends TestCase
         $this->assertInternalType('string', $serialized);
 
         // clear all instantiated instances so we can virtual test unserializing first
-        SerializableEnum::clear();
+        $this->clearEnumeration('MabeEnumTest\TestAsset\SerializableEnum');
 
         // First unserialize
         $unserialized = unserialize($serialized);
@@ -68,5 +67,24 @@ class EnumSerializableTraitTest extends TestCase
         $this->setExpectedException('LogicException');
         $enum = SerializableEnum::get(SerializableEnum::INT);
         $enum->unserialize(serialize(SerializableEnum::STR));
+    }
+
+    /**
+     * Clears all instantiated enumerations and detected constants of the given enumerator
+     * @param string $enumeration
+     */
+    private function clearEnumeration($enumeration)
+    {
+        $reflClass = new ReflectionClass($enumeration);
+        while ($reflClass->getName() !== 'MabeEnum\Enum') {
+            $reflClass = $reflClass->getParentClass();
+        }
+
+        $reflPropInstances = $reflClass->getProperty('instances');
+        $reflPropInstances->setAccessible(true);
+        $reflPropInstances->setValue(null, array());
+        $reflPropConstants = $reflClass->getProperty('constants');
+        $reflPropConstants->setAccessible(true);
+        $reflPropConstants->setValue(null, array());
     }
 }

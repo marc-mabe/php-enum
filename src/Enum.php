@@ -239,6 +239,7 @@ abstract class Enum
      * NOTE: This can break singleton behavior ... use it with caution!
      *
      * @return void
+     * @deprecated
      */
     final public static function clear()
     {
