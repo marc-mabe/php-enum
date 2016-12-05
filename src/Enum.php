@@ -163,6 +163,19 @@ abstract class Enum
             return $value;
         }
 
+        return static::byValue($value);
+    }
+
+    /**
+     * Get an enumerator instance by the given value
+     *
+     * @param mixed $value
+     * @return static
+     * @throws InvalidArgumentException On an unknwon or invalid value
+     * @throws LogicException           On ambiguous constant values
+     */
+    final public static function byValue($value)
+    {
         $class     = get_called_class();
         $constants = self::detectConstants($class);
         $name      = array_search($value, $constants, true);
@@ -188,7 +201,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous values
      */
-    final public static function getByName($name)
+    final public static function byName($name)
     {
         $name  = (string) $name;
         $class = get_called_class();
@@ -212,7 +225,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid ordinal number
      * @throws LogicException           On ambiguous values
      */
-    final public static function getByOrdinal($ordinal)
+    final public static function byOrdinal($ordinal)
     {
         $ordinal   = (int) $ordinal;
         $class     = get_called_class();
@@ -231,6 +244,34 @@ abstract class Enum
         }
 
         return self::$instances[$class][$name] = new $class(current($item), $ordinal);
+    }
+
+    /**
+     * Get an enumerator instance by the given name
+     *
+     * @param string $name The name of the enumerator
+     * @return static
+     * @throws InvalidArgumentException On an invalid or unknown name
+     * @throws LogicException           On ambiguous values
+     * @deprecated
+     */
+    final public static function getByName($name)
+    {
+        return static::byName($name);
+    }
+
+    /**
+     * Get an enumeration instance by the given ordinal number
+     *
+     * @param int $ordinal The ordinal number or the enumerator
+     * @return static
+     * @throws InvalidArgumentException On an invalid ordinal number
+     * @throws LogicException           On ambiguous values
+     * @deprecated
+     */
+    final public static function getByOrdinal($ordinal)
+    {
+        return static::byOrdinal($ordinal);
     }
 
     /**
@@ -253,7 +294,7 @@ abstract class Enum
      */
     final public static function getEnumerators()
     {
-        return array_map('self::getByName', array_keys(self::detectConstants(get_called_class())));
+        return array_map('self::byName', array_keys(self::detectConstants(get_called_class())));
     }
 
     /**
@@ -353,6 +394,6 @@ abstract class Enum
      */
     final public static function __callStatic($method, array $args)
     {
-        return self::getByName($method);
+        return self::byName($method);
     }
 }

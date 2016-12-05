@@ -159,7 +159,7 @@ class EnumTest extends TestCase
 
     public function testInstantiateUsingOrdinalNumber()
     {
-        $enum = EnumInheritance::getByOrdinal(16);
+        $enum = EnumInheritance::byOrdinal(16);
         $this->assertSame(16, $enum->getOrdinal());
         $this->assertSame('INHERITANCE', $enum->getName());
     }
@@ -167,12 +167,12 @@ class EnumTest extends TestCase
     public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException()
     {
         $this->setExpectedException('InvalidArgumentException');
-        EnumInheritance::getByOrdinal(17);
+        EnumInheritance::byOrdinal(17);
     }
 
     public function testInstantiateByName()
     {
-        $enum = EnumInheritance::getByName('ONE');
+        $enum = EnumInheritance::byName('ONE');
         $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enum);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
@@ -180,7 +180,7 @@ class EnumTest extends TestCase
     public function testInstantiateByUnknownNameThrowsInvalidArgumentException()
     {
         $this->setExpectedException('InvalidArgumentException');
-        EnumInheritance::getByName('UNKNOWN');
+        EnumInheritance::byName('UNKNOWN');
     }
 
     public function testInstantiateUsingMagicMethod()

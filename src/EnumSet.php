@@ -125,7 +125,7 @@ class EnumSet implements Iterator, Countable
     {
         if ($this->valid()) {
             $enumeration = $this->enumeration;
-            return $enumeration::getByOrdinal($this->ordinal);
+            return $enumeration::byOrdinal($this->ordinal);
         }
 
         return null;
@@ -376,7 +376,7 @@ class EnumSet implements Iterator, Countable
         $enumeration = $this->enumeration;
         $values      = array();
         foreach ($this->getOrdinals() as $ord) {
-            $values[] = $enumeration::getByOrdinal($ord)->getValue();
+            $values[] = $enumeration::byOrdinal($ord)->getValue();
         }
         return $values;
     }
@@ -390,7 +390,7 @@ class EnumSet implements Iterator, Countable
         $enumeration = $this->enumeration;
         $names       = array();
         foreach ($this->getOrdinals() as $ord) {
-            $names[] = $enumeration::getByOrdinal($ord)->getName();
+            $names[] = $enumeration::byOrdinal($ord)->getName();
         }
         return $names;
     }
@@ -404,7 +404,7 @@ class EnumSet implements Iterator, Countable
         $enumeration = $this->enumeration;
         $enumerators = array();
         foreach ($this->getOrdinals() as $ord) {
-            $enumerators[] = $enumeration::getByOrdinal($ord);
+            $enumerators[] = $enumeration::byOrdinal($ord);
         }
         return $enumerators;
     }
