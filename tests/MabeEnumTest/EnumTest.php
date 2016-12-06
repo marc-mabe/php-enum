@@ -21,12 +21,6 @@ use ReflectionClass;
  */
 class EnumTest extends TestCase
 {
-    public function setUp()
-    {
-        EnumBasic::clear();
-        EnumInheritance::clear();
-    }
-
     public function testGetNameReturnsConstantNameOfCurrentValue()
     {
         $enum = EnumBasic::get(EnumBasic::ONE);
