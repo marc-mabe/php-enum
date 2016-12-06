@@ -174,7 +174,7 @@ class EnumSetTest extends TestCase
     public function testIterateOutOfRangeIfLastOrdinalEnumIsSet()
     {
         $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $enum    = EnumBasic::getByOrdinal(count(EnumBasic::getConstants()) - 1);
+        $enum    = EnumBasic::byOrdinal(count(EnumBasic::getConstants()) - 1);
 
         $enumSet->attach($enum);
         $enumSet->rewind();
@@ -246,7 +246,7 @@ class EnumSetTest extends TestCase
     {
         $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
 
-        $this->assertNull($enum->attach(Enum65::getByOrdinal(64)));
+        $this->assertNull($enum->attach(Enum65::byOrdinal(64)));
         $enum->next();
         $this->assertTrue($enum->valid());
     }

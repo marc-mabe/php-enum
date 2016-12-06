@@ -75,8 +75,8 @@ class UserStatus extends Enum
 // different ways to instantiate an enumerator
 $status = UserStatus::get(UserStatus::ACTIVE);
 $status = UserStatus::ACTIVE();
-$status = UserStatus::getByName('ACTIVE');
-$status = UserStatus::getByOrdinal(1);
+$status = UserStatus::byName('ACTIVE');
+$status = UserStatus::byOrdinal(1);
 
 // available methods to get the selected entry
 $status->getValue();   // returns the selected constant value
