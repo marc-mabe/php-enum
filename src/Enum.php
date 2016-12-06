@@ -146,7 +146,13 @@ abstract class Enum
      */
     final public function is($enumerator)
     {
-        return $this === $enumerator || $this->value === $enumerator;
+        return $this === $enumerator || $this->value === $enumerator
+
+            // The following additional conditions are required only because of the issue of serializable singletons
+            || ($enumerator instanceof static
+                && get_class($enumerator) === get_called_class()
+                && $enumerator->value === $this->value
+            );
     }
 
     /**

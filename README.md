@@ -271,8 +271,9 @@ class CardinalDirection extends Enum implements Serializable
 $north1 = CardinalDirection::NORTH();
 $north2 = unserialize(serialize($north1));
 
-// The following could be FALSE as described above
-var_dump($north1 === $north2);
+var_dump($north1 === $north2);  // returns FALSE as described above
+var_dump($north1->is($north2)); // returns TRUE - this way the two instances are treated equal
+var_dump($north2->is($north1)); // returns TRUE - equality works in both directions
 ```
 
 # Why not `SplEnum`
