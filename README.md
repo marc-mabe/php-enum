@@ -38,9 +38,9 @@ use MabeEnum\Enum;
 // define an own enumeration class
 class UserStatus extends Enum
 {
-    const INACTIVE = 0;
-    const ACTIVE   = 1;
-    const DELETED  = 2;
+    const INACTIVE = 'i';
+    const ACTIVE   = 'a';
+    const DELETED  = 'd';
 
     // all scalar datatypes are supported
     const NIL     = null;
@@ -72,17 +72,24 @@ class UserStatus extends Enum
     // const CLASS = 'class';
 }
 
-// different ways to instantiate an enumerator
-$status = UserStatus::get(UserStatus::ACTIVE);
-$status = UserStatus::ACTIVE();
-$status = UserStatus::byName('ACTIVE');
-$status = UserStatus::byOrdinal(1);
+// ways to instantiate an enumerator
+$status = UserStatus::get(UserStatus::ACTIVE); // by value or instance
+$status = UserStatus::ACTIVE();                // by name as callable
+$status = UserStatus::byValue('a');            // by value
+$status = UserStatus::byName('ACTIVE');        // by name
+$status = UserStatus::byOrdinal(1);            // by ordinal number
 
-// available methods to get the selected entry
+// basic methods of an instantiated enumerator
 $status->getValue();   // returns the selected constant value
 $status->getName();    // returns the selected constant name
 $status->getOrdinal(); // returns the ordinal number of the selected constant
-(string) $status;      // returns the selected constant name
+
+// basic methods to list defined enumerators
+UserStatus::getEnumerators()  // returns a list of enumerator instances
+UserStatus::getValues()       // returns a list of enumerator values
+UserStatus::getNames()        // returns a list of enumerator names
+UserStatus::getOrdinals()     // returns a list of ordinal numbers
+UserStatus::getConstants()    // returns an associative array of enumerator names to enumerator values
 
 // same enumerators (of the same enumeration class) holds the same instance
 UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
@@ -113,8 +120,8 @@ class User
     public function getStatus()
     {
         if (!$this->status) {
-            // initialize the default enumerator
-            $this->status = UserStatus::get(UserStatus::INACTIVE);
+            // initialize default
+            $this->status = UserStatus::INACTIVE();
         }
         return $this->status;
     }
