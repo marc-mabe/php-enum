@@ -806,4 +806,26 @@ class EnumSetTest extends TestCase
         $this->setExpectedException('InvalidArgumentException');
         $set1->symDiff($set2);
     }
+
+    public function testBitset(){
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+
+        $enum1  = EnumBasic::ONE;
+        $enum2  = EnumBasic::TWO;
+
+        $this->assertNull($enumSet->attach($enum1));
+        $this->assertTrue($enumSet->getBitset()==(1<<EnumBasic::get($enum1)->getOrdinal()));
+
+        $this->assertNull($enumSet->attach($enum2));
+        $this->assertTrue($enumSet->getBitset()==(1<<EnumBasic::get($enum1)->getOrdinal() | 1<<EnumBasic::get($enum2)->getOrdinal()));
+
+
+        $this->assertNull($enumSet->detach($enum1));
+        $bitset=$enumSet->getBitset();
+        $enumSet2=new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enumSet2->setBitset($bitset);
+
+        $this->assertFalse($enumSet2->contains($enum1));
+        $this->assertTrue($enumSet2->contains($enum2));
+    }
 }

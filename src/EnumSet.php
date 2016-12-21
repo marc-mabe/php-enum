@@ -543,4 +543,22 @@ class EnumSet implements Iterator, Countable
         $byte = (int) ($ordinal / 8);
         $this->bitset[$byte] = $this->bitset[$byte] & chr(~(1 << ($ordinal % 8)));
     }
+
+    /**
+     * Get the bitset
+     * @return int
+     */
+    public function getBitset() {
+        return $this->bitset;
+    }
+
+    /**
+     * Set the bitset, it resets the current position of the iterator
+     * @param int $bitset
+     * @return void
+     */
+    public function setBitset($bitset) {
+        $this->bitset = (int) $bitset;
+        $this->rewind();
+    }
 }
