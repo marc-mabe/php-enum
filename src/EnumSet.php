@@ -449,7 +449,7 @@ class EnumSet implements Iterator, Countable
         if ($lastByteMaxOrd === 0) {
             $this->bitset = $bitset;
         } else {
-            $lastByte     = chr($lastByteMaxOrd) & $bitset[$size - 1];
+            $lastByte     = chr((1 << $lastByteMaxOrd) - 1) & $bitset[$size - 1];
             $this->bitset = substr($bitset, 0, -1) . $lastByte;
         }
 
