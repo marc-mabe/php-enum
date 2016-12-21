@@ -9,6 +9,7 @@ use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\Enum32;
 use MabeEnumTest\TestAsset\Enum64;
 use MabeEnumTest\TestAsset\Enum65;
+use MabeEnumTest\TestAsset\Enum66;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -370,8 +371,11 @@ class EnumSetTest extends TestCase
 
     public function testSetBinaryBitsetLeTruncateHighBits()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
-        foreach (Enum65::getEnumerators() as $enumerator) {
+        // using Enum66 to make sure the max. ordinal number gets converted into a bitset
+        // Enum65 has max. ordinal number of 1 of the last byte. -> 00000001
+        // Enum66 has max. ordinal number of 2 of the last byte. -> 00000011
+        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum66');
+        foreach (Enum66::getEnumerators() as $enumerator) {
             $enumSet->attach($enumerator);
         }
 
