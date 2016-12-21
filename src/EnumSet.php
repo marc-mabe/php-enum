@@ -506,7 +506,7 @@ class EnumSet implements Iterator, Countable
      */
     public function setBitset($bitset)
     {
-        $this->setBinaryBitsetBE($bitset);
+        $this->setBinaryBitsetBe($bitset);
     }
 
     /**
