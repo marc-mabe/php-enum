@@ -8,6 +8,7 @@ use MabeEnumTest\TestAsset\EnumAmbiguous;
 use MabeEnumTest\TestAsset\EnumExtendedAmbiguous;
 use MabeEnumTest\TestAsset\ConstVisibilityEnum;
 use MabeEnumTest\TestAsset\ConstVisibilityEnumExtended;
+use MabeEnumTest\TestAsset\FailureEnumWithArguments;
 use MabeEnumTest\TestAsset\SerializableEnum;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
@@ -331,5 +332,18 @@ class EnumTest extends TestCase
 
         $this->assertFalse($enum1 === $enum2, 'Wrong test implementation');
         $this->assertTrue($enum1->is($enum2), 'Two different instances of exact the same enumerator should be equal');
+    }
+
+    public function testFailureEnumWithArguments()
+    {
+        $failure1 = FailureEnumWithArguments::VALIDATION_ERROR('foo');
+        $this->assertInstanceOf('MabeEnumTest\TestAsset\FailureEnumWithArguments', $failure1);
+        $this->assertEquals('foo', $failure1->message());
+
+        $failure2 = FailureEnumWithArguments::DB_ERROR('bar');
+        $this->assertInstanceOf('MabeEnumTest\TestAsset\FailureEnumWithArguments', $failure2);
+        $this->assertEquals('bar', $failure2->message());
+
+        $this->assertNotSame($failure1, $failure2);
     }
 }
