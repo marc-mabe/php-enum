@@ -337,11 +337,11 @@ class EnumTest extends TestCase
     public function testFailureEnumWithArguments()
     {
         $failure1 = FailureEnumWithArguments::VALIDATION_ERROR('foo');
-        $this->assertInstanceOf(FailureEnumWithArguments::class, $failure1);
+        $this->assertInstanceOf('MabeEnumTest\TestAsset\FailureEnumWithArguments', $failure1);
         $this->assertEquals('foo', $failure1->message());
 
         $failure2 = FailureEnumWithArguments::DB_ERROR('bar');
-        $this->assertInstanceOf(FailureEnumWithArguments::class, $failure2);
+        $this->assertInstanceOf('MabeEnumTest\TestAsset\FailureEnumWithArguments', $failure2);
         $this->assertEquals('bar', $failure2->message());
 
         $this->assertNotSame($failure1, $failure2);
