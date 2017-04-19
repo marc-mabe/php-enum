@@ -15,9 +15,9 @@ use ReflectionClass;
 /**
  * Unit tests for the class MabeEnum\Enum
  *
- * @link http://github.com/marc-mabe/php-enum for the canonical source repository
+ * @link      http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2015 Marc Bennewitz
- * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ * @license   http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumTest extends TestCase
 {
@@ -35,7 +35,7 @@ class EnumTest extends TestCase
 
     public function testEnumInheritance()
     {
-        $this->assertSame(array(
+        $this->assertSame([
             'ONE'           => 1,
             'TWO'           => 2,
             'THREE'         => 3,
@@ -53,7 +53,7 @@ class EnumTest extends TestCase
             'BOOLEAN_TRUE'  => true,
             'BOOLEAN_FALSE' => false,
             'INHERITANCE'   => 'Inheritance',
-        ), EnumInheritance::getConstants());
+        ], EnumInheritance::getConstants());
 
         $enum = EnumInheritance::get(EnumInheritance::ONE);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
@@ -86,7 +86,7 @@ class EnumTest extends TestCase
     public function testGetWithInvalidTypeOfValueThrowsInvalidArgumentException()
     {
         $this->setExpectedException('InvalidArgumentException');
-        EnumBasic::get(array());
+        EnumBasic::get([]);
     }
 
     public function testGetByInstance()
@@ -106,57 +106,57 @@ class EnumTest extends TestCase
 
     public function testGetEnumerators()
     {
-        $constants   = EnumInheritance::getConstants();
+        $constants = EnumInheritance::getConstants();
         $enumerators = EnumInheritance::getEnumerators();
-        $count       = count($enumerators);
+        $count = count($enumerators);
 
         $this->assertSame(count($constants), $count);
         for ($i = 0; $i < $count; ++$i) {
             $this->assertArrayHasKey($i, $enumerators);
-            $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enumerators[$i]);
+            $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enumerators[ $i ]);
 
-            $enumerator = $enumerators[$i];
+            $enumerator = $enumerators[ $i ];
             $this->assertArrayHasKey($enumerator->getName(), $constants);
-            $this->assertSame($constants[$enumerator->getName()], $enumerator->getValue());
+            $this->assertSame($constants[ $enumerator->getName() ], $enumerator->getValue());
         }
     }
 
     public function testGetValues()
     {
         $expectedValues = array_values(EnumInheritance::getConstants());
-        $values         = EnumInheritance::getValues();
-        $count          = count($values);
+        $values = EnumInheritance::getValues();
+        $count = count($values);
 
         $this->assertSame(count($expectedValues), $count);
         for ($i = 0; $i < $count; ++$i) {
             $this->assertArrayHasKey($i, $values);
-            $this->assertSame($expectedValues[$i], $values[$i]);
+            $this->assertSame($expectedValues[ $i ], $values[ $i ]);
         }
     }
 
     public function testGetNames()
     {
         $expectedNames = array_keys(EnumInheritance::getConstants());
-        $names         = EnumInheritance::getNames();
-        $count         = count($names);
+        $names = EnumInheritance::getNames();
+        $count = count($names);
 
         $this->assertSame(count($expectedNames), $count);
         for ($i = 0; $i < $count; ++$i) {
             $this->assertArrayHasKey($i, $names);
-            $this->assertSame($expectedNames[$i], $names[$i]);
+            $this->assertSame($expectedNames[ $i ], $names[ $i ]);
         }
     }
 
     public function testGetOrdinals()
     {
         $constants = EnumInheritance::getConstants();
-        $ordinals  = EnumInheritance::getOrdinals();
-        $count     = count($ordinals);
+        $ordinals = EnumInheritance::getOrdinals();
+        $count = count($ordinals);
 
         $this->assertSame(count($constants), $count);
         for ($i = 0; $i < $count; ++$i) {
             $this->assertArrayHasKey($i, $ordinals);
-            $this->assertSame($i, $ordinals[$i]);
+            $this->assertSame($i, $ordinals[ $i ]);
         }
     }
 
@@ -249,23 +249,23 @@ class EnumTest extends TestCase
         EnumBasic::clear();
         $enum2 = EnumBasic::ONE();
         $enum3 = EnumBasic::ONE();
-        
+
         $this->assertNotSame($enum1, $enum2);
         $this->assertSame($enum2, $enum3);
     }
 
-    public function testCloneNotCallableAndThrowsLogicException()
+    public function testClone()
     {
         $enum = EnumBasic::ONE();
 
-        $reflectionClass  = new ReflectionClass($enum);
+        $reflectionClass = new ReflectionClass($enum);
         $reflectionMethod = $reflectionClass->getMethod('__clone');
-        $this->assertTrue($reflectionMethod->isPrivate(), 'The method __clone must be private');
+        $this->assertTrue($reflectionMethod->isPublic(), 'The method __clone must be private');
         $this->assertTrue($reflectionMethod->isFinal(), 'The method __clone must be final');
 
         $reflectionMethod->setAccessible(true);
-        $this->setExpectedException('LogicException');
-        $reflectionMethod->invoke($enum);
+        $enumClone = $reflectionMethod->invoke($enum);
+        $this->assertSame($enum, $enumClone);
     }
 
     public function testNotSerializable()
@@ -291,7 +291,7 @@ class EnumTest extends TestCase
         $this->assertTrue($enum->has(EnumBasic::ONE()));
         $this->assertTrue($enum->has(EnumBasic::ONE));
     }
-    
+
     public function testConstVisibility()
     {
         if (PHP_VERSION_ID < 70100) {
@@ -299,12 +299,12 @@ class EnumTest extends TestCase
         }
 
         $constants = ConstVisibilityEnum::getConstants();
-        $this->assertSame(array(
+        $this->assertSame([
             'IPUB' => ConstVisibilityEnum::IPUB,
             'PUB'  => ConstVisibilityEnum::PUB,
-        ), $constants);
+        ], $constants);
     }
-    
+
     public function testConstVisibilityExtended()
     {
         if (PHP_VERSION_ID < 70100) {
@@ -312,12 +312,12 @@ class EnumTest extends TestCase
         }
 
         $constants = ConstVisibilityEnumExtended::getConstants();
-        $this->assertSame(array(
+        $this->assertSame([
             'IPUB'  => ConstVisibilityEnumExtended::IPUB,
             'PUB'   => ConstVisibilityEnumExtended::PUB,
             'IPUB2' => ConstVisibilityEnumExtended::IPUB2,
             'PUB2'  => ConstVisibilityEnumExtended::PUB2,
-        ), $constants);
+        ], $constants);
     }
 
     public function testIsSerializableIssue()

@@ -67,12 +67,14 @@ abstract class Enum
     }
 
     /**
-     * @throws LogicException Enums are not cloneable
-     *                        because instances are implemented as singletons
+     * Will return same instance of enum
+     * this is useful when using assets generators
+     *
+     * @return Enum
      */
-    final private function __clone()
+    final public function __clone()
     {
-        throw new LogicException('Enums are not cloneable');
+        return $this;
     }
 
     /**
