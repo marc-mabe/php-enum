@@ -489,15 +489,17 @@ class EnumSetTest extends TestCase
     /**
      * if $A->isEqual($B) is true then $A->isSuperset($B) is also true
      */
-    public function testIsSsetEqual()
+    public function testIsEqualIsSuperset()
     {
         $set1 = new EnumSet(Enum32::class);
         $set2 = new EnumSet(Enum32::class);
+        $this->assertTrue($set1->isEqual($set2));
         $this->assertTrue($set1->isSuperset($set2));
 
         foreach (Enum32::getEnumerators() as $enumerator) {
             $set1->attach($enumerator);
             $set2->attach($enumerator);
+            $this->assertTrue($set1->isEqual($set2));
             $this->assertTrue($set1->isSuperset($set2));
         }
     }
