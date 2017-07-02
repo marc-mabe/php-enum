@@ -110,7 +110,7 @@ abstract class Enum
      */
     final public function getName()
     {
-        return array_search($this->value, self::detectConstants(get_called_class()), true);
+        return array_search($this->value, self::detectConstants(static::class), true);
     }
 
     /**
@@ -127,7 +127,7 @@ abstract class Enum
         // detect ordinal
         $ordinal = 0;
         $value   = $this->value;
-        foreach (self::detectConstants(get_called_class()) as $constValue) {
+        foreach (self::detectConstants(static::class) as $constValue) {
             if ($value === $constValue) {
                 break;
             }
@@ -150,7 +150,7 @@ abstract class Enum
 
             // The following additional conditions are required only because of the issue of serializable singletons
             || ($enumerator instanceof static
-                && get_class($enumerator) === get_called_class()
+                && get_class($enumerator) === static::class
                 && $enumerator->value === $this->value
             );
     }
@@ -165,7 +165,7 @@ abstract class Enum
      */
     final public static function get($value)
     {
-        if ($value instanceof static && get_class($value) === get_called_class()) {
+        if ($value instanceof static && get_class($value) === static::class) {
             return $value;
         }
 
@@ -182,7 +182,7 @@ abstract class Enum
      */
     final public static function byValue($value)
     {
-        $class     = get_called_class();
+        $class     = static::class;
         $constants = self::detectConstants($class);
         $name      = array_search($value, $constants, true);
         if ($name === false) {
@@ -210,7 +210,7 @@ abstract class Enum
     final public static function byName($name)
     {
         $name  = (string) $name;
-        $class = get_called_class();
+        $class = static::class;
         if (isset(self::$instances[$class][$name])) {
             return self::$instances[$class][$name];
         }
@@ -234,7 +234,7 @@ abstract class Enum
     final public static function byOrdinal($ordinal)
     {
         $ordinal   = (int) $ordinal;
-        $class     = get_called_class();
+        $class     = static::class;
         $constants = self::detectConstants($class);
         $item      = array_slice($constants, $ordinal, 1, true);
         if (empty($item)) {
@@ -259,7 +259,7 @@ abstract class Enum
      */
     final public static function getEnumerators()
     {
-        return array_map('self::byName', array_keys(self::detectConstants(get_called_class())));
+        return array_map([static::class, 'byName'], array_keys(self::detectConstants(static::class)));
     }
 
     /**
@@ -269,7 +269,7 @@ abstract class Enum
      */
     final public static function getValues()
     {
-        return array_values(self::detectConstants(get_called_class()));
+        return array_values(self::detectConstants(static::class));
     }
 
     /**
@@ -279,7 +279,7 @@ abstract class Enum
      */
     final public static function getNames()
     {
-        return array_keys(self::detectConstants(get_called_class()));
+        return array_keys(self::detectConstants(static::class));
     }
     /*
      * Get a list of enumerator ordinal numbers
@@ -288,7 +288,7 @@ abstract class Enum
      */
     final public static function getOrdinals()
     {
-        $count = count(self::detectConstants(get_called_class()));
+        $count = count(self::detectConstants(static::class));
         return $count === 0 ? array() : range(0, $count - 1);
     }
 
@@ -300,7 +300,7 @@ abstract class Enum
      */
     final public static function getConstants()
     {
-        return self::detectConstants(get_called_class());
+        return self::detectConstants(static::class);
     }
 
     /**
@@ -311,13 +311,11 @@ abstract class Enum
      */
     final public static function has($value)
     {
-        if ($value instanceof static && get_class($value) === get_called_class()) {
+        if ($value instanceof static && get_class($value) === static::class) {
             return true;
         }
 
-        $class     = get_called_class();
-        $constants = self::detectConstants($class);
-
+        $constants = self::detectConstants(static::class);
         return in_array($value, $constants, true);
     }
 
