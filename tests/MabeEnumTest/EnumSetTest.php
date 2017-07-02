@@ -315,43 +315,6 @@ class EnumSetTest extends TestCase
         $this->assertSame(3, $enumSet->count());
     }
 
-    /**
-     * @deprecated
-     */
-    public function testGetBitset()
-    {
-        $enumSet = new EnumSet(Enum65::class);
-        
-        $enum1 = Enum65::ONE;
-        $enum2 = Enum65::TWO;
-        $enum3 = Enum65::SIXTYFIVE;
-        $enum4 = Enum65::SIXTYFOUR;
-
-        $this->assertNull($enumSet->attach($enum1));
-        $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x01", $enumSet->getBinaryBitsetBe());
-        $this->assertTrue($enumSet->contains($enum1));
-
-        $this->assertNull($enumSet->attach($enum2));
-        $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x03", $enumSet->getBinaryBitsetBe());
-        $this->assertTrue($enumSet->contains($enum2));
-
-        $this->assertNull($enumSet->attach($enum3));
-        $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x00\x03", $enumSet->getBinaryBitsetBe());
-        $this->assertTrue($enumSet->contains($enum3));
-
-        $this->assertNull($enumSet->attach($enum4));
-        $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x03", $enumSet->getBinaryBitsetBe());
-        $this->assertTrue($enumSet->contains($enum4));
-        
-        $this->assertSame(4, $enumSet->count());
-
-        $this->assertNull($enumSet->detach($enum2));
-        $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x01", $enumSet->getBinaryBitsetBe());
-        $this->assertFalse($enumSet->contains($enum2));
-        
-        $this->assertSame(3, $enumSet->count());
-    }
-
     public function testSetBinaryBitsetLe()
     {
         $enumSet = new EnumSet(Enum65::class);
