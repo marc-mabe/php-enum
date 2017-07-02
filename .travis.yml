@@ -16,12 +16,9 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 5.3.3
-    - php: 5.3
-    - php: 5.4
+    - php: 5.5
       env:
         - CODE_COVERAGE="1"
-    - php: 5.5
     - php: 5.6
       env:
         - PHPDOC="1"

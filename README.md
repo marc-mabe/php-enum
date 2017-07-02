@@ -237,11 +237,10 @@ $enumMap->detach(UserStatus::INACTIVE);
 $enumMap->detach(UserStatus::DELETED());
 
 // iterate
-var_dump(iterator_to_array($enumMap)); // array(0 => UserStatus{$value=1});
-
-// define key and value used for iteration
-$enumMap->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
-var_dump(iterator_to_array($enumMap)); // array('ACTIVE' => 'aktiv');
+foreach ($enumMap as $enum => $value) {
+    var_dump(get_class($enum)); // UserStatus
+    var_dump(gettype($value))   // string
+}
 ```
 
 ## Serializing

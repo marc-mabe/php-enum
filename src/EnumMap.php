@@ -4,7 +4,6 @@ namespace MabeEnum;
 
 use SplObjectStorage;
 use InvalidArgumentException;
-use RuntimeException;
 
 /**
  * EnumMap implementation in base of SplObjectStorage
@@ -15,52 +14,6 @@ use RuntimeException;
  */
 class EnumMap extends SplObjectStorage
 {
-
-    /**
-     * key()-behaviour: return the iterator position
-     */
-    const KEY_AS_INDEX   = 1;
-
-    /**
-     * key()-behaviour: return the name of the current element
-     */
-    const KEY_AS_NAME    = 2;
-
-    /**
-     * key()-behaviour: return the value of the current element
-     */
-    const KEY_AS_VALUE   = 3;
-
-    /**
-     * key()-behaviour: return the ordinal number of the current element
-     */
-    const KEY_AS_ORDINAL = 4;
-
-    /**
-     * current()-behaviour: return the instance of the enumerator
-     */
-    const CURRENT_AS_ENUM    = 8;
-
-    /**
-     * current()-behaviour: return the data mapped the enumerator
-     */
-    const CURRENT_AS_DATA    = 16;
-
-    /**
-     * current()-behaviour: return the name of the enumerator
-     */
-    const CURRENT_AS_NAME    = 24;
-
-    /**
-     * current()-behaviour: return the value of the enumerator
-     */
-    const CURRENT_AS_VALUE   = 32;
-
-    /**
-     * current()-behaviour: return the ordinal number of the enumerator
-     */
-    const CURRENT_AS_ORDINAL = 40;
-
     /**
      * The classname of the enumeration type
      * @var string
@@ -68,19 +21,11 @@ class EnumMap extends SplObjectStorage
     private $enumeration;
 
     /**
-     * Flags to define behaviors
-     * (Default = KEY_AS_INDEX | CURRENT_AS_ENUM)
-     * @var int
-     */
-    private $flags = 9;
-
-    /**
      * Constructor
-     * @param string   $enumeration The classname of the enumeration type
-     * @param int|null $flags       Behaviour flags, see KEY_AS_* and CURRENT_AS_* constants
+     * @param string $enumeration The classname of the enumeration type
      * @throws InvalidArgumentException
      */
-    public function __construct($enumeration, $flags = null)
+    public function __construct($enumeration)
     {
         if (!is_subclass_of($enumeration, __NAMESPACE__ . '\Enum')) {
             throw new InvalidArgumentException(sprintf(
@@ -89,10 +34,6 @@ class EnumMap extends SplObjectStorage
             ));
         }
         $this->enumeration = $enumeration;
-
-        if ($flags !== null) {
-            $this->setFlags($flags);
-        }
     }
 
     /**
@@ -102,47 +43,6 @@ class EnumMap extends SplObjectStorage
     public function getEnumeration()
     {
         return $this->enumeration;
-    }
-
-    /**
-     * Set behaviour flags
-     * see KEY_AS_* and CURRENT_AS_* constants
-     * @param int $flags
-     * @return void
-     * @throws InvalidArgumentException On invalid or unsupported flags
-     */
-    public function setFlags($flags)
-    {
-        $flags = (int)$flags;
-
-        $keyFlag = $flags & 7;
-        if ($keyFlag > 4) {
-            throw new InvalidArgumentException(
-                "Unsupported flag given for key() behavior"
-            );
-        } elseif (!$keyFlag) {
-            $keyFlag = $this->flags & 7;
-        }
-
-        $currentFlag = $flags & 56;
-        if ($currentFlag > 40) {
-            throw new InvalidArgumentException(
-                "Unsupported flag given for current() behavior"
-            );
-        } elseif (!$currentFlag) {
-            $currentFlag = $this->flags & 56;
-        }
-
-        $this->flags = $keyFlag | $currentFlag;
-    }
-
-    /**
-     * Get the behaviour flags
-     * @return int
-     */
-    public function getFlags()
-    {
-        return $this->flags;
     }
 
     /**
@@ -188,13 +88,12 @@ class EnumMap extends SplObjectStorage
 
     /**
      * Get a unique identifier for the given enumerator
-     * @param Enum|scalar $enumerator
+     * @param Enum|null|boolean|int|float|string $enumerator
      * @return string
      * @throws InvalidArgumentException On an invalid given enumerator
      */
     public function getHash($enumerator)
     {
-        // getHash is available since PHP 5.4
         $enumeration = $this->enumeration;
         return spl_object_hash($enumeration::get($enumerator));
     }
@@ -250,46 +149,20 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Get the current item
-     * The return value varied by the behaviour of the current flag
+     * Get the current value
      * @return mixed
      */
     public function current()
     {
-        switch ($this->flags & 120) {
-            case self::CURRENT_AS_ENUM:
-                return parent::current();
-            case self::CURRENT_AS_DATA:
-                return parent::getInfo();
-            case self::CURRENT_AS_VALUE:
-                return parent::current()->getValue();
-            case self::CURRENT_AS_NAME:
-                return parent::current()->getName();
-            case self::CURRENT_AS_ORDINAL:
-                return parent::current()->getOrdinal();
-            default:
-                throw new RuntimeException('Invalid current flag');
-        }
+        return parent::getInfo();
     }
 
     /**
-     * Get the current item-key
-     * The return value varied by the behaviour of the key flag
-     * @return null|boolean|int|float|string
+     * Get the current key
+     * @return Enum|null
      */
     public function key()
     {
-        switch ($this->flags & 7) {
-            case self::KEY_AS_INDEX:
-                return parent::key();
-            case self::KEY_AS_NAME:
-                return parent::current()->getName();
-            case self::KEY_AS_ORDINAL:
-                return parent::current()->getOrdinal();
-            case self::KEY_AS_VALUE:
-                return parent::current()->getValue();
-            default:
-                throw new RuntimeException('Invalid key flag');
-        }
+        return parent::current();
     }
 }

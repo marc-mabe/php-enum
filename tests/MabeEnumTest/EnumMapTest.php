@@ -92,114 +92,32 @@ class EnumMapTest extends TestCase
         $this->assertFalse($enumMap->valid());
 
         // attach
-        $enumMap->attach($enum1, $value2);
-        $enumMap->attach($enum2, $value1);
+        $enumMap->attach($enum1, $value1);
+        $enumMap->attach($enum2, $value2);
 
         // a not empty enum map should be valid, starting by 0 (if not iterated)
         $enumMap->rewind();
         $this->assertSame(2, $enumMap->count());
         $this->assertTrue($enumMap->valid());
-        $this->assertSame(0, $enumMap->key());
-        $this->assertSame($enum1, $enumMap->current());
+        $this->assertSame($enum1, $enumMap->key());
+        $this->assertSame($value1, $enumMap->current());
 
         // go to the next element (last)
         $this->assertNull($enumMap->next());
         $this->assertTrue($enumMap->valid());
-        $this->assertSame(1, $enumMap->key());
-        $this->assertSame($enum2, $enumMap->current());
+        $this->assertSame($enum2, $enumMap->key());
+        $this->assertSame($value2, $enumMap->current());
 
         // go to the next element (out of range)
         $this->assertNull($enumMap->next());
         $this->assertFalse($enumMap->valid());
-        $this->assertSame(2, $enumMap->key());
+        $this->assertSame(null, $enumMap->key());
 
         // rewind will set the iterator position back to 0
         $enumMap->rewind();
         $this->assertTrue($enumMap->valid());
-        $this->assertSame(0, $enumMap->key());
-        $this->assertSame($enum1, $enumMap->current());
-    }
-
-    public function testIterateWithFlags()
-    {
-        $enumMap = new EnumMap(
-            'MabeEnumTest\TestAsset\EnumBasic',
-            EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM
-        );
-
-        $enumMap->attach(EnumBasic::TWO(), 'first');
-        $enumMap->attach(EnumBasic::ONE(), 'second');
-
-        // EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM (first)
-        $this->assertSame(EnumMap::KEY_AS_INDEX | EnumMap::CURRENT_AS_ENUM, $enumMap->getFlags());
-
-        $enumMap->rewind();
-        $this->assertSame(0, $enumMap->key());
-        $this->assertSame(EnumBasic::TWO(), $enumMap->current());
-
-        $enumMap->next();
-        $this->assertSame(1, $enumMap->key());
-        $this->assertSame(EnumBasic::ONE(), $enumMap->current());
-
-        // EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA
-        $enumMap->setFlags(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA);
-        $this->assertSame(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_DATA, $enumMap->getFlags());
-
-        $enumMap->rewind();
-        $this->assertSame('TWO', $enumMap->key());
-        $this->assertSame('first', $enumMap->current());
-
-        $enumMap->next();
-        $this->assertSame('ONE', $enumMap->key());
-        $this->assertSame('second', $enumMap->current());
-
-        // EnumMap::KEY_AS_VALUE | EnumMap::CURRENT_AS_ORDINAL
-        $enumMap->setFlags(EnumMap::KEY_AS_VALUE | EnumMap::CURRENT_AS_ORDINAL);
-        $this->assertSame(EnumMap::KEY_AS_VALUE | EnumMap::CURRENT_AS_ORDINAL, $enumMap->getFlags());
-
-        $enumMap->rewind();
-        $this->assertSame(2, $enumMap->key());
-        $this->assertSame(1, $enumMap->current());
-
-        $enumMap->next();
-        $this->assertSame(1, $enumMap->key());
-        $this->assertSame(0, $enumMap->current());
-
-        // EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_VALUE
-        $enumMap->setFlags(EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_VALUE);
-        $this->assertSame(EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_VALUE, $enumMap->getFlags());
-    
-        $enumMap->rewind();
-        $this->assertSame(1, $enumMap->key());
-        $this->assertSame(2, $enumMap->current());
-    
-        $enumMap->next();
-        $this->assertSame(0, $enumMap->key());
-        $this->assertSame(1, $enumMap->current());
-
-        // only change current flag to EnumMap::CURRENT_AS_NAME
-        $enumMap->setFlags(EnumMap::CURRENT_AS_NAME);
-        $this->assertSame(EnumMap::KEY_AS_ORDINAL | EnumMap::CURRENT_AS_NAME, $enumMap->getFlags());
-
-        $enumMap->rewind();
-        $this->assertSame(1, $enumMap->key());
-        $this->assertSame('TWO', $enumMap->current());
-
-        $enumMap->next();
-        $this->assertSame(0, $enumMap->key());
-        $this->assertSame('ONE', $enumMap->current());
-
-        // only change key flag to EnumMap::NAME_AS_NAME
-        $enumMap->setFlags(EnumMap::KEY_AS_NAME);
-        $this->assertSame(EnumMap::KEY_AS_NAME | EnumMap::CURRENT_AS_NAME, $enumMap->getFlags());
-
-        $enumMap->rewind();
-        $this->assertSame('TWO', $enumMap->key());
-        $this->assertSame('TWO', $enumMap->current());
-
-        $enumMap->next();
-        $this->assertSame('ONE', $enumMap->key());
-        $this->assertSame('ONE', $enumMap->current());
+        $this->assertSame($enum1, $enumMap->key());
+        $this->assertSame($value1, $enumMap->current());
     }
 
     public function testArrayAccessWithObjects()
@@ -244,54 +162,6 @@ class EnumMapTest extends TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
         new EnumMap('stdClass');
-    }
-
-    public function testSetFlagsThrowsInvalidArgumentExceptionOnUnsupportedKeyFlag()
-    {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
-
-        $this->setExpectedException('InvalidArgumentException');
-        $enumMap->setFlags(5);
-    }
-
-    public function testCurrentThrowsRuntimeExceptionOnInvalidFlag()
-    {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
-        $enumMap->attach(EnumBasic::ONE());
-        $enumMap->rewind();
-
-        // change internal flags to an invalid current flag
-        $reflectionClass = new ReflectionClass($enumMap);
-        $reflectionProp  = $reflectionClass->getProperty('flags');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($enumMap, 0);
-
-        $this->setExpectedException('RuntimeException');
-        $enumMap->current();
-    }
-
-    public function testKeyThrowsRuntimeExceptionOnInvalidFlag()
-    {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
-        $enumMap->attach(EnumBasic::ONE());
-        $enumMap->rewind();
-
-        // change internal flags to an invalid current flag
-        $reflectionClass = new ReflectionClass($enumMap);
-        $reflectionProp  = $reflectionClass->getProperty('flags');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($enumMap, 0);
-
-        $this->setExpectedException('RuntimeException');
-        $enumMap->key();
-    }
-
-    public function testSetFlagsThrowsInvalidArgumentExceptionOnUnsupportedCurrentFlag()
-    {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
-
-        $this->setExpectedException('InvalidArgumentException');
-        $enumMap->setFlags(48);
     }
 
     public function testInitEnumThrowsInvalidArgumentExceptionOnInvalidEnumGiven()
