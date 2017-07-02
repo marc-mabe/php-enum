@@ -436,7 +436,7 @@ class EnumSetTest extends TestCase
     /**
      * if $A->isEqual($B) is true then $A->isSubsetOf($B) is also true
      */
-    public function testIsSubsetEqual()
+    public function testIsSubsetIsEqual()
     {
         $set1 = new EnumSet(Enum32::class);
         $set2 = new EnumSet(Enum32::class);
@@ -489,7 +489,7 @@ class EnumSetTest extends TestCase
     /**
      * if $A->isEqual($B) is true then $A->isSuperset($B) is also true
      */
-    public function testIsEqualIsSuperset()
+    public function testIsSupersetIsEqual()
     {
         $set1 = new EnumSet(Enum32::class);
         $set2 = new EnumSet(Enum32::class);
