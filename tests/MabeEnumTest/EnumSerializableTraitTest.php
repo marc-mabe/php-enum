@@ -2,9 +2,12 @@
 
 namespace MabeEnumTest;
 
+use LogicException;
+use MabeEnum\Enum;
 use MabeEnumTest\TestAsset\SerializableEnum;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
+use RuntimeException;
 
 /**
  * Unit tests for the trait MabeEnum\EnumSerializableTrait
@@ -15,20 +18,13 @@ use ReflectionClass;
  */
 class EnumSerializableTraitTest extends TestCase
 {
-    public function setUp()
-    {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('Traits require PHP-5.4');
-        }
-    }
-
     public function testSerializeSerializableEnum()
     {
         $serialized = serialize(SerializableEnum::get(SerializableEnum::NIL));
         $this->assertInternalType('string', $serialized);
 
         $unserialized = unserialize($serialized);
-        $this->assertInstanceOf('MabeEnumTest\TestAsset\SerializableEnum', $unserialized);
+        $this->assertInstanceOf(SerializableEnum::class, $unserialized);
     }
 
     public function testUnserializeFirstWillHoldTheSameInstance()
@@ -37,11 +33,11 @@ class EnumSerializableTraitTest extends TestCase
         $this->assertInternalType('string', $serialized);
 
         // clear all instantiated instances so we can virtual test unserializing first
-        $this->clearEnumeration('MabeEnumTest\TestAsset\SerializableEnum');
+        $this->clearEnumeration(SerializableEnum::class);
 
         // First unserialize
         $unserialized = unserialize($serialized);
-        $this->assertInstanceOf('MabeEnumTest\TestAsset\SerializableEnum', $unserialized);
+        $this->assertInstanceOf(SerializableEnum::class, $unserialized);
 
         // second instantiate
         $enum = SerializableEnum::get($unserialized->getValue());
@@ -52,19 +48,19 @@ class EnumSerializableTraitTest extends TestCase
 
     public function testUnserializeThrowsRuntimeExceptionOnUnknownValue()
     {
-        $this->setExpectedException('RuntimeException');
-        unserialize('C:39:"MabeEnumTest\TestAsset\SerializableEnum":11:{s:4:"test";}');
+        $this->setExpectedException(RuntimeException::class);
+        unserialize('C:' . strlen(SerializableEnum::class) . ':"' . SerializableEnum::class . '":11:{s:4:"test";}');
     }
 
     public function testUnserializeThrowsRuntimeExceptionOnInvalidValue()
     {
-        $this->setExpectedException('RuntimeException');
-        unserialize('C:39:"MabeEnumTest\TestAsset\SerializableEnum":19:{O:8:"stdClass":0:{}}');
+        $this->setExpectedException(RuntimeException::class);
+        unserialize('C:' . strlen(SerializableEnum::class) . ':"' . SerializableEnum::class . '":19:{O:8:"stdClass":0:{}}');
     }
 
     public function testUnserializeThrowsLogicExceptionOnChangingValue()
     {
-        $this->setExpectedException('LogicException');
+        $this->setExpectedException(LogicException::class);
         $enum = SerializableEnum::get(SerializableEnum::INT);
         $enum->unserialize(serialize(SerializableEnum::STR));
     }
@@ -76,7 +72,7 @@ class EnumSerializableTraitTest extends TestCase
     private function clearEnumeration($enumeration)
     {
         $reflClass = new ReflectionClass($enumeration);
-        while ($reflClass->getName() !== 'MabeEnum\Enum') {
+        while ($reflClass->getName() !== Enum::class) {
             $reflClass = $reflClass->getParentClass();
         }
 

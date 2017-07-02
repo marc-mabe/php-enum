@@ -2,6 +2,7 @@
 
 namespace MabeEnumTest;
 
+use InvalidArgumentException;
 use MabeEnum\EnumSet;
 use MabeEnumTest\TestAsset\EmptyEnum;
 use MabeEnumTest\TestAsset\EnumBasic;
@@ -23,8 +24,8 @@ class EnumSetTest extends TestCase
 {
     public function testBasic()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumSet->getEnumeration());
+        $enumSet = new EnumSet(EnumBasic::class);
+        $this->assertSame(EnumBasic::class, $enumSet->getEnumeration());
 
         $enum1  = EnumBasic::ONE();
         $enum2  = EnumBasic::TWO();
@@ -46,7 +47,7 @@ class EnumSetTest extends TestCase
 
     public function testBasicWithConstantValuesAsEnums()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enumSet = new EnumSet(EnumBasic::class);
 
         $enum1  = EnumBasic::ONE;
         $enum2  = EnumBasic::TWO;
@@ -68,7 +69,7 @@ class EnumSetTest extends TestCase
 
     public function testUnique()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enumSet = new EnumSet(EnumBasic::class);
 
         $enumSet->attach(EnumBasic::ONE());
         $enumSet->attach(EnumBasic::ONE);
@@ -81,7 +82,7 @@ class EnumSetTest extends TestCase
 
     public function testIterateOrdered()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enumSet = new EnumSet(EnumBasic::class);
 
         // an empty enum set needs to be invalid, starting by 0
         $this->assertSame(0, $enumSet->count());
@@ -121,7 +122,7 @@ class EnumSetTest extends TestCase
 
     public function testIterateAndDetach()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumInheritance');
+        $enumSet = new EnumSet(EnumInheritance::class);
 
         $enum1 = EnumInheritance::ONE();
         $enum2 = EnumInheritance::TWO();
@@ -155,20 +156,20 @@ class EnumSetTest extends TestCase
 
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
     {
-        $this->setExpectedException('InvalidArgumentException');
-        new EnumSet('stdClass');
+        $this->setExpectedException(InvalidArgumentException::class);
+        new EnumSet(self::class);
     }
 
     public function testInitEnumThrowsInvalidArgumentExceptionOnInvalidEnum()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $this->setExpectedException('InvalidArgumentException');
+        $enumSet = new EnumSet(EnumBasic::class);
+        $this->setExpectedException(InvalidArgumentException::class);
         $this->assertFalse($enumSet->contains(EnumInheritance::INHERITANCE()));
     }
 
     public function testIterateOutOfRangeIfLastOrdinalEnumIsSet()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enumSet = new EnumSet(EnumBasic::class);
         $enum    = EnumBasic::byOrdinal(count(EnumBasic::getConstants()) - 1);
 
         $enumSet->attach($enum);
@@ -188,7 +189,7 @@ class EnumSetTest extends TestCase
 
     public function testRewindFirstOnEmptySet()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enumSet = new EnumSet(EnumBasic::class);
 
         $enumSet->attach(EnumBasic::TWO);
         $enumSet->rewind();
@@ -201,7 +202,7 @@ class EnumSetTest extends TestCase
 
     public function test32EnumerationsSet()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $enumSet = new EnumSet(Enum32::class);
         foreach (Enum32::getConstants() as $name => $value) {
             $this->assertFalse($enumSet->contains($value));
             $enumSet->attach($value);
@@ -220,7 +221,7 @@ class EnumSetTest extends TestCase
 
     public function test64EnumerationsSet()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum64');
+        $enumSet = new EnumSet(Enum64::class);
         foreach (Enum64::getConstants() as $name => $value) {
             $this->assertFalse($enumSet->contains($value));
             $enumSet->attach($value);
@@ -239,7 +240,7 @@ class EnumSetTest extends TestCase
 
     public function test65EnumerationsSet()
     {
-        $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enum = new EnumSet(Enum65::class);
 
         $this->assertNull($enum->attach(Enum65::byOrdinal(64)));
         $enum->next();
@@ -248,7 +249,7 @@ class EnumSetTest extends TestCase
 
     public function testGetBinaryBitsetLe()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet = new EnumSet(Enum65::class);
         
         $enum1 = Enum65::ONE;
         $enum2 = Enum65::TWO;
@@ -282,7 +283,7 @@ class EnumSetTest extends TestCase
 
     public function testGetBinaryBitsetBe()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet = new EnumSet(Enum65::class);
         
         $enum1 = Enum65::ONE;
         $enum2 = Enum65::TWO;
@@ -319,7 +320,7 @@ class EnumSetTest extends TestCase
      */
     public function testGetBitset()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet = new EnumSet(Enum65::class);
         
         $enum1 = Enum65::ONE;
         $enum2 = Enum65::TWO;
@@ -353,7 +354,7 @@ class EnumSetTest extends TestCase
 
     public function testSetBinaryBitsetLe()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet = new EnumSet(Enum65::class);
         $enumSet->setBinaryBitsetLe("\x01\x00\x00\x00\x00\x00\x00\x80\x01");
 
         $this->assertTrue($enumSet->contains(Enum65::ONE));
@@ -368,7 +369,7 @@ class EnumSetTest extends TestCase
         // using Enum66 to make sure the max. ordinal number gets converted into a bitset
         // Enum65 has max. ordinal number of 1 of the last byte. -> 00000001
         // Enum66 has max. ordinal number of 2 of the last byte. -> 00000011
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum66');
+        $enumSet = new EnumSet(Enum66::class);
         foreach (Enum66::getEnumerators() as $enumerator) {
             $enumSet->attach($enumerator);
         }
@@ -382,7 +383,7 @@ class EnumSetTest extends TestCase
 
     public function testSetBinaryBitsetBe()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet = new EnumSet(Enum65::class);
         $enumSet->setBinaryBitsetBe("\x01\x80\x00\x00\x00\x00\x00\x00\x01");
 
         $this->assertTrue($enumSet->contains(Enum65::ONE));
@@ -394,44 +395,44 @@ class EnumSetTest extends TestCase
 
     public function testSetBinaryBitsetLeShort()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enumSet = new EnumSet(Enum65::class);
         $enumSet->setBinaryBitsetLe("\x0A");
         $this->assertSame("\x0A\x00\x00\x00\x00\x00\x00\x00\x00", $enumSet->getBinaryBitsetLe());
     }
 
     public function testSetBinaryBitsetLeLong()
     {
-        $enumSet = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $enumSet = new EnumSet(EnumBasic::class);
         $enumSet->setBinaryBitsetLe("\x0A\xFF\xFF\xFF\xFF\xFF");
         $this->assertSame("\x0A\xFF", $enumSet->getBinaryBitsetLe());
     }
 
     public function testSetBinaryBitsetLeArgumentExceptionIfNotString()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         
-        $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enum = new EnumSet(Enum65::class);
         $enum->setBinaryBitsetLe(0);
     }
 
     public function testSetBinaryBitsetBeArgumentExceptionIfNotString()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         
-        $enum = new EnumSet('MabeEnumTest\TestAsset\Enum65');
+        $enum = new EnumSet(Enum65::class);
         $enum->setBinaryBitsetBe(0);
     }
 
     public function testCountingEmptyEnumEmptySet()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EmptyEnum');
+        $set = new EnumSet(EmptyEnum::class);
         $this->assertSame(0, $set->count());
     }
 
     public function testIsEqual()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(EnumBasic::class);
         $this->assertTrue($set1->isEqual($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
@@ -445,8 +446,8 @@ class EnumSetTest extends TestCase
 
     public function testIsEqualWrongInstance()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumInheritance');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(EnumInheritance::class);
         $this->assertFalse($set1->isEqual($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
@@ -463,8 +464,8 @@ class EnumSetTest extends TestCase
      */
     public function testIsSubsetEqual()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(Enum32::class);
+        $set2 = new EnumSet(Enum32::class);
         $this->assertTrue($set1->isSubset($set2));
 
         foreach (Enum32::getEnumerators() as $enumerator) {
@@ -476,8 +477,8 @@ class EnumSetTest extends TestCase
 
     public function testIsSubsetFull()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(Enum32::class);
+        $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
             $set2->attach($enumerator);
@@ -487,8 +488,8 @@ class EnumSetTest extends TestCase
 
     public function testIsSubsetFalse()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(Enum32::class);
+        $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
             $set1->attach($enumerator);
@@ -498,8 +499,8 @@ class EnumSetTest extends TestCase
 
     public function testIsSubsetWrongInstance()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumInheritance');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(EnumInheritance::class);
         $this->assertFalse($set1->isSubset($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
@@ -516,8 +517,8 @@ class EnumSetTest extends TestCase
      */
     public function testIsSsetEqual()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(Enum32::class);
+        $set2 = new EnumSet(Enum32::class);
         $this->assertTrue($set1->isSuperset($set2));
 
         foreach (Enum32::getEnumerators() as $enumerator) {
@@ -529,8 +530,8 @@ class EnumSetTest extends TestCase
 
     public function testIsSupersetFull()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(Enum32::class);
+        $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
             $set1->attach($enumerator);
@@ -540,8 +541,8 @@ class EnumSetTest extends TestCase
 
     public function testIsSupersetFalse()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(Enum32::class);
+        $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
             $set2->attach($enumerator);
@@ -551,8 +552,8 @@ class EnumSetTest extends TestCase
 
     public function testIsSupersetWrongInstance()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumInheritance');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(EnumInheritance::class);
         $this->assertFalse($set1->isSuperset($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
@@ -566,7 +567,7 @@ class EnumSetTest extends TestCase
 
     public function testGetOrdinals()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $this->assertSame(array(), $set->getOrdinals());
 
         foreach (EnumBasic::getConstants() as $value) {
@@ -578,7 +579,7 @@ class EnumSetTest extends TestCase
 
     public function testGetOrdinalsDoesNotEffectIteratorPosition()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $set->attach(EnumBasic::ONE);
         $set->attach(EnumBasic::TWO);
         $set->next();
@@ -589,7 +590,7 @@ class EnumSetTest extends TestCase
 
     public function testGetEnumerators()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $this->assertSame(array(), $set->getEnumerators());
 
         foreach (EnumBasic::getConstants() as $value) {
@@ -601,7 +602,7 @@ class EnumSetTest extends TestCase
 
     public function testGetEnumeratorsDoesNotEffectIteratorPosition()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $set->attach(EnumBasic::ONE);
         $set->attach(EnumBasic::TWO);
         $set->next();
@@ -612,7 +613,7 @@ class EnumSetTest extends TestCase
 
     public function testGetValues()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $this->assertSame(array(), $set->getValues());
 
         foreach (EnumBasic::getConstants() as $value) {
@@ -624,7 +625,7 @@ class EnumSetTest extends TestCase
 
     public function testGetValuesDoesNotEffectIteratorPosition()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $set->attach(EnumBasic::ONE);
         $set->attach(EnumBasic::TWO);
         $set->next();
@@ -635,7 +636,7 @@ class EnumSetTest extends TestCase
 
     public function testGetNames()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $this->assertSame(array(), $set->getNames());
 
         foreach (EnumBasic::getConstants() as $value) {
@@ -647,7 +648,7 @@ class EnumSetTest extends TestCase
 
     public function testGetNamesDoesNotEffectIteratorPosition()
     {
-        $set = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set = new EnumSet(EnumBasic::class);
         $set->attach(EnumBasic::ONE);
         $set->attach(EnumBasic::TWO);
         $set->next();
@@ -658,15 +659,15 @@ class EnumSetTest extends TestCase
 
     public function testUnion()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1 = new EnumSet(EnumBasic::class);
         $set1->attach(EnumBasic::ONE);
         $set1->attach(EnumBasic::TWO);
 
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet(EnumBasic::class);
         $set2->attach(EnumBasic::TWO);
         $set2->attach(EnumBasic::THREE);
 
-        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3 = new EnumSet(EnumBasic::class);
         $set3->attach(EnumBasic::THREE);
         $set3->attach(EnumBasic::FOUR);
 
@@ -681,26 +682,26 @@ class EnumSetTest extends TestCase
 
     public function testUnionThrowsInvalidArgumentException()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         $set1->union($set2);
     }
 
     public function testIntersect()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1 = new EnumSet(EnumBasic::class);
         $set1->attach(EnumBasic::ONE);
         $set1->attach(EnumBasic::TWO);
         $set1->attach(EnumBasic::THREE);
 
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet(EnumBasic::class);
         $set2->attach(EnumBasic::TWO);
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3 = new EnumSet(EnumBasic::class);
         $set3->attach(EnumBasic::THREE);
         $set3->attach(EnumBasic::FOUR);
         $set3->attach(EnumBasic::FIVE);
@@ -713,26 +714,26 @@ class EnumSetTest extends TestCase
 
     public function testIntersectThrowsInvalidArgumentException()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         $set1->intersect($set2);
     }
 
     public function testDiff()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1 = new EnumSet(EnumBasic::class);
         $set1->attach(EnumBasic::ONE);
         $set1->attach(EnumBasic::TWO);
         $set1->attach(EnumBasic::THREE);
 
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet(EnumBasic::class);
         $set2->attach(EnumBasic::TWO);
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3 = new EnumSet(EnumBasic::class);
         $set3->attach(EnumBasic::THREE);
         $set3->attach(EnumBasic::FOUR);
         $set3->attach(EnumBasic::FIVE);
@@ -745,26 +746,26 @@ class EnumSetTest extends TestCase
 
     public function testDiffThrowsInvalidArgumentException()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         $set1->diff($set2);
     }
 
     public function testSymDiff()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set1 = new EnumSet(EnumBasic::class);
         $set1->attach(EnumBasic::ONE);
         $set1->attach(EnumBasic::TWO);
         $set1->attach(EnumBasic::THREE);
 
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set2 = new EnumSet(EnumBasic::class);
         $set2->attach(EnumBasic::TWO);
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
+        $set3 = new EnumSet(EnumBasic::class);
         $set3->attach(EnumBasic::THREE);
         $set3->attach(EnumBasic::FOUR);
         $set3->attach(EnumBasic::FIVE);
@@ -779,10 +780,10 @@ class EnumSetTest extends TestCase
 
     public function testSymDiffThrowsInvalidArgumentException()
     {
-        $set1 = new EnumSet('MabeEnumTest\TestAsset\EnumBasic');
-        $set2 = new EnumSet('MabeEnumTest\TestAsset\Enum32');
+        $set1 = new EnumSet(EnumBasic::class);
+        $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         $set1->symDiff($set2);
     }
 }

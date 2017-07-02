@@ -2,6 +2,8 @@
 
 namespace MabeEnumTest;
 
+use InvalidArgumentException;
+use LogicException;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
@@ -73,19 +75,19 @@ class EnumTest extends TestCase
 
     public function testGetWithNonStrictValueThrowsInvalidArgumentException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         EnumBasic::get((string)EnumBasic::TWO);
     }
 
     public function testGetWithInvalidValueThrowsInvalidArgumentException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         EnumBasic::get('unknown');
     }
 
     public function testGetWithInvalidTypeOfValueThrowsInvalidArgumentException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         EnumBasic::get(array());
     }
 
@@ -100,7 +102,7 @@ class EnumTest extends TestCase
     {
         $enum = EnumInheritance::get(EnumInheritance::ONE);
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         EnumBasic::get($enum);
     }
 
@@ -113,7 +115,7 @@ class EnumTest extends TestCase
         $this->assertSame(count($constants), $count);
         for ($i = 0; $i < $count; ++$i) {
             $this->assertArrayHasKey($i, $enumerators);
-            $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enumerators[$i]);
+            $this->assertInstanceOf(EnumInheritance::class, $enumerators[$i]);
 
             $enumerator = $enumerators[$i];
             $this->assertArrayHasKey($enumerator->getName(), $constants);
@@ -200,39 +202,39 @@ class EnumTest extends TestCase
 
     public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         EnumInheritance::byOrdinal(17);
     }
 
     public function testInstantiateByName()
     {
         $enum = EnumInheritance::byName('ONE');
-        $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enum);
+        $this->assertInstanceOf(EnumInheritance::class, $enum);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
 
     public function testInstantiateByUnknownNameThrowsInvalidArgumentException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         EnumInheritance::byName('UNKNOWN');
     }
 
     public function testInstantiateUsingMagicMethod()
     {
         $enum = EnumInheritance::ONE();
-        $this->assertInstanceOf('MabeEnumTest\TestAsset\EnumInheritance', $enum);
+        $this->assertInstanceOf(EnumInheritance::class, $enum);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
 
     public function testAmbiguousConstantsThrowsLogicException()
     {
-        $this->setExpectedException('LogicException');
+        $this->setExpectedException(LogicException::class);
         EnumAmbiguous::get('unknown');
     }
 
     public function testExtendedAmbiguousCanstantsThrowsLogicException()
     {
-        $this->setExpectedException('LogicException');
+        $this->setExpectedException(LogicException::class);
         EnumExtendedAmbiguous::get('unknown');
     }
 
@@ -253,7 +255,7 @@ class EnumTest extends TestCase
         $this->assertTrue($reflectionMethod->isFinal(), 'The method __clone must be final');
 
         $reflectionMethod->setAccessible(true);
-        $this->setExpectedException('LogicException');
+        $this->setExpectedException(LogicException::class);
         $reflectionMethod->invoke($enum);
     }
 
@@ -261,14 +263,14 @@ class EnumTest extends TestCase
     {
         $enum = EnumBasic::ONE();
 
-        $this->setExpectedException('LogicException');
+        $this->setExpectedException(LogicException::class);
         serialize($enum);
     }
 
     public function testNotUnserializable()
     {
-        $this->setExpectedException('LogicException');
-        unserialize("O:32:\"MabeEnumTest\TestAsset\EnumBasic\":0:{}");
+        $this->setExpectedException(LogicException::class);
+        unserialize('O:' . strlen(EnumBasic::class) . ':"' . EnumBasic::class . '":0:{}');
     }
 
     public function testHas()

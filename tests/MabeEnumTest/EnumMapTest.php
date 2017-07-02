@@ -2,6 +2,7 @@
 
 namespace MabeEnumTest;
 
+use InvalidArgumentException;
 use MabeEnum\EnumMap;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
@@ -19,8 +20,8 @@ class EnumMapTest extends TestCase
 {
     public function testBasic()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
-        $this->assertSame('MabeEnumTest\TestAsset\EnumBasic', $enumMap->getEnumeration());
+        $enumMap = new EnumMap(EnumBasic::class);
+        $this->assertSame(EnumBasic::class, $enumMap->getEnumeration());
 
         $enum1  = EnumBasic::ONE();
         $value1 = 'value1';
@@ -49,7 +50,7 @@ class EnumMapTest extends TestCase
 
     public function testBasicWithConstantValuesAsEnums()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap = new EnumMap(EnumBasic::class);
 
         $enum1  = EnumBasic::ONE;
         $value1 = 'value1';
@@ -78,7 +79,7 @@ class EnumMapTest extends TestCase
 
     public function testIterate()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap = new EnumMap(EnumBasic::class);
 
         $enum1  = EnumBasic::ONE();
         $value1 = 'value1';
@@ -122,7 +123,7 @@ class EnumMapTest extends TestCase
 
     public function testArrayAccessWithObjects()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap = new EnumMap(EnumBasic::class);
 
         $enumMap[EnumBasic::ONE()] = 'first';
         $enumMap[EnumBasic::TWO()] = 'second';
@@ -141,7 +142,7 @@ class EnumMapTest extends TestCase
 
     public function testArrayAccessWithValues()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap = new EnumMap(EnumBasic::class);
 
         $enumMap[EnumBasic::ONE] = 'first';
         $enumMap[EnumBasic::TWO] = 'second';
@@ -160,21 +161,21 @@ class EnumMapTest extends TestCase
 
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         new EnumMap('stdClass');
     }
 
     public function testInitEnumThrowsInvalidArgumentExceptionOnInvalidEnumGiven()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap = new EnumMap(EnumBasic::class);
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(InvalidArgumentException::class);
         $enumMap->offsetSet(EnumInheritance::INHERITANCE(), 'test');
     }
 
     public function testContainsAndOffsetExistsReturnsFalseOnInvalidEnum()
     {
-        $enumMap = new EnumMap('MabeEnumTest\TestAsset\EnumBasic');
+        $enumMap = new EnumMap(EnumBasic::class);
 
         $this->assertFalse($enumMap->contains(EnumInheritance::INHERITANCE()));
         $this->assertFalse($enumMap->contains(EnumInheritance::INHERITANCE));
