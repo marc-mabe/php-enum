@@ -98,16 +98,6 @@ class EnumMap extends SplObjectStorage
     /**
      * Get the classname of the enumeration
      * @return string
-     * @deprecated Please use getEnumeration() instead
-     */
-    public function getEnumClass()
-    {
-        return $this->getEnumeration();
-    }
-
-    /**
-     * Get the classname of the enumeration
-     * @return string
      */
     public function getEnumeration()
     {

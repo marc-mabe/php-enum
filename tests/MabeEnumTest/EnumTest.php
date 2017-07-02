@@ -243,17 +243,6 @@ class EnumTest extends TestCase
         $this->assertSame($enum1, $enum2);
     }
 
-    public function testClear()
-    {
-        $enum1 = EnumBasic::ONE();
-        EnumBasic::clear();
-        $enum2 = EnumBasic::ONE();
-        $enum3 = EnumBasic::ONE();
-        
-        $this->assertNotSame($enum1, $enum2);
-        $this->assertSame($enum2, $enum3);
-    }
-
     public function testCloneNotCallableAndThrowsLogicException()
     {
         $enum = EnumBasic::ONE();

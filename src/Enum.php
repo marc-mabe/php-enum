@@ -253,48 +253,6 @@ abstract class Enum
     }
 
     /**
-     * Get an enumerator instance by the given name
-     *
-     * @param string $name The name of the enumerator
-     * @return static
-     * @throws InvalidArgumentException On an invalid or unknown name
-     * @throws LogicException           On ambiguous values
-     * @deprecated
-     */
-    final public static function getByName($name)
-    {
-        return static::byName($name);
-    }
-
-    /**
-     * Get an enumeration instance by the given ordinal number
-     *
-     * @param int $ordinal The ordinal number or the enumerator
-     * @return static
-     * @throws InvalidArgumentException On an invalid ordinal number
-     * @throws LogicException           On ambiguous values
-     * @deprecated
-     */
-    final public static function getByOrdinal($ordinal)
-    {
-        return static::byOrdinal($ordinal);
-    }
-
-    /**
-     * Clear all instantiated enumerators of the called class
-     *
-     * NOTE: This can break singleton behavior ... use it with caution!
-     *
-     * @return void
-     * @deprecated
-     */
-    final public static function clear()
-    {
-        $class = get_called_class();
-        unset(self::$instances[$class], self::$constants[$class]);
-    }
-
-    /**
      * Get a list of enumerator instances ordered by ordinal number
      *
      * @return static[]

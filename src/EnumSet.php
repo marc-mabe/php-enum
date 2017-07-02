@@ -62,16 +62,6 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Get the classname of enumeration this set is for
-     * @return string
-     * @deprecated Please use getEnumeration() instead
-     */
-    public function getEnumClass()
-    {
-        return $this->getEnumeration();
-    }
-
-    /**
      * Get the classname of the enumeration
      * @return string
      */
@@ -482,31 +472,6 @@ class EnumSet implements Iterator, Countable
             throw new InvalidArgumentException('Bitset must be a string');
         }
         $this->setBinaryBitsetLe(strrev($bitset));
-    }
-
-    /**
-     * Get the binary bitset
-     * 
-     * @return string Returns the binary bitset in big-endian order
-     * @deprecated Please use getBinaryBitsetBe() instead
-     */
-    public function getBitset()
-    {
-        return $this->getBinaryBitsetBe();
-    }
-
-    /**
-     * Set the bitset.
-     * NOTE: It resets the current position of the iterator
-     * 
-     * @param string $bitset The binary bitset in big-endian order
-     * @return void
-     * @throws InvalidArgumentException On a non string is given as Parameter
-     * @deprecated Please use setBinaryBitsetBe() instead
-     */
-    public function setBitset($bitset)
-    {
-        $this->setBinaryBitsetBe($bitset);
     }
 
     /**
