@@ -1,9 +1,6 @@
 sudo: false
 language: php
 
-# HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
-dist: trusty
-
 cache:
   directories:
     - $HOME/.composer/cache
@@ -34,6 +31,8 @@ matrix:
         - CODE_COVERAGE="1"
     - php: nightly
     - php: hhvm
+      # HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
+      dist: trusty
   allow_failures:
     - php: nightly
 
