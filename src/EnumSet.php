@@ -431,17 +431,25 @@ class EnumSet implements Iterator, Countable
             // add "\0" if the given bitset is not long enough
             $bitset .= str_repeat("\0", $size - $sizeIn);
         } elseif ($sizeIn > $size) {
+            if (trim(substr($bitset, $size), "\0") !== '') {
+                throw new InvalidArgumentException('Out-Of-Range bits detected');
+            }
             $bitset = substr($bitset, 0, $size);
         }
 
         // truncate out-of-range bits of last byte
         $lastByteMaxOrd = $this->ordinalMax % 8;
-        if ($lastByteMaxOrd === 0) {
-            $this->bitset = $bitset;
-        } else {
-            $lastByte     = chr((1 << $lastByteMaxOrd) - 1) & $bitset[$size - 1];
-            $this->bitset = substr($bitset, 0, -1) . $lastByte;
+        if ($lastByteMaxOrd !== 0) {
+            $lastByte         = $bitset[$size - 1];
+            $lastByteExpected = chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
+            if ($lastByte !== $lastByteExpected) {
+                throw new InvalidArgumentException('Out-Of-Range bits detected');
+            }
+
+            $this->bitset = substr($bitset, 0, -1) . $lastByteExpected;
         }
+
+        $this->bitset = $bitset;
 
         // reset the iterator position
         $this->rewind();

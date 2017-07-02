@@ -327,21 +327,54 @@ class EnumSetTest extends TestCase
         $this->assertTrue($enumSet->count() == 3);
     }
 
-    public function testSetBinaryBitsetLeTruncateHighBits()
+    public function testSetBinaryBitsetLeShort()
     {
-        // using Enum66 to make sure the max. ordinal number gets converted into a bitset
-        // Enum65 has max. ordinal number of 1 of the last byte. -> 00000001
-        // Enum66 has max. ordinal number of 2 of the last byte. -> 00000011
-        $enumSet = new EnumSet(Enum66::class);
-        foreach (Enum66::getEnumerators() as $enumerator) {
-            $enumSet->attach($enumerator);
-        }
+        $enumSet = new EnumSet(Enum65::class);
+        $enumSet->setBinaryBitsetLe("\x0A");
+        $this->assertSame("\x0A\x00\x00\x00\x00\x00\x00\x00\x00", $enumSet->getBinaryBitsetLe());
+    }
 
+    public function testSetBinaryBitsetLeLong()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+        $enumSet->setBinaryBitsetLe("\x0A\xFF\x00\x00\x00\x00");
+        $this->assertSame("\x0A\xFF", $enumSet->getBinaryBitsetLe());
+    }
+
+    public function testSetBinaryBitsetLeOutOrRangeBitsOfExtendedBytes1()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+
+        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $enumSet->setBinaryBitsetLe("\x0A\xFF\x01");
+    }
+
+    public function testSetBinaryBitsetLeOutOrRangeBitsOfExtendedBytes2()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+
+        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $enumSet->setBinaryBitsetLe("\x0A\xFF\x00\x02");
+    }
+
+    public function testSetBinaryBitsetLeOutOrRangeBitsOfLastValidByte()
+    {
+        // using Enum65 to detect Out-Of-Range bits of last valid byte
+        // Enum65 has max. ordinal number of 2 of the last byte. -> 0001
+        $enumSet   = new EnumSet(Enum65::class);
         $bitset    = $enumSet->getBinaryBitsetLe();
-        $newBitset = substr($bitset, 0, -1) . "\xff\xff";
-        $enumSet->setBinaryBitsetLe($newBitset);
+        $newBitset = substr($bitset, 0, -1) . "\x02";
 
-        $this->assertSame(bin2hex($bitset), bin2hex($enumSet->getBinaryBitsetLe()));
+        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $enumSet->setBinaryBitsetLe($newBitset);
+    }
+
+    public function testSetBinaryBitsetLeArgumentExceptionIfNotString()
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        
+        $enum = new EnumSet(Enum65::class);
+        $enum->setBinaryBitsetLe(0);
     }
 
     public function testSetBinaryBitsetBe()
@@ -354,28 +387,6 @@ class EnumSetTest extends TestCase
         $this->assertTrue($enumSet->contains(Enum65::SIXTYFIVE));
         $this->assertTrue($enumSet->contains(Enum65::SIXTYFOUR));
         $this->assertTrue($enumSet->count() == 3);
-    }
-
-    public function testSetBinaryBitsetLeShort()
-    {
-        $enumSet = new EnumSet(Enum65::class);
-        $enumSet->setBinaryBitsetLe("\x0A");
-        $this->assertSame("\x0A\x00\x00\x00\x00\x00\x00\x00\x00", $enumSet->getBinaryBitsetLe());
-    }
-
-    public function testSetBinaryBitsetLeLong()
-    {
-        $enumSet = new EnumSet(EnumBasic::class);
-        $enumSet->setBinaryBitsetLe("\x0A\xFF\xFF\xFF\xFF\xFF");
-        $this->assertSame("\x0A\xFF", $enumSet->getBinaryBitsetLe());
-    }
-
-    public function testSetBinaryBitsetLeArgumentExceptionIfNotString()
-    {
-        $this->setExpectedException(InvalidArgumentException::class);
-        
-        $enum = new EnumSet(Enum65::class);
-        $enum->setBinaryBitsetLe(0);
     }
 
     public function testSetBinaryBitsetBeArgumentExceptionIfNotString()
