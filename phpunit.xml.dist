@@ -11,7 +11,7 @@
         beStrictAboutTestsThatDoNotTestAnything="true"
         beStrictAboutOutputDuringTests="true"
         beStrictAboutTestSize="true"
-        checkForUnintentionallyCoveredCode="true"
+        beStrictAboutCoversAnnotation="true"
         >
     <testsuite name="php-enum Test-Suite">
         <directory>./tests</directory>
