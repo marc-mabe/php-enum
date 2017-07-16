@@ -31,7 +31,7 @@
         "phpunit/phpunit": "~4.0",
 
         "lstrojny/functional-php": "HHVM: variadic params with type constraints are not supported in non-Hack",
-        "lstrojny/functional-php": "1.2.*"
+        "lstrojny/functional-php": "1.2.*|1.0.*"
     },
     "autoload": {
         "psr-4": {
