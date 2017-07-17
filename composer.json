@@ -29,6 +29,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
+        "phpbench/phpbench": "@dev",
 
         "lstrojny/functional-php": "HHVM: variadic params with type constraints are not supported in non-Hack",
         "lstrojny/functional-php": "1.2.*|1.0.*"
@@ -36,6 +37,12 @@
     "autoload": {
         "psr-4": {
             "MabeEnum\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MabeEnumTest\\":  "tests/MabeEnumTest/",
+            "MabeEnumBench\\": "bench/"
         }
     },
     "extra": {
