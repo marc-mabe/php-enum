@@ -184,8 +184,9 @@ class EnumSet implements Iterator, Countable
                 continue; // fast skip null byte
             }
 
+            $ord = ord($this->bitset[$bytePos]);
             for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
-                if ((ord($this->bitset[$bytePos]) & (1 << $bitPos)) !== 0) {
+                if ($ord & (1 << $bitPos)) {
                     ++$count;
                 }
             }
@@ -347,8 +348,9 @@ class EnumSet implements Iterator, Countable
                 continue; // fast skip null byte
             }
 
+            $ord = ord($this->bitset[$bytePos]);
             for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
-                if ((ord($this->bitset[$bytePos]) & (1 << $bitPos)) !== 0) {
+                if ($ord & (1 << $bitPos)) {
                     $ordinals[] = $bytePos * 8 + $bitPos;
                 }
             }
