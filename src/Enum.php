@@ -30,11 +30,18 @@ abstract class Enum
     private $ordinal;
 
     /**
-     * An array of available constants by class
+     * A map of enumerator names and values by enumeration class
      *
      * @var array ["$class" => ["$name" => $value, ...], ...]
      */
     private static $constants = array();
+
+    /**
+     * A List of of available enumerator names by enumeration class
+     *
+     * @var array ["$class" => ["$name0", ...], ...]
+     */
+    private static $names = array();
 
     /**
      * Already instantiated enumerators
@@ -110,6 +117,9 @@ abstract class Enum
      */
     final public function getName()
     {
+        if ($this->ordinal !== null) {
+            return self::$names[static::class][$this->ordinal];
+        }
         return array_search($this->value, self::detectConstants(static::class), true);
     }
 
@@ -235,21 +245,25 @@ abstract class Enum
     {
         $ordinal   = (int) $ordinal;
         $class     = static::class;
-        $constants = self::detectConstants($class);
-        $item      = array_slice($constants, $ordinal, 1, true);
-        if (empty($item)) {
+
+        if (!isset(self::$names[$class])) {
+            self::detectConstants($class);
+        }
+
+        if (!isset(self::$names[$class][$ordinal])) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid ordinal number, must between 0 and %s',
-                count($constants) - 1
+                count(self::$names[$class]) - 1
             ));
         }
 
-        $name = key($item);
+        $name = self::$names[$class][$ordinal];
         if (isset(self::$instances[$class][$name])) {
             return self::$instances[$class][$name];
         }
 
-        return self::$instances[$class][$name] = new $class(current($item), $ordinal);
+        $const = $class . '::' . $name;
+        return self::$instances[$class][$name] = new $class(constant($const));
     }
 
     /**
@@ -259,7 +273,10 @@ abstract class Enum
      */
     final public static function getEnumerators()
     {
-        return array_map([static::class, 'byName'], array_keys(self::detectConstants(static::class)));
+        if (!isset(self::$names[static::class])) {
+            self::detectConstants(static::class);
+        }
+        return array_map([static::class, 'byName'], self::$names[static::class]);
     }
 
     /**
@@ -279,7 +296,10 @@ abstract class Enum
      */
     final public static function getNames()
     {
-        return array_keys(self::detectConstants(static::class));
+        if (!isset(self::$names[static::class])) {
+            self::detectConstants(static::class);
+        }
+        return self::$names[static::class];
     }
     /*
      * Get a list of enumerator ordinal numbers
@@ -320,7 +340,7 @@ abstract class Enum
     }
 
     /**
-     * Detect all available constants by the given class
+     * Detect all public available constants of given enumeration class
      *
      * @param string $class
      * @return array
@@ -368,6 +388,7 @@ abstract class Enum
             }
 
             self::$constants[$class] = $constants;
+            self::$names[$class] = array_keys($constants);
         }
 
         return self::$constants[$class];

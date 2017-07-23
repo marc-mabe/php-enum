@@ -4,6 +4,7 @@ namespace MabeEnumTest;
 
 use InvalidArgumentException;
 use LogicException;
+use MabeEnum\Enum;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\EnumAmbiguous;
@@ -23,6 +24,23 @@ use ReflectionClass;
  */
 class EnumTest extends TestCase
 {
+    public function setUp()
+    {
+        $enumRefl = new ReflectionClass(Enum::class);
+
+        $constantsProp = $enumRefl->getProperty('constants');
+        $namesProp = $enumRefl->getProperty('names');
+        $instancesProp = $enumRefl->getProperty('instances');
+
+        $constantsProp->setAccessible(true);
+        $namesProp->setAccessible(true);
+        $instancesProp->setAccessible(true);
+
+        $constantsProp->setValue(null, []);
+        $namesProp->setValue(null, []);
+        $instancesProp->setValue(null, []);
+    }
+
     public function testGetNameReturnsConstantNameOfCurrentValue()
     {
         $enum = EnumBasic::get(EnumBasic::ONE);
@@ -106,10 +124,27 @@ class EnumTest extends TestCase
         EnumBasic::get($enum);
     }
 
-    public function testGetEnumerators()
+    public function testGetEnumeratorsConstansAlreadyDetected()
     {
         $constants   = EnumInheritance::getConstants();
         $enumerators = EnumInheritance::getEnumerators();
+        $count       = count($enumerators);
+
+        $this->assertSame(count($constants), $count);
+        for ($i = 0; $i < $count; ++$i) {
+            $this->assertArrayHasKey($i, $enumerators);
+            $this->assertInstanceOf(EnumInheritance::class, $enumerators[$i]);
+
+            $enumerator = $enumerators[$i];
+            $this->assertArrayHasKey($enumerator->getName(), $constants);
+            $this->assertSame($constants[$enumerator->getName()], $enumerator->getValue());
+        }
+    }
+
+    public function testGetEnumeratorsConstansNotDetected()
+    {
+        $enumerators = EnumInheritance::getEnumerators();
+        $constants   = EnumInheritance::getConstants();
         $count       = count($enumerators);
 
         $this->assertSame(count($constants), $count);
@@ -136,7 +171,7 @@ class EnumTest extends TestCase
         }
     }
 
-    public function testGetNames()
+    public function testGetNamesConstantsAlreadyDetected()
     {
         $expectedNames = array_keys(EnumInheritance::getConstants());
         $names         = EnumInheritance::getNames();
@@ -149,6 +184,19 @@ class EnumTest extends TestCase
         }
     }
 
+    public function testGetNamesConstantsNotDetected()
+    {
+        $names         = EnumInheritance::getNames();
+        $expectedNames = array_keys(EnumInheritance::getConstants());
+        $count         = count($names);
+
+        $this->assertSame(count($expectedNames), $count);
+        for ($i = 0; $i < $count; ++$i) {
+            $this->assertArrayHasKey($i, $names);
+            $this->assertSame($expectedNames[$i], $names[$i]);
+        }
+    }
+    
     public function testGetOrdinals()
     {
         $constants = EnumInheritance::getConstants();
