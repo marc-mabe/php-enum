@@ -245,7 +245,7 @@ class EnumSet implements Iterator, Countable
         foreach (func_get_args() as $other) {
             if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
                 throw new InvalidArgumentException(sprintf(
-                    "Others should be an instance of %s of the same enumeration as this %s",
+                    'Others should be an instance of %s of the same enumeration as this %s',
                     __CLASS__,
                     $this->enumeration
                 ));
@@ -270,7 +270,7 @@ class EnumSet implements Iterator, Countable
         foreach (func_get_args() as $other) {
             if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
                 throw new InvalidArgumentException(sprintf(
-                    "Others should be an instance of %s of the same enumeration as this %s",
+                    'Others should be an instance of %s of the same enumeration as this %s',
                     __CLASS__,
                     $this->enumeration
                 ));
@@ -295,7 +295,7 @@ class EnumSet implements Iterator, Countable
         foreach (func_get_args() as $other) {
             if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
                 throw new InvalidArgumentException(sprintf(
-                    "Others should be an instance of %s of the same enumeration as this %s",
+                    'Others should be an instance of %s of the same enumeration as this %s',
                     __CLASS__,
                     $this->enumeration
                 ));
@@ -320,7 +320,7 @@ class EnumSet implements Iterator, Countable
         foreach (func_get_args() as $other) {
             if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
                 throw new InvalidArgumentException(sprintf(
-                    "Others should be an instance of %s of the same enumeration as this %s",
+                    'Others should be an instance of %s of the same enumeration as this %s',
                     __CLASS__,
                     $this->enumeration
                 ));
