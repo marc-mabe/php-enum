@@ -674,7 +674,7 @@ class EnumSet implements Iterator, Countable
         for ($i = 0; $i < $len; ++$i) {
             $ord = ord($bitset[$i]);
 
-            if ($ord && $i > PHP_INT_SIZE) {
+            if ($ord && $i > PHP_INT_SIZE - 1) {
                 throw new InvalidArgumentException('Out-Of-Range bits detected');
             }
 
