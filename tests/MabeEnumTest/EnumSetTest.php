@@ -500,6 +500,33 @@ class EnumSetTest extends TestCase
         $this->assertSame(0, $set->count());
     }
 
+    public function testCountSingleBit32()
+    {
+        foreach (Enum32::getEnumerators() as $enum) {
+            $enumSet = new EnumSet(Enum32::class);
+            $enumSet->attach($enum);
+            $this->assertSame(1, $enumSet->count());
+        }
+    }
+
+    public function testCountSingleBit64()
+    {
+        foreach (Enum64::getEnumerators() as $enum) {
+            $enumSet = new EnumSet(Enum64::class);
+            $enumSet->attach($enum);
+            $this->assertSame(1, $enumSet->count());
+        }
+    }
+
+    public function testCountSingleBit66()
+    {
+        foreach (Enum66::getEnumerators() as $enum) {
+            $enumSet = new EnumSet(Enum66::class);
+            $enumSet->attach($enum);
+            $this->assertSame(1, $enumSet->count());
+        }
+    }
+
     public function testIsEqual()
     {
         $set1 = new EnumSet(EnumBasic::class);

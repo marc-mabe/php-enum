@@ -40,8 +40,7 @@ class EnumSet implements Iterator, Countable
     private $bitset = 0;
 
     /**#@+
-     * Defined the private method names to be called depended of
-     * how the bitset type was set too.
+     * Defines private method names to be called depended of how the bitset type was set too.
      * ... Integer or binary bitset.
      * ... *Int or *Bin method
      * 
@@ -79,7 +78,7 @@ class EnumSet implements Iterator, Countable
         // By default the bitset is initialized as integer bitset
         // in case the enumeraton has more enumerators then integer bits
         // we will switch this into a binary bitset
-        if ($this->ordinalMax > PHP_INT_SIZE * 8) {
+        if ($this->ordinalMax > \PHP_INT_SIZE * 8) {
             // init binary bitset with zeros
             $this->bitset = str_repeat("\0", ceil($this->ordinalMax / 8));
 
@@ -294,13 +293,37 @@ class EnumSet implements Iterator, Countable
      */
     private function doCountInt()
     {
-        $count = 0;
-        $ord = 0;
-        while ($ord !== $this->ordinalMax) {
-            if ($this->bitset & (1 << $ord++)) {
-                ++$count;
+        $count  = 0;
+        $bitset = $this->bitset;
+
+        // PHP does not support right shift unsigned
+        if ($bitset < 0) {
+            $count = 1;
+            $bitset = $bitset & \PHP_INT_MAX;
+        }
+
+        // iterate byte by byte and count set bits
+        for ($i = 0; $i < \PHP_INT_SIZE; ++$i) {
+            $bitPos = $i * 8;
+            $bitChk = 0xff << $bitPos;
+            $byte = $bitset & $bitChk;
+            if ($byte) {
+                $byte = $byte >> $bitPos;
+                if ($byte & 0b00000001) ++$count;
+                if ($byte & 0b00000010) ++$count;
+                if ($byte & 0b00000100) ++$count;
+                if ($byte & 0b00001000) ++$count;
+                if ($byte & 0b00010000) ++$count;
+                if ($byte & 0b00100000) ++$count;
+                if ($byte & 0b01000000) ++$count;
+                if ($byte & 0b10000000) ++$count;
+            }
+
+            if ($bitset <= $bitChk) {
+                break;
             }
         }
+
         return $count;
     }
 
