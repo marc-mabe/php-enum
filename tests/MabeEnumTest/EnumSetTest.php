@@ -789,12 +789,9 @@ class EnumSetTest extends TestCase
         $set2 = new EnumSet(EnumBasic::class);
         $set2->attach(EnumBasic::TWO);
         $set2->attach(EnumBasic::THREE);
+        $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-
-        $rs = $set1->union($set2, $set3);
+        $rs = $set1->union($set2);
         $this->assertSame([
             EnumBasic::ONE,
             EnumBasic::TWO,
@@ -824,13 +821,8 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-        $set3->attach(EnumBasic::FIVE);
-
-        $rs = $set1->intersect($set2, $set3);
-        $this->assertSame([EnumBasic::THREE], $rs->getValues());
+        $rs = $set1->intersect($set2);
+        $this->assertSame([EnumBasic::TWO, EnumBasic::THREE], $rs->getValues());
     }
 
     public function testIntersectThrowsInvalidArgumentException()
@@ -854,12 +846,7 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-        $set3->attach(EnumBasic::FIVE);
-
-        $rs = $set1->diff($set2, $set3);
+        $rs = $set1->diff($set2);
         $this->assertSame([EnumBasic::ONE], $rs->getValues());
     }
 
@@ -884,16 +871,10 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-        $set3->attach(EnumBasic::FIVE);
-
-        $rs = $set1->symDiff($set2, $set3);
+        $rs = $set1->symDiff($set2);
         $this->assertSame([
             EnumBasic::ONE,
             EnumBasic::FOUR,
-            EnumBasic::FIVE,
         ], $rs->getValues());
     }
 

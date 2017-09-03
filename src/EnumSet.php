@@ -369,120 +369,80 @@ class EnumSet implements Iterator, Countable
     /**
      * Produce a new set with enumerators from both this and other (this | other)
      *
-     * FIXME: No variadic params with type constraints because of https://github.com/facebook/hhvm/issues/6954
-     *
-     * @param EnumSet ...$others Other EnumSet(s) of the same enumeration to produce the union
+     * @param EnumSet $other EnumSet of the same enumeration to produce the union
      * @return EnumSet
      */
-    public function union(...$others)
+    public function union(EnumSet $other)
     {
-        $bitset = $this->bitset;
-        foreach ($others as $other) {
-            if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
-                throw new InvalidArgumentException(sprintf(
-                    'Others should be an instance of %s of the same enumeration as this %s',
-                    __CLASS__,
-                    $this->enumeration
-                ));
-            }
-
-            $bitset |= $other->bitset;
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
         }
 
         $clone = clone $this;
-        $clone->bitset = $bitset;
+        $clone->bitset = $this->bitset | $other->bitset;
         return $clone;
     }
 
     /**
      * Produce a new set with enumerators common to both this and other (this & other)
      *
-     * FIXME: No variadic params with type constraints because of https://github.com/facebook/hhvm/issues/6954
-     *
-     * @param EnumSet ...$others Other EnumSet(s) of the same enumeration to produce the union
+     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
      * @return EnumSet
      */
-    public function intersect(...$others)
+    public function intersect(EnumSet $other)
     {
-        $bitset = $this->bitset;
-        foreach ($others as $other) {
-            if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
-                throw new InvalidArgumentException(sprintf(
-                    'Others should be an instance of %s of the same enumeration as this %s',
-                    __CLASS__,
-                    $this->enumeration
-                ));
-            }
-
-            $bitset &= $other->bitset;
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
         }
 
         $clone = clone $this;
-        $clone->bitset = $bitset;
+        $clone->bitset = $this->bitset & $other->bitset;
         return $clone;
     }
 
     /**
      * Produce a new set with enumerators in this but not in other (this - other)
      *
-     * FIXME: No variadic params with type constraints because of https://github.com/facebook/hhvm/issues/6954
-     *
-     * @param EnumSet ...$others Other EnumSet(s) of the same enumeration to produce the union
+     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
      * @return EnumSet
      */
-    public function diff(...$others)
+    public function diff(EnumSet $other)
     {
-        $clone = clone $this;
-
-        if (isset($others[0])) {
-            $bitset = $others[0]->bitset;
-            foreach ($others as $other) {
-                if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
-                    throw new InvalidArgumentException(sprintf(
-                        'Others should of the same enumeration as this %s',
-                        __CLASS__,
-                        $this->enumeration
-                    ));
-                }
-
-                $bitset |= $other->bitset;
-            }
-
-            $clone->bitset = $this->bitset & ~$bitset;
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
         }
 
+        $clone = clone $this;
+        $clone->bitset = $this->bitset & ~$other->bitset;
         return $clone;
     }
 
     /**
-     * Produce a new set with enumerators in either this and other but not in both (this ^ (other | other))
+     * Produce a new set with enumerators in either this and other but not in both (this ^ other)
      *
-     * FIXME: No variadic params with type constraints because of https://github.com/facebook/hhvm/issues/6954
-     *
-     * @param EnumSet ...$others Other EnumSet(s) of the same enumeration to produce the union
+     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
      * @return EnumSet
      */
-    public function symDiff(...$others)
+    public function symDiff(EnumSet $other)
     {
-        $clone = clone $this;
-
-        if (isset($others[0])) {
-            $bitset = $others[0]->bitset;
-            foreach ($others as $other) {
-                if (!$other instanceof self || $this->enumeration !== $other->enumeration) {
-                    throw new InvalidArgumentException(sprintf(
-                        'Others should be an instance of %s of the same enumeration as this %s',
-                        __CLASS__,
-                        $this->enumeration
-                    ));
-                }
-
-                $bitset |= $other->bitset;
-            }
-
-            $clone->bitset = $this->bitset ^ $bitset;
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
         }
 
+        $clone = clone $this;
+        $clone->bitset = $this->bitset ^ $other->bitset;
         return $clone;
     }
 
