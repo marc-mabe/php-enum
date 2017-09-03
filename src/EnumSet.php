@@ -577,7 +577,7 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetBinaryBitsetLeInt()
     {
-        $bin = pack(PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
+        $bin = pack(\PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
         return substr($bin, 0, ceil($this->ordinalMax / 8));
     }
 
@@ -657,7 +657,7 @@ class EnumSet implements Iterator, Countable
         for ($i = 0; $i < $len; ++$i) {
             $ord = ord($bitset[$i]);
 
-            if ($ord && $i > PHP_INT_SIZE - 1) {
+            if ($ord && $i > \PHP_INT_SIZE - 1) {
                 throw new InvalidArgumentException('Out-Of-Range bits detected');
             }
 
