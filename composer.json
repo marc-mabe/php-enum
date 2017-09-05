@@ -1,6 +1,6 @@
 {
     "name": "marc-mabe/php-enum",
-    "description": "Simple and fast implementation of enumerations with native PHP 5.5 and upper",
+    "description": "Simple and fast implementation of enumerations with native PHP 5.6 and upper",
     "type": "library",
     "keywords": [
         "enum",
@@ -21,14 +21,14 @@
     }],
     "license": "BSD-3-Clause",
     "require": {
-        "php":            ">=5.5",
+        "php":            ">=5.6",
         "ext-reflection": "*"
     },
     "suggest": {
         "php": "PHP>=5.4 will be required for using trait EnumSerializableTrait"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.0 || ^5.0",
+        "phpunit/phpunit": "^5.0",
         "phpbench/phpbench": "@dev",
 
         "lstrojny/functional-php": "HHVM: variadic params with type constraints are not supported in non-Hack",

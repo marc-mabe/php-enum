@@ -5,6 +5,7 @@ namespace MabeEnumTest;
 use InvalidArgumentException;
 use MabeEnum\EnumSet;
 use MabeEnumTest\TestAsset\EmptyEnum;
+use MabeEnumTest\TestAsset\Enum31;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use MabeEnumTest\TestAsset\Enum32;
@@ -187,7 +188,7 @@ class EnumSetTest extends TestCase
         $this->assertSame($enum->getOrdinal() + 1, $enumSet->key());
     }
 
-    public function testRewindFirstOnEmptySet()
+    public function testRewindIntFirstOnEmptySet()
     {
         $enumSet = new EnumSet(EnumBasic::class);
 
@@ -196,6 +197,19 @@ class EnumSetTest extends TestCase
         $this->assertGreaterThan(0, $enumSet->key());
 
         $enumSet->detach(EnumBasic::TWO);
+        $enumSet->rewind();
+        $this->assertSame(0, $enumSet->key());
+    }
+
+    public function testRewindBinFirstOnEmptySet()
+    {
+        $enumSet = new EnumSet(Enum66::class);
+
+        $enumSet->attach(Enum66::TWO);
+        $enumSet->rewind();
+        $this->assertGreaterThan(0, $enumSet->key());
+
+        $enumSet->detach(Enum66::TWO);
         $enumSet->rewind();
         $this->assertSame(0, $enumSet->key());
     }
@@ -245,6 +259,42 @@ class EnumSetTest extends TestCase
         $this->assertNull($enum->attach(Enum65::byOrdinal(64)));
         $enum->next();
         $this->assertTrue($enum->valid());
+    }
+
+    public function testGetBit()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+        $enumSet->attach(EnumBasic::TWO);
+
+        $this->assertFalse($enumSet->getBit(EnumBasic::ONE()->getOrdinal()));
+        $this->assertTrue($enumSet->getBit(EnumBasic::TWO()->getOrdinal()));
+    }
+
+    public function testGetBitOutOfRangeOrdinal()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+
+        $this->expectException(InvalidArgumentException::class);
+        $enumSet->getBit(100);
+    }
+
+    public function testSetBit()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+
+        $enumSet->setBit(EnumBasic::TWO()->getOrdinal(), true);
+        $this->assertTrue($enumSet->getBit(EnumBasic::TWO()->getOrdinal()));
+
+        $enumSet->setBit(EnumBasic::TWO()->getOrdinal(), false);
+        $this->assertFalse($enumSet->getBit(EnumBasic::TWO()->getOrdinal()));
+    }
+
+    public function testSetBitOutOfRangeOrdinal()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+
+        $this->expectException(InvalidArgumentException::class);
+        $enumSet->setBit(100, true);
     }
 
     public function testGetBinaryBitsetLe()
@@ -315,49 +365,50 @@ class EnumSetTest extends TestCase
         $this->assertSame(3, $enumSet->count());
     }
 
-    public function testSetBinaryBitsetLe()
+    public function testSetBinaryBitsetLeBin()
     {
         $enumSet = new EnumSet(Enum65::class);
         $enumSet->setBinaryBitsetLe("\x01\x00\x00\x00\x00\x00\x00\x80\x01");
 
-        $this->assertTrue($enumSet->contains(Enum65::ONE));
-        $this->assertFalse($enumSet->contains(Enum65::TWO));
-        $this->assertTrue($enumSet->contains(Enum65::SIXTYFIVE));
-        $this->assertTrue($enumSet->contains(Enum65::SIXTYFOUR));
-        $this->assertTrue($enumSet->count() == 3);
+        $this->assertContains(Enum65::ONE(), $enumSet);
+        $this->assertNotContains(Enum65::TWO(), $enumSet);
+        $this->assertContains(Enum65::SIXTYFIVE(), $enumSet);
+        $this->assertContains(Enum65::SIXTYFOUR(), $enumSet);
+        $this->assertSame(3, $enumSet->count());
     }
 
-    public function testSetBinaryBitsetLeShort()
+    public function testSetBinaryBitsetLeBinShort()
     {
         $enumSet = new EnumSet(Enum65::class);
         $enumSet->setBinaryBitsetLe("\x0A");
         $this->assertSame("\x0A\x00\x00\x00\x00\x00\x00\x00\x00", $enumSet->getBinaryBitsetLe());
     }
 
-    public function testSetBinaryBitsetLeLong()
+    public function testSetBinaryBitsetLeBinLong()
     {
-        $enumSet = new EnumSet(EnumBasic::class);
-        $enumSet->setBinaryBitsetLe("\x0A\xFF\x00\x00\x00\x00");
-        $this->assertSame("\x0A\xFF", $enumSet->getBinaryBitsetLe());
+        $enumSet = new EnumSet(Enum65::class);
+        $bitset = "\x0A\xFF\x00\x00\x00\x00\x00\x00\x00";
+        $enumSet->setBinaryBitsetLe($bitset . "\x00\x00\x00\x00\x00\x00\x00");
+        $this->assertSame($bitset, $enumSet->getBinaryBitsetLe());
     }
 
-    public function testSetBinaryBitsetLeOutOrRangeBitsOfExtendedBytes1()
+    public function testSetBinaryBitsetLeBinOutOfRangeBitsOfExtendedBytes1()
     {
-        $enumSet = new EnumSet(EnumBasic::class);
+        $enumSet = new EnumSet(Enum65::class);
 
         $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
-        $enumSet->setBinaryBitsetLe("\x0A\xFF\x01");
+        $enumSet->setBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x00\x02");
     }
 
-    public function testSetBinaryBitsetLeOutOrRangeBitsOfExtendedBytes2()
+    public function testSetBinaryBitsetLeBinOutOfRangeBitsOfExtendedBytes2()
     {
-        $enumSet = new EnumSet(EnumBasic::class);
+        $enumSet = new EnumSet(Enum65::class);
 
         $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
-        $enumSet->setBinaryBitsetLe("\x0A\xFF\x00\x02");
+        $enumSet->setBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x02");
     }
 
-    public function testSetBinaryBitsetLeOutOrRangeBitsOfLastValidByte()
+    public function testSetBinaryBitsetLeBinOutOfRangeBitsOfLastValidByte()
     {
         // using Enum65 to detect Out-Of-Range bits of last valid byte
         // Enum65 has max. ordinal number of 2 of the last byte. -> 0001
@@ -369,12 +420,58 @@ class EnumSetTest extends TestCase
         $enumSet->setBinaryBitsetLe($newBitset);
     }
 
-    public function testSetBinaryBitsetLeArgumentExceptionIfNotString()
+    public function testSetBinaryBitsetLeBinArgumentExceptionIfNotString()
     {
         $this->setExpectedException(InvalidArgumentException::class);
         
         $enum = new EnumSet(Enum65::class);
         $enum->setBinaryBitsetLe(0);
+    }
+
+    public function testSetBinaryBitsetLeInt()
+    {
+        $enumSet = new EnumSet(Enum32::class);
+        $enumSet->setBinaryBitsetLe("\x01\x00\x80\x01");
+        $this->assertContains(Enum32::ONE(), $enumSet);
+        $this->assertNotContains(Enum32::TWO(), $enumSet);
+        $this->assertContains(Enum32::TWENTYFOUR(), $enumSet);
+        $this->assertContains(Enum32::TWENTYFIVE(), $enumSet);
+        $this->assertSame(3, $enumSet->count());
+    }
+
+    public function testSetBinaryBitsetLeIntShort()
+    {
+        $enumSet = new EnumSet(Enum32::class);
+        $enumSet->setBinaryBitsetLe("\x0A");
+        $this->assertSame("\x0A\x00\x00\x00", $enumSet->getBinaryBitsetLe());
+    }
+
+    public function testSetBinaryBitsetLeIntOutOfRangeBitsOfExtendedBytes1()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+
+        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $enumSet->setBinaryBitsetLe("\x0A\xFF\x01");
+    }
+
+    public function testSetBinaryBitsetLeIntOutOfRangeBitsOfExtendedBytes2()
+    {
+        $enumSet = new EnumSet(EnumBasic::class);
+
+        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $enumSet->setBinaryBitsetLe("\x01\x01\x01\x01\x01\x01\x01\x01\x01");
+    }
+
+    public function testSetBinaryBitsetLeIntOutOfRangeBitsOfLastValidByte()
+    {
+        // using Enum65 to detect Out-Of-Range bits of last valid byte
+        // Enum65 has max. ordinal number of 2 of the last byte. -> 0001
+        $enumSet   = new EnumSet(Enum31::class);
+        $bitset    = $enumSet->getBinaryBitsetLe();
+        $newBitset = substr($bitset, 0, -1) . "\xFF";
+
+        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $enumSet->setBinaryBitsetLe($newBitset);
     }
 
     public function testSetBinaryBitsetBe()
@@ -401,6 +498,33 @@ class EnumSetTest extends TestCase
     {
         $set = new EnumSet(EmptyEnum::class);
         $this->assertSame(0, $set->count());
+    }
+
+    public function testCountSingleBit32()
+    {
+        foreach (Enum32::getEnumerators() as $enum) {
+            $enumSet = new EnumSet(Enum32::class);
+            $enumSet->attach($enum);
+            $this->assertSame(1, $enumSet->count());
+        }
+    }
+
+    public function testCountSingleBit64()
+    {
+        foreach (Enum64::getEnumerators() as $enum) {
+            $enumSet = new EnumSet(Enum64::class);
+            $enumSet->attach($enum);
+            $this->assertSame(1, $enumSet->count());
+        }
+    }
+
+    public function testCountSingleBit66()
+    {
+        foreach (Enum66::getEnumerators() as $enum) {
+            $enumSet = new EnumSet(Enum66::class);
+            $enumSet->attach($enum);
+            $this->assertSame(1, $enumSet->count());
+        }
     }
 
     public function testIsEqual()
@@ -541,10 +665,10 @@ class EnumSetTest extends TestCase
         }
     }
 
-    public function testGetOrdinals()
+    public function testGetOrdinalsInt()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame(array(), $set->getOrdinals());
+        $this->assertSame([], $set->getOrdinals());
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
@@ -553,7 +677,19 @@ class EnumSetTest extends TestCase
         $this->assertSame(range(0, count(EnumBasic::getConstants()) - 1), $set->getOrdinals());
     }
 
-    public function testGetOrdinalsDoesNotEffectIteratorPosition()
+    public function testGetOrdinalsBin()
+    {
+        $set = new EnumSet(Enum66::class);
+        $this->assertSame([], $set->getOrdinals());
+
+        foreach (Enum66::getConstants() as $value) {
+            $set->attach($value);
+        }
+
+        $this->assertSame(range(0, count(Enum66::getConstants()) - 1), $set->getOrdinals());
+    }
+
+    public function testGetOrdinalsIntDoesNotEffectIteratorPosition()
     {
         $set = new EnumSet(EnumBasic::class);
         $set->attach(EnumBasic::ONE);
@@ -564,10 +700,21 @@ class EnumSetTest extends TestCase
         $this->assertSame(EnumBasic::TWO, $set->current()->getValue());
     }
 
+    public function testGetOrdinalsBinDoesNotEffectIteratorPosition()
+    {
+        $set = new EnumSet(Enum66::class);
+        $set->attach(Enum66::ONE);
+        $set->attach(Enum66::TWO);
+        $set->next();
+
+        $set->getOrdinals();
+        $this->assertSame(Enum66::TWO, $set->current()->getValue());
+    }
+
     public function testGetEnumerators()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame(array(), $set->getEnumerators());
+        $this->assertSame([], $set->getEnumerators());
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
@@ -590,7 +737,7 @@ class EnumSetTest extends TestCase
     public function testGetValues()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame(array(), $set->getValues());
+        $this->assertSame([], $set->getValues());
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
@@ -613,7 +760,7 @@ class EnumSetTest extends TestCase
     public function testGetNames()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame(array(), $set->getNames());
+        $this->assertSame([], $set->getNames());
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
@@ -642,18 +789,15 @@ class EnumSetTest extends TestCase
         $set2 = new EnumSet(EnumBasic::class);
         $set2->attach(EnumBasic::TWO);
         $set2->attach(EnumBasic::THREE);
+        $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-
-        $rs = $set1->union($set2, $set3);
-        $this->assertSame(array(
+        $rs = $set1->union($set2);
+        $this->assertSame([
             EnumBasic::ONE,
             EnumBasic::TWO,
             EnumBasic::THREE,
             EnumBasic::FOUR,
-        ), $rs->getValues());
+        ], $rs->getValues());
     }
 
     public function testUnionThrowsInvalidArgumentException()
@@ -677,15 +821,8 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-        $set3->attach(EnumBasic::FIVE);
-
-        $rs = $set1->intersect($set2, $set3);
-        $this->assertSame(array(
-            EnumBasic::THREE,
-        ), $rs->getValues());
+        $rs = $set1->intersect($set2);
+        $this->assertSame([EnumBasic::TWO, EnumBasic::THREE], $rs->getValues());
     }
 
     public function testIntersectThrowsInvalidArgumentException()
@@ -709,15 +846,8 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-        $set3->attach(EnumBasic::FIVE);
-
-        $rs = $set1->diff($set2, $set3);
-        $this->assertSame(array(
-            EnumBasic::ONE,
-        ), $rs->getValues());
+        $rs = $set1->diff($set2);
+        $this->assertSame([EnumBasic::ONE], $rs->getValues());
     }
 
     public function testDiffThrowsInvalidArgumentException()
@@ -741,17 +871,11 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::THREE);
         $set2->attach(EnumBasic::FOUR);
 
-        $set3 = new EnumSet(EnumBasic::class);
-        $set3->attach(EnumBasic::THREE);
-        $set3->attach(EnumBasic::FOUR);
-        $set3->attach(EnumBasic::FIVE);
-
-        $rs = $set1->symDiff($set2, $set3);
-        $this->assertSame(array(
+        $rs = $set1->symDiff($set2);
+        $this->assertSame([
             EnumBasic::ONE,
             EnumBasic::FOUR,
-            EnumBasic::FIVE,
-        ), $rs->getValues());
+        ], $rs->getValues());
     }
 
     public function testSymDiffThrowsInvalidArgumentException()
