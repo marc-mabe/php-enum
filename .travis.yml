@@ -21,6 +21,7 @@ matrix:
         - CODE_COVERAGE="1"
     - php: 7.0
       env:
+        - CODE_COVERAGE="1"
         - PHPDOC="1"
     - php: 7.1
       env:
