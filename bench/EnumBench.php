@@ -10,6 +10,10 @@ use MabeEnumTest\TestAsset\Enum66;
  * @BeforeMethods({"init"})
  * @Revs(2500)
  * @Iterations(25)
+ *
+ * @link http://github.com/marc-mabe/php-enum for the canonical source repository
+ * @copyright Copyright (c) 2017 Marc Bennewitz
+ * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumBench
 {

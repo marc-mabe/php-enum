@@ -18,7 +18,7 @@ use PHPUnit_Framework_TestCase as TestCase;
  * Unit tests for the class MabeEnum\EnumSet
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2015 Marc Bennewitz
+ * @copyright Copyright (c) 2017 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumSetTest extends TestCase

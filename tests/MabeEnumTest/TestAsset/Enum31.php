@@ -5,10 +5,10 @@ namespace MabeEnumTest\TestAsset;
 use MabeEnum\Enum;
 
 /**
- * Unit tests for the class MabeEnum\Enum
+ * Enumeration with numbers from 1-31 (Safe to use on 32 and 64 bit systems as positive integer)
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2013 Marc Bennewitz
+ * @copyright Copyright (c) 2017 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class Enum31 extends Enum
