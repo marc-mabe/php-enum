@@ -44,10 +44,6 @@ install:
       wget -q -N -t 3 --retry-connrefused 'https://github.com/phpDocumentor/phpDocumentor2/releases/download/v2.9.0/phpDocumentor.phar' || return 0;
       composer require --no-update --dev "evert/phpdoc-md:~0.2.0" || return 0;
     fi
-  - if [ "${TRAVIS_PHP_VERSION}" == "5.3.3" ]; then
-        composer config -g disable-tls true &&
-        composer config -g secure-http false;
-    fi
   - composer install -n
 
 script:
