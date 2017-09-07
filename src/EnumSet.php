@@ -202,7 +202,7 @@ class EnumSet implements Iterator, Countable
      */
     private function doRewindBin()
     {
-        if (trim($this->bitset, "\0") !== '') {
+        if (ltrim($this->bitset, "\0") !== '') {
             $this->ordinal = -1;
             $this->next();
         } else {
@@ -620,7 +620,7 @@ class EnumSet implements Iterator, Countable
             // add "\0" if the given bitset is not long enough
             $bitset .= str_repeat("\0", $size - $sizeIn);
         } elseif ($sizeIn > $size) {
-            if (trim(substr($bitset, $size), "\0") !== '') {
+            if (ltrim(substr($bitset, $size), "\0") !== '') {
                 throw new InvalidArgumentException('Out-Of-Range bits detected');
             }
             $bitset = substr($bitset, 0, $size);
