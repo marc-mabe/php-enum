@@ -7,7 +7,8 @@ use Iterator;
 use InvalidArgumentException;
 
 /**
- * This EnumSet is based on a bitset of a binary string.
+ * A set of enumerators of the given enumeration (EnumSet<T>)
+ * based on an integer or binary bitset depending of given enumeration size.
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2017 Marc Bennewitz
