@@ -88,18 +88,6 @@ class EnumMap extends SplObjectStorage
     }
 
     /**
-     * Get a unique identifier for the given enumerator
-     * @param Enum|null|boolean|int|float|string $enumerator
-     * @return string
-     * @throws InvalidArgumentException On an invalid given enumerator
-     */
-    public function getHash($enumerator)
-    {
-        $enumeration = $this->enumeration;
-        return spl_object_hash($enumeration::get($enumerator));
-    }
-
-    /**
      * Test if the given enumerator exists
      * @param Enum|null|boolean|int|float|string $enumerator
      * @return boolean

@@ -62,13 +62,11 @@ class EnumMapTest extends TestCase
         $this->assertNull($enumMap->attach($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
         $this->assertSame($value1, $enumMap[$enum1]);
-        $this->assertSame(spl_object_hash(EnumBasic::ONE()), $enumMap->getHash($enum1));
 
         $this->assertFalse($enumMap->contains($enum2));
         $this->assertNull($enumMap->attach($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
         $this->assertSame($value2, $enumMap[$enum2]);
-        $this->assertSame(spl_object_hash(EnumBasic::TWO()), $enumMap->getHash($enum2));
 
         $this->assertNull($enumMap->detach($enum1));
         $this->assertFalse($enumMap->contains($enum1));
