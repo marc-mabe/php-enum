@@ -197,9 +197,14 @@ class EnumSet66Bench
         $this->fullSet->symDiff($this->emptySet);
     }
 
-    public function benchGetOrdinals()
+    public function benchGetOrdinalsFull()
     {
         $this->fullSet->getOrdinals();
+    }
+
+    public function benchGetOrdinalsEmpty()
+    {
+        $this->emptySet->getOrdinals();
     }
 
     public function benchGetValues()

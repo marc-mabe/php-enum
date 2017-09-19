@@ -265,15 +265,16 @@ class EnumSet implements Iterator, Countable
      */
     private function doCountBin()
     {
-        $count = 0;
-        $byteLen = strlen($this->bitset);
+        $count   = 0;
+        $bitset  = $this->bitset;
+        $byteLen = strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
-            if ($this->bitset[$bytePos] === "\0") {
+            if ($bitset[$bytePos] === "\0") {
                 // fast skip null byte
                 continue;
             }
 
-            $ord = ord($this->bitset[$bytePos]);
+            $ord = ord($bitset[$bytePos]);
             for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
                 if ($ord & (1 << $bitPos)) {
                     ++$count;
@@ -468,14 +469,15 @@ class EnumSet implements Iterator, Countable
     private function doGetOrdinalsBin()
     {
         $ordinals = [];
-        $byteLen = strlen($this->bitset);
+        $bitset   = $this->bitset;
+        $byteLen  = strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
-            if ($this->bitset[$bytePos] === "\0") {
+            if ($bitset[$bytePos] === "\0") {
                 // fast skip null byte
                 continue;
             }
 
-            $ord = ord($this->bitset[$bytePos]);
+            $ord = ord($bitset[$bytePos]);
             for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
                 if ($ord & (1 << $bitPos)) {
                     $ordinals[] = $bytePos * 8 + $bitPos;
@@ -496,9 +498,11 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetOrdinalsInt()
     {
-        $ordinals = [];
-        for ($ord = 0; $ord < $this->ordinalMax; ++$ord) {
-            if ($this->bitset & (1 << $ord)) {
+        $ordinals   = [];
+        $ordinalMax = $this->ordinalMax;
+        $bitset     = $this->bitset;
+        for ($ord = 0; $ord < $ordinalMax; ++$ord) {
+            if ($bitset & (1 << $ord)) {
                 $ordinals[] = $ord;
             }
         }
