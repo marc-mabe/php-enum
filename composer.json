@@ -28,7 +28,7 @@
         "php": "PHP>=5.4 will be required for using trait EnumSerializableTrait"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.0",
+        "phpunit/phpunit": "^5.7 || ^6.0",
         "phpbench/phpbench": "@dev",
 
         "lstrojny/functional-php": "HHVM: variadic params with type constraints are not supported in non-Hack",

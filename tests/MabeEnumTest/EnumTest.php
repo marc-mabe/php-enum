@@ -12,7 +12,7 @@ use MabeEnumTest\TestAsset\EnumExtendedAmbiguous;
 use MabeEnumTest\TestAsset\ConstVisibilityEnum;
 use MabeEnumTest\TestAsset\ConstVisibilityEnumExtended;
 use MabeEnumTest\TestAsset\SerializableEnum;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 /**
@@ -93,19 +93,19 @@ class EnumTest extends TestCase
 
     public function testGetWithNonStrictValueThrowsInvalidArgumentException()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         EnumBasic::get((string)EnumBasic::TWO);
     }
 
     public function testGetWithInvalidValueThrowsInvalidArgumentException()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         EnumBasic::get('unknown');
     }
 
     public function testGetWithInvalidTypeOfValueThrowsInvalidArgumentException()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         EnumBasic::get(array());
     }
 
@@ -120,7 +120,7 @@ class EnumTest extends TestCase
     {
         $enum = EnumInheritance::get(EnumInheritance::ONE);
 
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         EnumBasic::get($enum);
     }
 
@@ -250,7 +250,7 @@ class EnumTest extends TestCase
 
     public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         EnumInheritance::byOrdinal(17);
     }
 
@@ -263,7 +263,7 @@ class EnumTest extends TestCase
 
     public function testInstantiateByUnknownNameThrowsInvalidArgumentException()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         EnumInheritance::byName('UNKNOWN');
     }
 
@@ -276,13 +276,13 @@ class EnumTest extends TestCase
 
     public function testAmbiguousConstantsThrowsLogicException()
     {
-        $this->setExpectedException(LogicException::class);
+        $this->expectException(LogicException::class);
         EnumAmbiguous::get('unknown');
     }
 
     public function testExtendedAmbiguousCanstantsThrowsLogicException()
     {
-        $this->setExpectedException(LogicException::class);
+        $this->expectException(LogicException::class);
         EnumExtendedAmbiguous::get('unknown');
     }
 
@@ -303,7 +303,7 @@ class EnumTest extends TestCase
         $this->assertTrue($reflectionMethod->isFinal(), 'The method __clone must be final');
 
         $reflectionMethod->setAccessible(true);
-        $this->setExpectedException(LogicException::class);
+        $this->expectException(LogicException::class);
         $reflectionMethod->invoke($enum);
     }
 
@@ -311,13 +311,13 @@ class EnumTest extends TestCase
     {
         $enum = EnumBasic::ONE();
 
-        $this->setExpectedException(LogicException::class);
+        $this->expectException(LogicException::class);
         serialize($enum);
     }
 
     public function testNotUnserializable()
     {
-        $this->setExpectedException(LogicException::class);
+        $this->expectException(LogicException::class);
         unserialize('O:' . strlen(EnumBasic::class) . ':"' . EnumBasic::class . '":0:{}');
     }
 

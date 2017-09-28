@@ -5,7 +5,7 @@ namespace MabeEnumTest;
 use LogicException;
 use MabeEnum\Enum;
 use MabeEnumTest\TestAsset\SerializableEnum;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
 
@@ -48,19 +48,19 @@ class EnumSerializableTraitTest extends TestCase
 
     public function testUnserializeThrowsRuntimeExceptionOnUnknownValue()
     {
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         unserialize('C:' . strlen(SerializableEnum::class) . ':"' . SerializableEnum::class . '":11:{s:4:"test";}');
     }
 
     public function testUnserializeThrowsRuntimeExceptionOnInvalidValue()
     {
-        $this->setExpectedException(RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         unserialize('C:' . strlen(SerializableEnum::class) . ':"' . SerializableEnum::class . '":19:{O:8:"stdClass":0:{}}');
     }
 
     public function testUnserializeThrowsLogicExceptionOnChangingValue()
     {
-        $this->setExpectedException(LogicException::class);
+        $this->expectException(LogicException::class);
         $enum = SerializableEnum::get(SerializableEnum::INT);
         $enum->unserialize(serialize(SerializableEnum::STR));
     }

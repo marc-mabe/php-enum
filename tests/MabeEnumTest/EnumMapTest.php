@@ -6,8 +6,9 @@ use InvalidArgumentException;
 use MabeEnum\EnumMap;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Serializable;
 
 /**
  * Unit tests for the class MabeEnum\EnumMap
@@ -159,7 +160,7 @@ class EnumMapTest extends TestCase
 
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new EnumMap('stdClass');
     }
 
@@ -167,7 +168,7 @@ class EnumMapTest extends TestCase
     {
         $enumMap = new EnumMap(EnumBasic::class);
 
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $enumMap->offsetSet(EnumInheritance::INHERITANCE(), 'test');
     }
 
@@ -180,5 +181,14 @@ class EnumMapTest extends TestCase
 
         $this->assertFalse(isset($enumMap[EnumInheritance::INHERITANCE()]));
         $this->assertFalse(isset($enumMap[EnumInheritance::INHERITANCE]));
+    }
+
+    public function testSerializable()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+        if ($enumMap instanceof Serializable) {
+            $enumMap->offsetSet(EnumBasic::ONE, 'one');
+            serialize($enumMap);
+        }
     }
 }

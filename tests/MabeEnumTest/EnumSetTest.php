@@ -12,7 +12,7 @@ use MabeEnumTest\TestAsset\Enum32;
 use MabeEnumTest\TestAsset\Enum64;
 use MabeEnumTest\TestAsset\Enum65;
 use MabeEnumTest\TestAsset\Enum66;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests for the class MabeEnum\EnumSet
@@ -157,14 +157,14 @@ class EnumSetTest extends TestCase
 
     public function testConstructThrowsInvalidArgumentExceptionIfEnumClassDoesNotExtendBaseEnum()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new EnumSet(self::class);
     }
 
     public function testInitEnumThrowsInvalidArgumentExceptionOnInvalidEnum()
     {
         $enumSet = new EnumSet(EnumBasic::class);
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->assertFalse($enumSet->contains(EnumInheritance::INHERITANCE()));
     }
 
@@ -396,7 +396,7 @@ class EnumSetTest extends TestCase
     {
         $enumSet = new EnumSet(Enum65::class);
 
-        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
         $enumSet->setBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x00\x02");
     }
 
@@ -404,7 +404,7 @@ class EnumSetTest extends TestCase
     {
         $enumSet = new EnumSet(Enum65::class);
 
-        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
         $enumSet->setBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x02");
     }
 
@@ -416,13 +416,13 @@ class EnumSetTest extends TestCase
         $bitset    = $enumSet->getBinaryBitsetLe();
         $newBitset = substr($bitset, 0, -1) . "\x02";
 
-        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
         $enumSet->setBinaryBitsetLe($newBitset);
     }
 
     public function testSetBinaryBitsetLeBinArgumentExceptionIfNotString()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         
         $enum = new EnumSet(Enum65::class);
         $enum->setBinaryBitsetLe(0);
@@ -450,7 +450,7 @@ class EnumSetTest extends TestCase
     {
         $enumSet = new EnumSet(EnumBasic::class);
 
-        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
         $enumSet->setBinaryBitsetLe("\x0A\xFF\x01");
     }
 
@@ -458,7 +458,7 @@ class EnumSetTest extends TestCase
     {
         $enumSet = new EnumSet(EnumBasic::class);
 
-        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
         $enumSet->setBinaryBitsetLe("\x01\x01\x01\x01\x01\x01\x01\x01\x01");
     }
 
@@ -470,7 +470,7 @@ class EnumSetTest extends TestCase
         $bitset    = $enumSet->getBinaryBitsetLe();
         $newBitset = substr($bitset, 0, -1) . "\xFF";
 
-        $this->setExpectedException(InvalidArgumentException::class, 'Out-Of-Range');
+        $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
         $enumSet->setBinaryBitsetLe($newBitset);
     }
 
@@ -488,7 +488,7 @@ class EnumSetTest extends TestCase
 
     public function testSetBinaryBitsetBeArgumentExceptionIfNotString()
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         
         $enum = new EnumSet(Enum65::class);
         $enum->setBinaryBitsetBe(0);
@@ -805,7 +805,7 @@ class EnumSetTest extends TestCase
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $set1->union($set2);
     }
 
@@ -830,7 +830,7 @@ class EnumSetTest extends TestCase
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $set1->intersect($set2);
     }
 
@@ -855,7 +855,7 @@ class EnumSetTest extends TestCase
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $set1->diff($set2);
     }
 
@@ -883,7 +883,7 @@ class EnumSetTest extends TestCase
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $set1->symDiff($set2);
     }
 }
