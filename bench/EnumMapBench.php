@@ -48,8 +48,8 @@ class EnumMapBench
 
         $this->emptyMap = new EnumMap(Enum66::class);
         $this->fullMap  = new EnumMap(Enum66::class);
-        foreach ($this->enumerators as $i => $enumerator) {
-            $this->fullMap->offsetSet($enumerator, $i);
+        foreach ($this->enumerators as $enumerator) {
+            $this->fullMap->offsetSet($enumerator);
         }
     }
 

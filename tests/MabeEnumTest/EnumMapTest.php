@@ -19,28 +19,26 @@ use Serializable;
  */
 class EnumMapTest extends TestCase
 {
-    public function testBasic()
+    public function testBasicWithEnumeratorInstances()
     {
         $enumMap = new EnumMap(EnumBasic::class);
         $this->assertSame(EnumBasic::class, $enumMap->getEnumeration());
 
-        $enum1  = EnumBasic::ONE();
+        $enum1  = EnumBasic::TWO();
         $value1 = 'value1';
 
-        $enum2  = EnumBasic::TWO();
+        $enum2  = EnumBasic::ONE();
         $value2 = 'value2';
 
         $this->assertFalse($enumMap->contains($enum1));
         $this->assertNull($enumMap->attach($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
         $this->assertSame($value1, $enumMap[$enum1]);
-        $this->assertSame(spl_object_hash($enum1), $enumMap->getHash($enum1));
 
         $this->assertFalse($enumMap->contains($enum2));
         $this->assertNull($enumMap->attach($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
         $this->assertSame($value2, $enumMap[$enum2]);
-        $this->assertSame(spl_object_hash($enum2), $enumMap->getHash($enum2));
 
         $this->assertNull($enumMap->detach($enum1));
         $this->assertFalse($enumMap->contains($enum1));
@@ -49,7 +47,7 @@ class EnumMapTest extends TestCase
         $this->assertFalse($enumMap->contains($enum2));
     }
 
-    public function testBasicWithConstantValuesAsEnums()
+    public function testBasicWithEnumeratorValues()
     {
         $enumMap = new EnumMap(EnumBasic::class);
 
@@ -186,9 +184,13 @@ class EnumMapTest extends TestCase
     public function testSerializable()
     {
         $enumMap = new EnumMap(EnumBasic::class);
-        if ($enumMap instanceof Serializable) {
-            $enumMap->offsetSet(EnumBasic::ONE, 'one');
-            serialize($enumMap);
-        }
+        $enumMap[EnumBasic::ONE()] = 'one';
+
+        $enumMapCopy = unserialize(serialize($enumMap));
+        $this->assertTrue($enumMapCopy->offsetExists(EnumBasic::ONE));
+        $this->assertFalse($enumMapCopy->offsetExists(EnumBasic::TWO));
+
+        // unserialized instance should be the same
+        $this->assertSame(EnumBasic::ONE(), $enumMapCopy->key());
     }
 }

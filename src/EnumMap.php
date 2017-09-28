@@ -2,24 +2,44 @@
 
 namespace MabeEnum;
 
-use SplObjectStorage;
+use ArrayAccess;
+use Countable;
 use InvalidArgumentException;
+use Iterator;
+use UnexpectedValueException;
 
 /**
- * A map of enumerator keys of the given enumeration (EnumMap<T>)
- * based on SplObjectStorage
+ * A map of enumerators (EnumMap<T>) and mixed values.
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2017 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-class EnumMap extends SplObjectStorage
+class EnumMap implements ArrayAccess, Countable, Iterator
 {
     /**
      * The classname of the enumeration type
      * @var string
      */
     private $enumeration;
+
+    /**
+     * Internal map of ordinal number and value
+     * @var array
+     */
+    private $map = [];
+
+    /**
+     * List of ordinal numbers
+     * @var int[]
+     */
+    private $ordinals = [];
+
+    /**
+     * Current iterator position
+     * @var int
+     */
+    private $pos = 0;
 
     /**
      * Constructor
@@ -29,7 +49,7 @@ class EnumMap extends SplObjectStorage
     public function __construct($enumeration)
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 "This EnumMap can handle subclasses of '%s' only",
                 Enum::class
             ));
@@ -55,8 +75,7 @@ class EnumMap extends SplObjectStorage
      */
     public function attach($enumerator, $data = null)
     {
-        $enumeration = $this->enumeration;
-        parent::attach($enumeration::get($enumerator), $data);
+        return $this->offsetSet($enumerator, $data);
     }
 
     /**
@@ -66,13 +85,7 @@ class EnumMap extends SplObjectStorage
      */
     public function contains($enumerator)
     {
-        try {
-            $enumeration = $this->enumeration;
-            return parent::contains($enumeration::get($enumerator));
-        } catch (InvalidArgumentException $e) {
-            // On an InvalidArgumentException the given argument can't be contained in this map
-            return false;
-        }
+        return $this->offsetExists($enumerator);
     }
 
     /**
@@ -83,8 +96,7 @@ class EnumMap extends SplObjectStorage
      */
     public function detach($enumerator)
     {
-        $enumeration = $this->enumeration;
-        parent::detach($enumeration::get($enumerator));
+        $this->offsetUnset($enumerator);
     }
 
     /**
@@ -95,7 +107,14 @@ class EnumMap extends SplObjectStorage
      */
     public function offsetExists($enumerator)
     {
-        return $this->contains($enumerator);
+        try {
+            $enumeration = $this->enumeration;
+            $ord  = $enumeration::get($enumerator)->getOrdinal();
+            return isset($this->map[$ord]);
+        } catch (InvalidArgumentException $e) {
+            // An invalid enumerator can't be contained in this map
+            return false;
+        }
     }
 
     /**
@@ -107,7 +126,15 @@ class EnumMap extends SplObjectStorage
     public function offsetGet($enumerator)
     {
         $enumeration = $this->enumeration;
-        return parent::offsetGet($enumeration::get($enumerator));
+        $ord = $enumeration::get($enumerator)->getOrdinal();
+        if (!isset($this->map[$ord])) {
+            throw new UnexpectedValueException(\sprintf(
+                "Enumerator '%s' could not be found",
+                \is_object($enumerator) ? $enumerator->getValue() : $enumerator
+            ));
+        }
+
+        return $this->map[$ord];
     }
 
     /**
@@ -121,7 +148,12 @@ class EnumMap extends SplObjectStorage
     public function offsetSet($enumerator, $data = null)
     {
         $enumeration = $this->enumeration;
-        parent::offsetSet($enumeration::get($enumerator), $data);
+        $ord = $enumeration::get($enumerator)->getOrdinal();
+
+        if (!isset($this->map[$ord])) {
+            $this->ordinals[] = $ord;
+        }
+        $this->map[$ord] = $data;
     }
 
     /**
@@ -134,7 +166,11 @@ class EnumMap extends SplObjectStorage
     public function offsetUnset($enumerator)
     {
         $enumeration = $this->enumeration;
-        parent::offsetUnset($enumeration::get($enumerator));
+        $ord = $enumeration::get($enumerator)->getOrdinal();
+
+        if (($idx = \array_search($ord, $this->ordinals, true)) !== false) {
+            unset($this->map[$ord], $this->ordinals[$idx]);
+        }
     }
 
     /**
@@ -143,7 +179,11 @@ class EnumMap extends SplObjectStorage
      */
     public function current()
     {
-        return parent::getInfo();
+        if (!isset($this->ordinals[$this->pos])) {
+            return null;
+        }
+
+        return $this->map[$this->ordinals[$this->pos]];
     }
 
     /**
@@ -152,6 +192,48 @@ class EnumMap extends SplObjectStorage
      */
     public function key()
     {
-        return parent::current();
+        if (!isset($this->ordinals[$this->pos])) {
+            return null;
+        }
+
+        $enumeration = $this->enumeration;
+        return $enumeration::byOrdinal($this->ordinals[$this->pos]);
+    }
+
+    /**
+     * Reset the iterator position to zero.
+     * @return void
+     */
+    public function rewind()
+    {
+        $this->pos = 0;
+    }
+
+    /**
+     * Increment the iterator position by one.
+     * @return void
+     */
+    public function next()
+    {
+        ++$this->pos;
+    }
+
+    /**
+     * Test if the iterator is in a valid state
+     * @return boolean
+     */
+    public function valid()
+    {
+        return isset($this->ordinals[$this->pos]);
+    }
+
+    /**
+     * Count the number of elements
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return \count($this->ordinals);
     }
 }
