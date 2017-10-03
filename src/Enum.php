@@ -117,10 +117,8 @@ abstract class Enum
      */
     final public function getName()
     {
-        if ($this->ordinal !== null) {
-            return self::$names[static::class][$this->ordinal];
-        }
-        return \array_search($this->value, self::detectConstants(static::class), true);
+        $ordinal = $this->ordinal !== null ? $this->ordinal : $this->getOrdinal();
+        return self::$names[static::class][$ordinal];
     }
 
     /**
