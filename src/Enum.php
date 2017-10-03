@@ -37,7 +37,7 @@ abstract class Enum
     private static $constants = array();
 
     /**
-     * A List of of available enumerator names by enumeration class
+     * A List of available enumerator names by enumeration class
      *
      * @var array ["$class" => ["$name0", ...], ...]
      */
@@ -130,22 +130,20 @@ abstract class Enum
      */
     final public function getOrdinal()
     {
-        if ($this->ordinal !== null) {
-            return $this->ordinal;
-        }
-
-        // detect ordinal
-        $ordinal = 0;
-        $value   = $this->value;
-        foreach (self::detectConstants(static::class) as $constValue) {
-            if ($value === $constValue) {
-                break;
+        if ($this->ordinal === null) {
+            $ordinal = 0;
+            $value   = $this->value;
+            foreach (self::detectConstants(static::class) as $constValue) {
+                if ($value === $constValue) {
+                    break;
+                }
+                ++$ordinal;
             }
-            ++$ordinal;
+
+            $this->ordinal = $ordinal;
         }
 
-        $this->ordinal = $ordinal;
-        return $ordinal;
+        return $this->ordinal;
     }
 
     /**
@@ -263,7 +261,7 @@ abstract class Enum
         }
 
         $const = $class . '::' . $name;
-        return self::$instances[$class][$name] = new $class(\constant($const));
+        return self::$instances[$class][$name] = new $class(\constant($const), $ordinal);
     }
 
     /**
