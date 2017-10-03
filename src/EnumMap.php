@@ -5,7 +5,8 @@ namespace MabeEnum;
 use ArrayAccess;
 use Countable;
 use InvalidArgumentException;
-use Iterator;
+use OutOfBoundsException;
+use SeekableIterator;
 use UnexpectedValueException;
 
 /**
@@ -15,7 +16,7 @@ use UnexpectedValueException;
  * @copyright Copyright (c) 2017 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-class EnumMap implements ArrayAccess, Countable, Iterator
+class EnumMap implements ArrayAccess, Countable, SeekableIterator
 {
     /**
      * The classname of the enumeration type
@@ -67,43 +68,63 @@ class EnumMap implements ArrayAccess, Countable, Iterator
     }
 
     /**
-     * Attach a new enumerator or overwrite an existing one
-     * @param Enum|null|boolean|int|float|string $enumerator
-     * @param mixed                              $data
-     * @return void
-     * @throws InvalidArgumentException On an invalid given enumerator
+     * Get a list of map keys
+     * @return Enum[]
      */
-    public function attach($enumerator, $data = null)
+    public function getKeys()
     {
-        return $this->offsetSet($enumerator, $data);
+        return \array_map([$this->enumeration, 'byOrdinal'], $this->ordinals);
+    }
+
+    /**
+     * Get a list of map values
+     * @return mixed[]
+     */
+    public function getValues()
+    {
+        return \array_values($this->map);
+    }
+
+    /**
+     * Search for the given value
+     * @param mixed $value
+     * @param bool $strict Use strict type comparison
+     * @return Enum|null The found key or NULL
+     */
+    public function search($value, $strict = false)
+    {
+        $ord = \array_search($value, $this->map, $strict);
+        if ($ord !== false) {
+            $enumeration = $this->enumeration;
+            return $enumeration::byOrdinal($ord);
+        }
+
+        return null;
     }
 
     /**
      * Test if the given enumerator exists
      * @param Enum|null|boolean|int|float|string $enumerator
      * @return boolean
+     * @see offsetExists
      */
     public function contains($enumerator)
     {
-        return $this->offsetExists($enumerator);
+        try {
+            $enumeration = $this->enumeration;
+            $ord  = $enumeration::get($enumerator)->getOrdinal();
+            return array_key_exists($ord, $this->map);
+        } catch (InvalidArgumentException $e) {
+            // An invalid enumerator can't be contained in this map
+            return false;
+        }
     }
 
     /**
-     * Detach an enumerator
-     * @param Enum|null|boolean|int|float|string $enumerator
-     * @return void
-     * @throws InvalidArgumentException On an invalid given enumerator
-     */
-    public function detach($enumerator)
-    {
-        $this->offsetUnset($enumerator);
-    }
-
-    /**
-     * Test if the given enumerator exists
+     * Test if the given enumerator key exists and is not NULL
      * @param Enum|null|boolean|int|float|string $enumerator
      * @return boolean
-     * @see contains()
+     * @see contains
      */
     public function offsetExists($enumerator)
     {
@@ -112,7 +133,7 @@ class EnumMap implements ArrayAccess, Countable, Iterator
             $ord  = $enumeration::get($enumerator)->getOrdinal();
             return isset($this->map[$ord]);
         } catch (InvalidArgumentException $e) {
-            // An invalid enumerator can't be contained in this map
+            // An invalid enumerator can't be an offset of this map
             return false;
         }
     }
@@ -145,7 +166,7 @@ class EnumMap implements ArrayAccess, Countable, Iterator
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see attach()
      */
-    public function offsetSet($enumerator, $data = null)
+    public function offsetSet($enumerator, $value = null)
     {
         $enumeration = $this->enumeration;
         $ord = $enumeration::get($enumerator)->getOrdinal();
@@ -153,7 +174,7 @@ class EnumMap implements ArrayAccess, Countable, Iterator
         if (!isset($this->map[$ord])) {
             $this->ordinals[] = $ord;
         }
-        $this->map[$ord] = $data;
+        $this->map[$ord] = $value;
     }
 
     /**
@@ -170,7 +191,22 @@ class EnumMap implements ArrayAccess, Countable, Iterator
 
         if (($idx = \array_search($ord, $this->ordinals, true)) !== false) {
             unset($this->map[$ord], $this->ordinals[$idx]);
+            $this->ordinals = \array_values($this->ordinals);
         }
+    }
+
+    /**
+     * Seeks to the given iterator position.
+     * @param int $pos
+     */
+    public function seek($pos)
+    {
+        $pos = (int)$pos;
+        if (!isset($this->ordinals[$pos])) {
+            throw new OutOfBoundsException("Position {$pos} not found");
+        }
+
+        $this->pos = $pos;
     }
 
     /**

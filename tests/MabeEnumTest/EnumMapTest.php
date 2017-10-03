@@ -6,9 +6,8 @@ use InvalidArgumentException;
 use MabeEnum\EnumMap;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
+use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
-use Serializable;
 
 /**
  * Unit tests for the class MabeEnum\EnumMap
@@ -31,20 +30,33 @@ class EnumMapTest extends TestCase
         $value2 = 'value2';
 
         $this->assertFalse($enumMap->contains($enum1));
-        $this->assertNull($enumMap->attach($enum1, $value1));
+        $this->assertFalse($enumMap->contains($enum2));
+        $this->assertSame([], $enumMap->getKeys());
+        $this->assertSame([], $enumMap->getValues());
+
+        $this->assertNull($enumMap->offsetSet($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
         $this->assertSame($value1, $enumMap[$enum1]);
-
         $this->assertFalse($enumMap->contains($enum2));
-        $this->assertNull($enumMap->attach($enum2, $value2));
+        $this->assertSame([$enum1], $enumMap->getKeys());
+        $this->assertSame([$value1], $enumMap->getValues());
+
+
+        $this->assertNull($enumMap->offsetSet($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
         $this->assertSame($value2, $enumMap[$enum2]);
+        $this->assertSame([$enum1, $enum2], $enumMap->getKeys());
+        $this->assertSame([$value1, $value2], $enumMap->getValues());
 
-        $this->assertNull($enumMap->detach($enum1));
+        $this->assertNull($enumMap->offsetUnset($enum1));
         $this->assertFalse($enumMap->contains($enum1));
+        $this->assertSame([$enum2], $enumMap->getKeys());
+        $this->assertSame([$value2], $enumMap->getValues());
 
-        $this->assertNull($enumMap->detach($enum2));
+        $this->assertNull($enumMap->offsetUnset($enum2));
         $this->assertFalse($enumMap->contains($enum2));
+        $this->assertSame([], $enumMap->getKeys());
+        $this->assertSame([], $enumMap->getValues());
     }
 
     public function testBasicWithEnumeratorValues()
@@ -58,20 +70,32 @@ class EnumMapTest extends TestCase
         $value2 = 'value2';
 
         $this->assertFalse($enumMap->contains($enum1));
-        $this->assertNull($enumMap->attach($enum1, $value1));
+        $this->assertFalse($enumMap->contains($enum2));
+        $this->assertSame([], $enumMap->getKeys());
+        $this->assertSame([], $enumMap->getValues());
+
+        $this->assertNull($enumMap->offsetSet($enum1, $value1));
         $this->assertTrue($enumMap->contains($enum1));
         $this->assertSame($value1, $enumMap[$enum1]);
-
         $this->assertFalse($enumMap->contains($enum2));
-        $this->assertNull($enumMap->attach($enum2, $value2));
+        $this->assertSame([EnumBasic::byValue($enum1)], $enumMap->getKeys());
+        $this->assertSame([$value1], $enumMap->getValues());
+
+        $this->assertNull($enumMap->offsetSet($enum2, $value2));
         $this->assertTrue($enumMap->contains($enum2));
         $this->assertSame($value2, $enumMap[$enum2]);
+        $this->assertSame([EnumBasic::byValue($enum1), EnumBasic::byValue($enum2)], $enumMap->getKeys());
+        $this->assertSame([$value1, $value2], $enumMap->getValues());
 
-        $this->assertNull($enumMap->detach($enum1));
+        $this->assertNull($enumMap->offsetUnset($enum1));
         $this->assertFalse($enumMap->contains($enum1));
+        $this->assertSame([EnumBasic::byValue($enum2)], $enumMap->getKeys());
+        $this->assertSame([$value2], $enumMap->getValues());
 
-        $this->assertNull($enumMap->detach($enum2));
+        $this->assertNull($enumMap->offsetUnset($enum2));
         $this->assertFalse($enumMap->contains($enum2));
+        $this->assertSame([], $enumMap->getKeys());
+        $this->assertSame([], $enumMap->getValues());
     }
 
     public function testIterate()
@@ -90,8 +114,8 @@ class EnumMapTest extends TestCase
         $this->assertFalse($enumMap->valid());
 
         // attach
-        $enumMap->attach($enum1, $value1);
-        $enumMap->attach($enum2, $value2);
+        $enumMap->offsetSet($enum1, $value1);
+        $enumMap->offsetSet($enum2, $value2);
 
         // a not empty enum map should be valid, starting by 0 (if not iterated)
         $enumMap->rewind();
@@ -179,6 +203,76 @@ class EnumMapTest extends TestCase
 
         $this->assertFalse(isset($enumMap[EnumInheritance::INHERITANCE()]));
         $this->assertFalse(isset($enumMap[EnumInheritance::INHERITANCE]));
+    }
+
+    public function testSearch()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+        $enumMap[EnumBasic::TWO()] = '2';
+        $enumMap[EnumBasic::THREE()] = '3';
+
+        $this->assertSame(EnumBasic::TWO(), $enumMap->search('2'));
+        $this->assertSame(EnumBasic::TWO(), $enumMap->search(2));
+        $this->assertSame(EnumBasic::THREE(), $enumMap->search('3'));
+        $this->assertSame(EnumBasic::THREE(), $enumMap->search(3));
+
+        $this->assertNull($enumMap->search('4'));
+        $this->assertNull($enumMap->search(4));
+        $this->assertNull($enumMap->search('unknown'));
+    }
+
+    public function testSearchStrict()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+        $enumMap[EnumBasic::TWO()] = '2';
+        $enumMap[EnumBasic::THREE()] = '3';
+
+        $this->assertSame(EnumBasic::TWO(), $enumMap->search('2', true));
+        $this->assertNull($enumMap->search(2, true));
+        $this->assertSame(EnumBasic::THREE(), $enumMap->search('3', true));
+        $this->assertNull($enumMap->search(3, true));
+
+        $this->assertNull($enumMap->search('4', true));
+        $this->assertNull($enumMap->search(4, true));
+        $this->assertNull($enumMap->search('unknown', true));
+    }
+
+    public function testNullValue()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+        $enumMap[EnumBasic::ONE()] = null;
+
+        $enumMap->rewind();
+        $this->assertSame(1, $enumMap->count());
+        $this->assertTrue($enumMap->valid());
+        $this->assertSame(EnumBasic::ONE(), $enumMap->key());
+        $this->assertNull($enumMap->current());
+
+        $this->assertFalse(isset($enumMap[EnumBasic::ONE]));
+        $this->assertFalse(isset($enumMap[EnumBasic::ONE()]));
+        $this->assertFalse($enumMap->offsetExists(EnumBasic::ONE));
+        $this->assertFalse($enumMap->offsetExists(EnumBasic::ONE()));
+
+        $this->assertTrue($enumMap->contains(EnumBasic::ONE));
+        $this->assertTrue($enumMap->contains(EnumBasic::ONE()));
+    }
+
+    public function testSeek()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+        $enumMap[EnumBasic::ONE()] = 'one';
+        $enumMap[EnumBasic::TWO()] = 'two';
+
+        $this->assertSame(EnumBasic::ONE(), $enumMap->key());
+
+        $enumMap->seek(1);
+        $this->assertSame(EnumBasic::TWO(), $enumMap->key());
+
+        $enumMap->seek(0);
+        $this->assertSame(EnumBasic::ONE(), $enumMap->key());
+
+        $this->expectException(OutOfBoundsException::class);
+        $enumMap->seek(2);
     }
 
     public function testSerializable()
