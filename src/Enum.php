@@ -120,7 +120,7 @@ abstract class Enum
         if ($this->ordinal !== null) {
             return self::$names[static::class][$this->ordinal];
         }
-        return array_search($this->value, self::detectConstants(static::class), true);
+        return \array_search($this->value, self::detectConstants(static::class), true);
     }
 
     /**
@@ -160,7 +160,7 @@ abstract class Enum
 
             // The following additional conditions are required only because of the issue of serializable singletons
             || ($enumerator instanceof static
-                && get_class($enumerator) === static::class
+                && \get_class($enumerator) === static::class
                 && $enumerator->value === $this->value
             );
     }
@@ -175,7 +175,7 @@ abstract class Enum
      */
     final public static function get($value)
     {
-        if ($value instanceof static && get_class($value) === static::class) {
+        if ($value instanceof static && \get_class($value) === static::class) {
             return $value;
         }
 
@@ -194,11 +194,11 @@ abstract class Enum
     {
         $class     = static::class;
         $constants = self::detectConstants($class);
-        $name      = array_search($value, $constants, true);
+        $name      = \array_search($value, $constants, true);
         if ($name === false) {
-            $message = is_scalar($value)
-                ? 'Unknown value ' . var_export($value, true)
-                : 'Invalid value of type ' . (is_object($value) ? get_class($value) : gettype($value));
+            $message = \is_scalar($value)
+                ? 'Unknown value ' . \var_export($value, true)
+                : 'Invalid value of type ' . (\is_object($value) ? \get_class($value) : \gettype($value));
             throw new InvalidArgumentException($message);
         }
 
@@ -226,11 +226,11 @@ abstract class Enum
         }
 
         $const = $class . '::' . $name;
-        if (!defined($const)) {
+        if (!\defined($const)) {
             throw new InvalidArgumentException($const . ' not defined');
         }
 
-        return self::$instances[$class][$name] = new $class(constant($const));
+        return self::$instances[$class][$name] = new $class(\constant($const));
     }
 
     /**
@@ -253,7 +253,7 @@ abstract class Enum
         if (!isset(self::$names[$class][$ordinal])) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid ordinal number, must between 0 and %s',
-                count(self::$names[$class]) - 1
+                \count(self::$names[$class]) - 1
             ));
         }
 
@@ -263,7 +263,7 @@ abstract class Enum
         }
 
         $const = $class . '::' . $name;
-        return self::$instances[$class][$name] = new $class(constant($const));
+        return self::$instances[$class][$name] = new $class(\constant($const));
     }
 
     /**
@@ -276,7 +276,7 @@ abstract class Enum
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
         }
-        return array_map([static::class, 'byName'], self::$names[static::class]);
+        return \array_map([static::class, 'byName'], self::$names[static::class]);
     }
 
     /**
@@ -286,7 +286,7 @@ abstract class Enum
      */
     final public static function getValues()
     {
-        return array_values(self::detectConstants(static::class));
+        return \array_values(self::detectConstants(static::class));
     }
 
     /**
@@ -308,8 +308,8 @@ abstract class Enum
      */
     final public static function getOrdinals()
     {
-        $count = count(self::detectConstants(static::class));
-        return $count === 0 ? array() : range(0, $count - 1);
+        $count = \count(self::detectConstants(static::class));
+        return $count === 0 ? array() : \range(0, $count - 1);
     }
 
     /**
@@ -331,12 +331,12 @@ abstract class Enum
      */
     final public static function has($value)
     {
-        if ($value instanceof static && get_class($value) === static::class) {
+        if ($value instanceof static && \get_class($value) === static::class) {
             return true;
         }
 
         $constants = self::detectConstants(static::class);
-        return in_array($value, $constants, true);
+        return \in_array($value, $constants, true);
     }
 
     /**
@@ -373,22 +373,22 @@ abstract class Enum
             // Detect ambiguous values and report names
             $ambiguous = array();
             foreach ($constants as $value) {
-                $names = array_keys($constants, $value, true);
-                if (count($names) > 1) {
-                    $ambiguous[var_export($value, true)] = $names;
+                $names = \array_keys($constants, $value, true);
+                if (\count($names) > 1) {
+                    $ambiguous[\var_export($value, true)] = $names;
                 }
             }
             if (!empty($ambiguous)) {
                 throw new LogicException(
                     'All possible values needs to be unique. The following are ambiguous: '
-                    . implode(', ', array_map(function ($names) use ($constants) {
-                        return implode('/', $names) . '=' . var_export($constants[$names[0]], true);
+                    . \implode(', ', \array_map(function ($names) use ($constants) {
+                        return \implode('/', $names) . '=' . \var_export($constants[$names[0]], true);
                     }, $ambiguous))
                 );
             }
 
             self::$constants[$class] = $constants;
-            self::$names[$class] = array_keys($constants);
+            self::$names[$class] = \array_keys($constants);
         }
 
         return self::$constants[$class];

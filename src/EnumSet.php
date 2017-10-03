@@ -65,8 +65,8 @@ class EnumSet implements Iterator, Countable
      */
     public function __construct($enumeration)
     {
-        if (!is_subclass_of($enumeration, Enum::class)) {
-            throw new InvalidArgumentException(sprintf(
+        if (!\is_subclass_of($enumeration, Enum::class)) {
+            throw new InvalidArgumentException(\sprintf(
                 "%s can handle subclasses of '%s' only",
                 static::class,
                 Enum::class
@@ -81,7 +81,7 @@ class EnumSet implements Iterator, Countable
         // we will switch this into a binary bitset
         if ($this->ordinalMax > \PHP_INT_SIZE * 8) {
             // init binary bitset with zeros
-            $this->bitset = str_repeat("\0", ceil($this->ordinalMax / 8));
+            $this->bitset = \str_repeat("\0", ceil($this->ordinalMax / 8));
 
             // switch internal binary bitset functions
             $this->fnDoRewind            = 'doRewindBin';
@@ -203,7 +203,7 @@ class EnumSet implements Iterator, Countable
      */
     private function doRewindBin()
     {
-        if (ltrim($this->bitset, "\0") !== '') {
+        if (\ltrim($this->bitset, "\0") !== '') {
             $this->ordinal = -1;
             $this->next();
         } else {
@@ -267,14 +267,14 @@ class EnumSet implements Iterator, Countable
     {
         $count   = 0;
         $bitset  = $this->bitset;
-        $byteLen = strlen($bitset);
+        $byteLen = \strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
             if ($bitset[$bytePos] === "\0") {
                 // fast skip null byte
                 continue;
             }
 
-            $ord = ord($bitset[$bytePos]);
+            $ord = \ord($bitset[$bytePos]);
             for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
                 if ($ord & (1 << $bitPos)) {
                     ++$count;
@@ -470,14 +470,14 @@ class EnumSet implements Iterator, Countable
     {
         $ordinals = [];
         $bitset   = $this->bitset;
-        $byteLen  = strlen($bitset);
+        $byteLen  = \strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
             if ($bitset[$bytePos] === "\0") {
                 // fast skip null byte
                 continue;
             }
 
-            $ord = ord($bitset[$bytePos]);
+            $ord = \ord($bitset[$bytePos]);
             for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
                 if ($ord & (1 << $bitPos)) {
                     $ordinals[] = $bytePos * 8 + $bitPos;
@@ -582,8 +582,8 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetBinaryBitsetLeInt()
     {
-        $bin = pack(\PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
-        return substr($bin, 0, ceil($this->ordinalMax / 8));
+        $bin = \pack(\PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
+        return \substr($bin, 0, \ceil($this->ordinalMax / 8));
     }
 
     /**
@@ -597,7 +597,7 @@ class EnumSet implements Iterator, Countable
      */
     public function setBinaryBitsetLe($bitset)
     {
-        if (!is_string($bitset)) {
+        if (!\is_string($bitset)) {
             throw new InvalidArgumentException('Bitset must be a string');
         }
 
@@ -618,29 +618,29 @@ class EnumSet implements Iterator, Countable
      */
     private function doSetBinaryBitsetLeBin($bitset)
     {
-        $size   = strlen($this->bitset);
-        $sizeIn = strlen($bitset);
+        $size   = \strlen($this->bitset);
+        $sizeIn = \strlen($bitset);
 
         if ($sizeIn < $size) {
             // add "\0" if the given bitset is not long enough
-            $bitset .= str_repeat("\0", $size - $sizeIn);
+            $bitset .= \str_repeat("\0", $size - $sizeIn);
         } elseif ($sizeIn > $size) {
-            if (ltrim(substr($bitset, $size), "\0") !== '') {
+            if (\ltrim(\substr($bitset, $size), "\0") !== '') {
                 throw new InvalidArgumentException('Out-Of-Range bits detected');
             }
-            $bitset = substr($bitset, 0, $size);
+            $bitset = \substr($bitset, 0, $size);
         }
 
         // truncate out-of-range bits of last byte
         $lastByteMaxOrd = $this->ordinalMax % 8;
         if ($lastByteMaxOrd !== 0) {
             $lastByte         = $bitset[$size - 1];
-            $lastByteExpected = chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
+            $lastByteExpected = \chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
             if ($lastByte !== $lastByteExpected) {
                 throw new InvalidArgumentException('Out-Of-Range bits detected');
             }
 
-            $this->bitset = substr($bitset, 0, -1) . $lastByteExpected;
+            $this->bitset = \substr($bitset, 0, -1) . $lastByteExpected;
         }
 
         $this->bitset = $bitset;
@@ -657,10 +657,10 @@ class EnumSet implements Iterator, Countable
      */
     private function doSetBinaryBitsetLeInt($bitset)
     {
-        $len = strlen($bitset);
+        $len = \strlen($bitset);
         $int = 0;
         for ($i = 0; $i < $len; ++$i) {
-            $ord = ord($bitset[$i]);
+            $ord = \ord($bitset[$i]);
 
             if ($ord && $i > \PHP_INT_SIZE - 1) {
                 throw new InvalidArgumentException('Out-Of-Range bits detected');
@@ -683,7 +683,7 @@ class EnumSet implements Iterator, Countable
      */
     public function getBinaryBitsetBe()
     {
-        return strrev($this->bitset);
+        return \strrev($this->bitset);
     }
 
     /**
@@ -697,10 +697,10 @@ class EnumSet implements Iterator, Countable
      */
     public function setBinaryBitsetBe($bitset)
     {
-        if (!is_string($bitset)) {
+        if (!\is_string($bitset)) {
             throw new InvalidArgumentException('Bitset must be a string');
         }
-        $this->setBinaryBitsetLe(strrev($bitset));
+        $this->setBinaryBitsetLe(\strrev($bitset));
     }
 
     /**
@@ -730,7 +730,7 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetBitBin($ordinal)
     {
-        return (ord($this->bitset[(int) ($ordinal / 8)]) & 1 << ($ordinal % 8)) !== 0;
+        return (\ord($this->bitset[(int) ($ordinal / 8)]) & 1 << ($ordinal % 8)) !== 0;
     }
 
     /**
@@ -785,7 +785,7 @@ class EnumSet implements Iterator, Countable
     private function doSetBitBin($ordinal)
     {
         $byte = (int) ($ordinal / 8);
-        $this->bitset[$byte] = $this->bitset[$byte] | chr(1 << ($ordinal % 8));
+        $this->bitset[$byte] = $this->bitset[$byte] | \chr(1 << ($ordinal % 8));
     }
 
     /**
@@ -816,7 +816,7 @@ class EnumSet implements Iterator, Countable
     private function doUnsetBitBin($ordinal)
     {
         $byte = (int) ($ordinal / 8);
-        $this->bitset[$byte] = $this->bitset[$byte] & chr(~(1 << ($ordinal % 8)));
+        $this->bitset[$byte] = $this->bitset[$byte] & \chr(~(1 << ($ordinal % 8)));
     }
 
     /**

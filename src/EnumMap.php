@@ -28,7 +28,7 @@ class EnumMap extends SplObjectStorage
      */
     public function __construct($enumeration)
     {
-        if (!is_subclass_of($enumeration, Enum::class)) {
+        if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(sprintf(
                 "This EnumMap can handle subclasses of '%s' only",
                 Enum::class

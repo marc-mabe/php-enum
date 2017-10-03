@@ -33,7 +33,7 @@ trait EnumSerializableTrait
      */
     public function serialize()
     {
-        return serialize($this->getValue());
+        return \serialize($this->getValue());
     }
 
     /**
@@ -45,17 +45,17 @@ trait EnumSerializableTrait
      */
     public function unserialize($serialized)
     {
-        $value     = unserialize($serialized);
+        $value     = \unserialize($serialized);
         $constants = self::getConstants();
-        $name      = array_search($value, $constants, true);
+        $name      = \array_search($value, $constants, true);
         if ($name === false) {
-            $message = is_scalar($value)
-                ? 'Unknown value ' . var_export($value, true)
-                : 'Invalid value of type ' . (is_object($value) ? get_class($value) : gettype($value));
+            $message = \is_scalar($value)
+                ? 'Unknown value ' . \var_export($value, true)
+                : 'Invalid value of type ' . (\is_object($value) ? \get_class($value) : \gettype($value));
             throw new RuntimeException($message);
         }
 
-        $class      = get_class($this);
+        $class      = \get_class($this);
         $enumerator = $this;
         $closure    = function () use ($class, $name, $value, $enumerator) {
             if ($this->value !== null && $value !== null) {
@@ -68,7 +68,7 @@ trait EnumSerializableTrait
                 self::$instances[$class][$name] = $enumerator;
             }
         };
-        $closure = $closure->bindTo($this, 'MabeEnum\Enum');
+        $closure = $closure->bindTo($this, Enum::class);
         $closure();
     }
 }
