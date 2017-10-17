@@ -468,9 +468,8 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetOrdinalsBin()
     {
-        $ordinals = [];
-        $bitset   = $this->bitset;
-        $byteLen  = \strlen($bitset);
+        $bitset  = $this->bitset;
+        $byteLen = \strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
             if ($bitset[$bytePos] === "\0") {
                 // fast skip null byte
@@ -480,11 +479,10 @@ class EnumSet implements Iterator, Countable
             $ord = \ord($bitset[$bytePos]);
             for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
                 if ($ord & (1 << $bitPos)) {
-                    $ordinals[] = $bytePos * 8 + $bitPos;
+                    yield $bytePos * 8 + $bitPos;
                 }
             }
         }
-        return $ordinals;
     }
 
     /**
@@ -498,15 +496,13 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetOrdinalsInt()
     {
-        $ordinals   = [];
         $ordinalMax = $this->ordinalMax;
         $bitset     = $this->bitset;
         for ($ord = 0; $ord < $ordinalMax; ++$ord) {
             if ($bitset & (1 << $ord)) {
-                $ordinals[] = $ord;
+                yield $ord;
             }
         }
-        return $ordinals;
     }
 
     /**
@@ -516,11 +512,9 @@ class EnumSet implements Iterator, Countable
     public function getValues()
     {
         $enumeration = $this->enumeration;
-        $values      = [];
         foreach ($this->getOrdinals() as $ord) {
-            $values[] = $enumeration::byOrdinal($ord)->getValue();
+            yield $enumeration::byOrdinal($ord)->getValue();
         }
-        return $values;
     }
 
     /**
@@ -530,11 +524,9 @@ class EnumSet implements Iterator, Countable
     public function getNames()
     {
         $enumeration = $this->enumeration;
-        $names       = [];
         foreach ($this->getOrdinals() as $ord) {
-            $names[] = $enumeration::byOrdinal($ord)->getName();
+            yield $enumeration::byOrdinal($ord)->getName();
         }
-        return $names;
     }
 
     /**
@@ -544,11 +536,9 @@ class EnumSet implements Iterator, Countable
     public function getEnumerators()
     {
         $enumeration = $this->enumeration;
-        $enumerators = [];
         foreach ($this->getOrdinals() as $ord) {
-            $enumerators[] = $enumeration::byOrdinal($ord);
+            yield $enumeration::byOrdinal($ord);
         }
-        return $enumerators;
     }
 
     /**
