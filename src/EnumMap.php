@@ -171,7 +171,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
         $enumeration = $this->enumeration;
         $ord = $enumeration::get($enumerator)->getOrdinal();
 
-        if (!isset($this->map[$ord])) {
+        if (!array_key_exists($ord, $this->map)) {
             $this->ordinals[] = $ord;
         }
         $this->map[$ord] = $value;
