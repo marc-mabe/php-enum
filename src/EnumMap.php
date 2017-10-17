@@ -148,7 +148,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     {
         $enumeration = $this->enumeration;
         $ord = $enumeration::get($enumerator)->getOrdinal();
-        if (!isset($this->map[$ord])) {
+        if (!isset($this->map[$ord]) && !array_key_exists($ord, $this->map)) {
             throw new UnexpectedValueException(\sprintf(
                 "Enumerator '%s' could not be found",
                 \is_object($enumerator) ? $enumerator->getValue() : $enumerator
@@ -161,7 +161,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     /**
      * Attach a new enumerator or overwrite an existing one
      * @param Enum|null|boolean|int|float|string $enumerator
-     * @param mixed                              $data
+     * @param mixed                              $value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see attach()

@@ -8,6 +8,7 @@ use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
+use UnexpectedValueException;
 
 /**
  * Unit tests for the class MabeEnum\EnumMap
@@ -98,6 +99,14 @@ class EnumMapTest extends TestCase
         $this->assertSame([], $enumMap->getValues());
     }
 
+    public function testOffsetGetMissingKey()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+
+        $this->expectException(UnexpectedValueException::class);
+        $enumMap->offsetGet(EnumBasic::ONE);
+    }
+
     public function testIterate()
     {
         $enumMap = new EnumMap(EnumBasic::class);
@@ -132,6 +141,7 @@ class EnumMapTest extends TestCase
 
         // go to the next element (out of range)
         $this->assertNull($enumMap->next());
+        $this->assertNull($enumMap->current());
         $this->assertFalse($enumMap->valid());
         $this->assertSame(null, $enumMap->key());
 
@@ -243,6 +253,8 @@ class EnumMapTest extends TestCase
         $enumMap[EnumBasic::ONE()] = null;
 
         $this->assertSame(1, $enumMap->count());
+        $this->assertNull($enumMap[EnumBasic::ONE]);
+        $this->assertNull($enumMap->offsetGet(EnumBasic::ONE));
         $this->assertSame([EnumBasic::ONE()], $enumMap->getKeys());
 
         $enumMap->rewind();
