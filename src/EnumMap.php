@@ -73,7 +73,10 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function getKeys()
     {
-        return \array_map([$this->enumeration, 'byOrdinal'], $this->ordinals);
+        $enumeration = $this->enumeration;
+        foreach ($this->ordinals as $ord) {
+            yield $enumeration::byOrdinal($ord);
+        }
     }
 
     /**
@@ -82,7 +85,9 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function getValues()
     {
-        return \array_values($this->map);
+        foreach ($this->map as $value) {
+            yield $value;
+        }
     }
 
     /**

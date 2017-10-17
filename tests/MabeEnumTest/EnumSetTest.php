@@ -668,25 +668,25 @@ class EnumSetTest extends TestCase
     public function testGetOrdinalsInt()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame([], $set->getOrdinals());
+        $this->assertSame([], iterator_to_array($set->getOrdinals()));
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
         }
 
-        $this->assertSame(range(0, count(EnumBasic::getConstants()) - 1), $set->getOrdinals());
+        $this->assertSame(range(0, count(EnumBasic::getConstants()) - 1), iterator_to_array($set->getOrdinals()));
     }
 
     public function testGetOrdinalsBin()
     {
         $set = new EnumSet(Enum66::class);
-        $this->assertSame([], $set->getOrdinals());
+        $this->assertSame([], iterator_to_array($set->getOrdinals()));
 
         foreach (Enum66::getConstants() as $value) {
             $set->attach($value);
         }
 
-        $this->assertSame(range(0, count(Enum66::getConstants()) - 1), $set->getOrdinals());
+        $this->assertSame(range(0, count(Enum66::getConstants()) - 1), iterator_to_array($set->getOrdinals()));
     }
 
     public function testGetOrdinalsIntDoesNotEffectIteratorPosition()
@@ -714,13 +714,13 @@ class EnumSetTest extends TestCase
     public function testGetEnumerators()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame([], $set->getEnumerators());
+        $this->assertSame([], iterator_to_array($set->getEnumerators()));
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
         }
 
-        $this->assertSame(EnumBasic::getEnumerators(), $set->getEnumerators());
+        $this->assertSame(EnumBasic::getEnumerators(), iterator_to_array($set->getEnumerators()));
     }
 
     public function testGetEnumeratorsDoesNotEffectIteratorPosition()
@@ -737,13 +737,13 @@ class EnumSetTest extends TestCase
     public function testGetValues()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame([], $set->getValues());
+        $this->assertSame([], iterator_to_array($set->getValues()));
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
         }
 
-        $this->assertSame(array_values(EnumBasic::getConstants()), $set->getValues());
+        $this->assertSame(array_values(EnumBasic::getConstants()), iterator_to_array($set->getValues()));
     }
 
     public function testGetValuesDoesNotEffectIteratorPosition()
@@ -760,13 +760,13 @@ class EnumSetTest extends TestCase
     public function testGetNames()
     {
         $set = new EnumSet(EnumBasic::class);
-        $this->assertSame([], $set->getNames());
+        $this->assertSame([], iterator_to_array($set->getNames()));
 
         foreach (EnumBasic::getConstants() as $value) {
             $set->attach($value);
         }
 
-        $this->assertSame(array_keys(EnumBasic::getConstants()), $set->getNames());
+        $this->assertSame(array_keys(EnumBasic::getConstants()), iterator_to_array($set->getNames()));
     }
 
     public function testGetNamesDoesNotEffectIteratorPosition()
@@ -797,7 +797,7 @@ class EnumSetTest extends TestCase
             EnumBasic::TWO,
             EnumBasic::THREE,
             EnumBasic::FOUR,
-        ], $rs->getValues());
+        ], iterator_to_array($rs->getValues()));
     }
 
     public function testUnionThrowsInvalidArgumentException()
@@ -822,7 +822,7 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::FOUR);
 
         $rs = $set1->intersect($set2);
-        $this->assertSame([EnumBasic::TWO, EnumBasic::THREE], $rs->getValues());
+        $this->assertSame([EnumBasic::TWO, EnumBasic::THREE], iterator_to_array($rs->getValues()));
     }
 
     public function testIntersectThrowsInvalidArgumentException()
@@ -847,7 +847,7 @@ class EnumSetTest extends TestCase
         $set2->attach(EnumBasic::FOUR);
 
         $rs = $set1->diff($set2);
-        $this->assertSame([EnumBasic::ONE], $rs->getValues());
+        $this->assertSame([EnumBasic::ONE], iterator_to_array($rs->getValues()));
     }
 
     public function testDiffThrowsInvalidArgumentException()
@@ -875,7 +875,7 @@ class EnumSetTest extends TestCase
         $this->assertSame([
             EnumBasic::ONE,
             EnumBasic::FOUR,
-        ], $rs->getValues());
+        ], iterator_to_array($rs->getValues()));
     }
 
     public function testSymDiffThrowsInvalidArgumentException()
