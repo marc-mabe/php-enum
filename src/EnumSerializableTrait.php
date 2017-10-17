@@ -58,7 +58,7 @@ trait EnumSerializableTrait
         $class      = \get_class($this);
         $enumerator = $this;
         $closure    = function () use ($class, $name, $value, $enumerator) {
-            if ($this->value !== null && $value !== null) {
+            if ($value !== null && $this->value !== null) {
                 throw new LogicException('Do not call this directly - please use unserialize($enum) instead');
             }
 

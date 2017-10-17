@@ -81,7 +81,7 @@ class EnumSet implements Iterator, Countable
         // we will switch this into a binary bitset
         if ($this->ordinalMax > \PHP_INT_SIZE * 8) {
             // init binary bitset with zeros
-            $this->bitset = \str_repeat("\0", ceil($this->ordinalMax / 8));
+            $this->bitset = \str_repeat("\0", (int)\ceil($this->ordinalMax / 8));
 
             // switch internal binary bitset functions
             $this->fnDoRewind            = 'doRewindBin';
@@ -583,7 +583,7 @@ class EnumSet implements Iterator, Countable
     private function doGetBinaryBitsetLeInt()
     {
         $bin = \pack(\PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
-        return \substr($bin, 0, \ceil($this->ordinalMax / 8));
+        return \substr($bin, 0, (int)\ceil($this->ordinalMax / 8));
     }
 
     /**

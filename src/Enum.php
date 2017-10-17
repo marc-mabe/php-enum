@@ -34,21 +34,21 @@ abstract class Enum
      *
      * @var array ["$class" => ["$name" => $value, ...], ...]
      */
-    private static $constants = array();
+    private static $constants = [];
 
     /**
      * A List of available enumerator names by enumeration class
      *
      * @var array ["$class" => ["$name0", ...], ...]
      */
-    private static $names = array();
+    private static $names = [];
 
     /**
      * Already instantiated enumerators
      *
      * @var array ["$class" => ["$name" => $instance, ...], ...]
      */
-    private static $instances = array();
+    private static $instances = [];
 
     /**
      * Constructor
@@ -162,20 +162,20 @@ abstract class Enum
     }
 
     /**
-     * Get an enumerator instance of the given value or instance
+     * Get an enumerator instance of the given enumerator value or instance
      *
-     * @param static|null|bool|int|float|string $value
+     * @param static|null|bool|int|float|string $enumerator
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function get($value)
+    final public static function get($enumerator)
     {
-        if ($value instanceof static && \get_class($value) === static::class) {
-            return $value;
+        if ($enumerator instanceof static && \get_class($enumerator) === static::class) {
+            return $enumerator;
         }
 
-        return static::byValue($value);
+        return static::byValue($enumerator);
     }
 
     /**
@@ -188,8 +188,7 @@ abstract class Enum
      */
     final public static function byValue($value)
     {
-        $class     = static::class;
-        $constants = self::detectConstants($class);
+        $constants = self::detectConstants(static::class);
         $name      = \array_search($value, $constants, true);
         if ($name === false) {
             $message = \is_scalar($value)
@@ -198,11 +197,11 @@ abstract class Enum
             throw new InvalidArgumentException($message);
         }
 
-        if (!isset(self::$instances[$class][$name])) {
-            self::$instances[$class][$name] = new $class($constants[$name]);
+        if (!isset(self::$instances[static::class][$name])) {
+            self::$instances[static::class][$name] = new static($constants[$name]);
         }
 
-        return self::$instances[$class][$name];
+        return self::$instances[static::class][$name];
     }
 
     /**
@@ -215,18 +214,17 @@ abstract class Enum
      */
     final public static function byName($name)
     {
-        $name  = (string) $name;
-        $class = static::class;
-        if (isset(self::$instances[$class][$name])) {
-            return self::$instances[$class][$name];
+        $name = (string) $name;
+        if (isset(self::$instances[static::class][$name])) {
+            return self::$instances[static::class][$name];
         }
 
-        $const = $class . '::' . $name;
+        $const = static::class . '::' . $name;
         if (!\defined($const)) {
             throw new InvalidArgumentException($const . ' not defined');
         }
 
-        return self::$instances[$class][$name] = new $class(\constant($const));
+        return self::$instances[static::class][$name] = new static(\constant($const));
     }
 
     /**
@@ -239,27 +237,26 @@ abstract class Enum
      */
     final public static function byOrdinal($ordinal)
     {
-        $ordinal   = (int) $ordinal;
-        $class     = static::class;
+        $ordinal = (int) $ordinal;
 
-        if (!isset(self::$names[$class])) {
-            self::detectConstants($class);
+        if (!isset(self::$names[static::class])) {
+            self::detectConstants(static::class);
         }
 
-        if (!isset(self::$names[$class][$ordinal])) {
+        if (!isset(self::$names[static::class][$ordinal])) {
             throw new InvalidArgumentException(\sprintf(
                 'Invalid ordinal number, must between 0 and %s',
-                \count(self::$names[$class]) - 1
+                \count(self::$names[static::class]) - 1
             ));
         }
 
-        $name = self::$names[$class][$ordinal];
-        if (isset(self::$instances[$class][$name])) {
-            return self::$instances[$class][$name];
+        $name = self::$names[static::class][$ordinal];
+        if (isset(self::$instances[static::class][$name])) {
+            return self::$instances[static::class][$name];
         }
 
-        $const = $class . '::' . $name;
-        return self::$instances[$class][$name] = new $class(\constant($const), $ordinal);
+        $const = static::class . '::' . $name;
+        return self::$instances[static::class][$name] = new static(\constant($const), $ordinal);
     }
 
     /**
@@ -305,7 +302,7 @@ abstract class Enum
     final public static function getOrdinals()
     {
         $count = \count(self::detectConstants(static::class));
-        return $count === 0 ? array() : \range(0, $count - 1);
+        return $count === 0 ? [] : \range(0, $count - 1);
     }
 
     /**
@@ -346,10 +343,10 @@ abstract class Enum
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
-            $constants  = array();
+            $constants  = [];
 
             do {
-                $scopeConstants = array();
+                $scopeConstants = [];
                 if (PHP_VERSION_ID >= 70100) {
                     // Since PHP-7.1 visibility modifiers are allowed for class constants
                     // for enumerations we are only interested in public once.
@@ -367,7 +364,7 @@ abstract class Enum
             } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
 
             // Detect ambiguous values and report names
-            $ambiguous = array();
+            $ambiguous = [];
             foreach ($constants as $value) {
                 $names = \array_keys($constants, $value, true);
                 if (\count($names) > 1) {
