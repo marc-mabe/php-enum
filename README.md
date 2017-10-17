@@ -42,15 +42,13 @@ class UserStatus extends Enum
     const ACTIVE   = 'a';
     const DELETED  = 'd';
 
-    // all scalar datatypes are supported
+    // all scalar data types and arrays are supported as enumerator values
     const NIL     = null;
     const BOOLEAN = true;
     const INT     = 1234;
     const STR     = 'string';
     const FLOAT   = 0.123;
-
-    // Arrays are supported since PHP-5.6
-    const ARR = array('this', 'is', array('an', 'array'));
+    const ARR     = ['this', 'is', ['an', 'array']];
 
     // Enumerators will be generated from public constants only
     public    const PUBLIC_CONST    = 'public constant';    // this will be an enumerator
@@ -58,9 +56,9 @@ class UserStatus extends Enum
     private   const PRIVATE_CONST   = 'private constant';   // this will NOT be an enumerator
 
     // works since PHP-7.0 - see https://wiki.php.net/rfc/context_sensitive_lexer
-    const TRUE      = true;
-    const FALSE     = false;
-    const NULL      = null;
+    const TRUE      = 'true';
+    const FALSE     = 'false';
+    const NULL      = 'null';
     const PUBLIC    = 'public';
     const PRIVATE   = 'private';
     const PROTECTED = 'protected';
@@ -85,11 +83,11 @@ $status->getName();    // returns the selected constant name
 $status->getOrdinal(); // returns the ordinal number of the selected constant
 
 // basic methods to list defined enumerators
-UserStatus::getEnumerators()  // returns a list of enumerator instances
-UserStatus::getValues()       // returns a list of enumerator values
-UserStatus::getNames()        // returns a list of enumerator names
-UserStatus::getOrdinals()     // returns a list of ordinal numbers
-UserStatus::getConstants()    // returns an associative array of enumerator names to enumerator values
+UserStatus::getEnumerators();  // returns a list of enumerator instances
+UserStatus::getValues();       // returns a list of enumerator values
+UserStatus::getNames();        // returns a list of enumerator names
+UserStatus::getOrdinals();     // returns a list of ordinal numbers
+UserStatus::getConstants();    // returns an associative array of enumerator names to enumerator values
 
 // same enumerators (of the same enumeration class) holds the same instance
 UserStatus::get(UserStatus::ACTIVE) === UserStatus::ACTIVE()
@@ -135,11 +133,12 @@ Because in normal OOP the above example allows `UserStatus` and types inherited 
 Please think about the following example:
 
 ```php
-class ExtendedUserStatus
+class ExtendedUserStatus extends UserStatus
 {
     const EXTENDED = 'extended';
 }
 
+$user = new User();
 $user->setStatus(ExtendedUserStatus::EXTENDED());
 ```
 
@@ -209,10 +208,10 @@ $enumSet->isEqual($other);    // Check if the EnumSet is the same as other
 $enumSet->isSubset($other);   // Check if the EnumSet is a subset of other
 $enumSet->isSuperset($other); // Check if the EnumSet is a superset of other
 
-$enumSet->union($other[, ...]);     // Produce a new set with enumerators from both this and other (this | other)
-$enumSet->intersect($other[, ...]); // Produce a new set with enumerators common to both this and other (this & other)
-$enumSet->diff($other[, ...]);      // Produce a new set with enumerators in this but not in other (this - other)
-$enumSet->symDiff($other[, ...]);   // Produce a new set with enumerators in either this and other but not in both (this ^ (other | other))
+$enumSet->union($other);     // Produce a new set with enumerators from both this and other (this | other)
+$enumSet->intersect($other); // Produce a new set with enumerators common to both this and other (this & other)
+$enumSet->diff($other);      // Produce a new set with enumerators in this but not in other (this - other)
+$enumSet->symDiff($other);   // Produce a new set with enumerators in either this and other but not in both (this ^ other)
 ```
 
 ## EnumMap
@@ -227,20 +226,48 @@ use MabeEnum\EnumMap;
 // create a new EnumMap
 $enumMap = new EnumMap('UserStatus');
 
-// attach entries (by value or by instance)
-$enumMap->attach(UserStatus::INACTIVE, 'inaktiv');
-$enumMap->attach(UserStatus::ACTIVE(), 'aktiv');
-$enumMap->attach(UserStatus::DELETED(), 'gelöscht');
+// read and write key-value-pairs like an array
+$enumMap[UserStatus::INACTIVE] = 'inaktiv';
+$enumMap[UserStatus::ACTIVE]   = 'aktiv';
+$enumMap[UserStatus::DELETED]  = 'gelöscht';
+$enumMap[UserStatus::INACTIVE]; // 'inaktiv';
+$enumMap[UserStatus::ACTIVE];   // 'aktiv';
+$enumMap[UserStatus::DELETED];  // 'gelöscht';
 
-// detach entries (by value or by instance)
-$enumMap->detach(UserStatus::INACTIVE);
-$enumMap->detach(UserStatus::DELETED());
+isset($enumMap[UserStatus::DELETED]); // true
+unset($enumMap[UserStatus::DELETED]);
+isset($enumMap[UserStatus::DELETED]); // false
 
-// iterate
+// ... no matter if you use enumerator values or enumerator objects
+$enumMap[UserStatus::INACTIVE()] = 'inaktiv';
+$enumMap[UserStatus::ACTIVE()]   = 'aktiv';
+$enumMap[UserStatus::DELETED()]  = 'gelöscht';
+$enumMap[UserStatus::INACTIVE()]; // 'inaktiv';
+$enumMap[UserStatus::ACTIVE()];   // 'aktiv';
+$enumMap[UserStatus::DELETED()];  // 'gelöscht';
+
+isset($enumMap[UserStatus::DELETED()]); // true
+unset($enumMap[UserStatus::DELETED()]);
+isset($enumMap[UserStatus::DELETED()]); // false
+
+
+// support for null aware exists check
+$enumMap[UserStatus::NULL] = null;
+isset($enumMap[UserStatus::NULL]);    // false
+$enumMap->contains(UserStatus::NULL); // true
+
+
+// iterating over the map
 foreach ($enumMap as $enum => $value) {
-    var_dump(get_class($enum)); // UserStatus
-    var_dump(gettype($value))   // string
+    get_class($enum);  // UserStatus (enumerator object)
+    gettype($value);   // string (the value the enumerators maps to)
 }
+
+// get a list of keys (= a list of enumerator objects)
+$enumMap->getKeys();
+
+// get a list of values (= a list of values the enumerator maps to)
+$enumMap->getValues();
 ```
 
 ## Serializing

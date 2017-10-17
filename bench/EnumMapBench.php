@@ -53,6 +53,36 @@ class EnumMapBench
         }
     }
 
+    public function benchGetKeysEmpty()
+    {
+        $this->emptyMap->getKeys();
+    }
+
+    public function benchGetKeysFull()
+    {
+        $this->fullMap->getKeys();
+    }
+
+    public function benchGetValuesEmpty()
+    {
+        $this->emptyMap->getValues();
+    }
+
+    public function benchGetValuesFull()
+    {
+        $this->fullMap->getValues();
+    }
+
+    public function benchSearchTypeJuggling()
+    {
+        $this->fullMap->search('31');
+    }
+
+    public function benchSearchStrict()
+    {
+        $this->fullMap->search(31, true);
+    }
+
     public function benchOffsetSetEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
@@ -81,31 +111,31 @@ class EnumMapBench
         }
     }
 
-    public function benchOffsetExistsEnumeratorTrue()
+    public function benchOffsetExistsEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
             $this->fullMap->offsetExists($enumerator);
         }
     }
 
-    public function benchOffsetExistsEnumeratorFalse()
+    public function benchOffsetExistsValue()
+    {
+        foreach ($this->values as $value) {
+            $this->fullMap->offsetExists($value);
+        }
+    }
+
+    public function benchContainsEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->fullMap->offsetExists($enumerator);
+            $this->fullMap->contains($enumerator);
         }
     }
 
-    public function benchOffsetExistsValueTrue()
+    public function benchContainsValue()
     {
         foreach ($this->values as $value) {
-            $this->fullMap->offsetExists($value);
-        }
-    }
-
-    public function benchOffsetExistsValueFalse()
-    {
-        foreach ($this->values as $value) {
-            $this->fullMap->offsetExists($value);
+            $this->fullMap->contains($value);
         }
     }
 

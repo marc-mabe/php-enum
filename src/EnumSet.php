@@ -232,7 +232,7 @@ class EnumSet implements Iterator, Countable
     }
 
     /**
-     * Test if the iterator in a valid state
+     * Test if the iterator is in a valid state
      * @return boolean
      */
     public function valid()
@@ -377,7 +377,7 @@ class EnumSet implements Iterator, Countable
     public function union(EnumSet $other)
     {
         if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Other should be of the same enumeration as this %s',
                 $this->enumeration
             ));
@@ -397,7 +397,7 @@ class EnumSet implements Iterator, Countable
     public function intersect(EnumSet $other)
     {
         if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Other should be of the same enumeration as this %s',
                 $this->enumeration
             ));
@@ -417,7 +417,7 @@ class EnumSet implements Iterator, Countable
     public function diff(EnumSet $other)
     {
         if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Other should be of the same enumeration as this %s',
                 $this->enumeration
             ));
@@ -437,7 +437,7 @@ class EnumSet implements Iterator, Countable
     public function symDiff(EnumSet $other)
     {
         if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Other should be of the same enumeration as this %s',
                 $this->enumeration
             ));
