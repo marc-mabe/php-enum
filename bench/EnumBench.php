@@ -2,7 +2,10 @@
 
 namespace MabeEnumBench;
 
+use MabeEnum\Enum;
 use MabeEnumTest\TestAsset\Enum66;
+use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Benchmark of abstract class Enum tested with enumeration of 66 enumerators.
@@ -17,6 +20,10 @@ use MabeEnumTest\TestAsset\Enum66;
  */
 class EnumBench
 {
+    /**
+     * @var ReflectionProperty[]
+     */
+    private $enumPropsRefl;
     /**
      * @var string[]
      */
@@ -42,10 +49,23 @@ class EnumBench
      */
     public function init()
     {
+        $enumRefl = new ReflectionClass(Enum::class);
+        $this->enumPropsRefl = $enumRefl->getProperties(ReflectionProperty::IS_STATIC);
+        foreach ($this->enumPropsRefl as $enumPropRefl) {
+            $enumPropRefl->setAccessible(true);
+        }
+
         $this->names       = Enum66::getNames();
         $this->values      = Enum66::getValues();
         $this->ordinals    = Enum66::getOrdinals();
         $this->enumerators = Enum66::getEnumerators();
+    }
+
+    private function resetStaticEnumProps()
+    {
+        foreach ($this->enumPropsRefl as $enumPropRefl) {
+            $enumPropRefl->setValue([]);
+        }
     }
 
     public function benchGetName()
@@ -85,6 +105,7 @@ class EnumBench
 
     public function benchGetConstants()
     {
+        $this->resetStaticEnumProps();
         Enum66::getConstants();
     }
 
