@@ -2,6 +2,7 @@
 
 namespace MabeEnumTest;
 
+use AssertionError;
 use InvalidArgumentException;
 use LogicException;
 use MabeEnum\Enum;
@@ -39,6 +40,11 @@ class EnumTest extends TestCase
         $constantsProp->setValue(null, []);
         $namesProp->setValue(null, []);
         $instancesProp->setValue(null, []);
+    }
+
+    public function tearDown()
+    {
+        assert_options(ASSERT_ACTIVE, 1);
     }
 
     public function testGetNameReturnsConstantNameOfCurrentValue()
@@ -274,15 +280,31 @@ class EnumTest extends TestCase
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
 
-    public function testAmbiguousConstantsThrowsLogicException()
+    public function testEnabledAssertAmbiguousEnumeratorValues()
     {
-        $this->expectException(LogicException::class);
+        $this->expectException(AssertionError::class);
         EnumAmbiguous::get('unknown');
     }
 
-    public function testExtendedAmbiguousCanstantsThrowsLogicException()
+    public function testDisabledAssertAmbiguousEnumeratorValues()
     {
-        $this->expectException(LogicException::class);
+        assert_options(ASSERT_ACTIVE, 0);
+        $this->expectException(InvalidArgumentException::class);
+
+        EnumAmbiguous::get('unknown');
+    }
+
+    public function testExtendedEnabledAssertAmbiguousEnumeratorValues()
+    {
+        $this->expectException(AssertionError::class);
+        EnumExtendedAmbiguous::get('unknown');
+    }
+
+    public function testExtendedDisabledAssertAmbiguousEnumeratorValues()
+    {
+        assert_options(ASSERT_ACTIVE, 0);
+        $this->expectException(InvalidArgumentException::class);
+
         EnumExtendedAmbiguous::get('unknown');
     }
 
