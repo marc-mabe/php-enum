@@ -275,11 +275,14 @@ class EnumSet implements Iterator, Countable
             }
 
             $ord = \ord($bitset[$bytePos]);
-            for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
-                if ($ord & (1 << $bitPos)) {
-                    ++$count;
-                }
-            }
+            if ($ord & 0b00000001) ++$count;
+            if ($ord & 0b00000010) ++$count;
+            if ($ord & 0b00000100) ++$count;
+            if ($ord & 0b00001000) ++$count;
+            if ($ord & 0b00010000) ++$count;
+            if ($ord & 0b00100000) ++$count;
+            if ($ord & 0b01000000) ++$count;
+            if ($ord & 0b10000000) ++$count;
         }
         return $count;
     }
@@ -305,8 +308,8 @@ class EnumSet implements Iterator, Countable
         }
 
         // iterate byte by byte and count set bits
-        for ($i = 0; $i < \PHP_INT_SIZE; ++$i) {
-            $bitPos = $i * 8;
+        $phpIntBitSize = \PHP_INT_SIZE * 8;
+        for ($bitPos = 0; $bitPos < $phpIntBitSize; $bitPos += 8) {
             $bitChk = 0xff << $bitPos;
             $byte = $bitset & $bitChk;
             if ($byte) {
