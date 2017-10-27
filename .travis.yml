@@ -49,9 +49,9 @@ install:
 
 script:
   - if [ "$CODE_COVERAGE" == "1" ]; then
-      php vendor/bin/phpunit --verbose --coverage-text --coverage-clover=coverage.clover;
+      php -d 'zend.assertions=1' vendor/bin/phpunit --verbose --coverage-text --coverage-clover=coverage.clover;
     else
-      php vendor/bin/phpunit --verbose;
+      php -d 'zend.assertions=1' vendor/bin/phpunit --verbose;
     fi
 
 after_script:

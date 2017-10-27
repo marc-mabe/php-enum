@@ -2,6 +2,7 @@
 
 namespace MabeEnum;
 
+use AssertionError;
 use ReflectionClass;
 use InvalidArgumentException;
 use LogicException;
@@ -337,17 +338,17 @@ abstract class Enum
      *
      * @param string $class
      * @return array
-     * @throws LogicException On ambiguous constant values
+     * @throws AssertionError On ambiguous constant values
      */
     private static function detectConstants($class)
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
-            $constants  = [];
+            $publicConstants  = [];
 
             do {
                 $scopeConstants = [];
-                if (PHP_VERSION_ID >= 70100) {
+                if (\PHP_VERSION_ID >= 70100) {
                     // Since PHP-7.1 visibility modifiers are allowed for class constants
                     // for enumerations we are only interested in public once.
                     foreach ($reflection->getReflectionConstants() as $reflConstant) {
@@ -360,31 +361,33 @@ abstract class Enum
                     $scopeConstants = $reflection->getConstants();
                 }
 
-                $constants = $scopeConstants + $constants;
+                $publicConstants = $scopeConstants + $publicConstants;
             } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
 
-            // Detect ambiguous values and report names
-            $ambiguous = [];
-            foreach ($constants as $value) {
-                $names = \array_keys($constants, $value, true);
-                if (\count($names) > 1) {
-                    $ambiguous[\var_export($value, true)] = $names;
-                }
-            }
-            if (!empty($ambiguous)) {
-                throw new LogicException(
-                    'All possible values needs to be unique. The following are ambiguous: '
-                    . \implode(', ', \array_map(function ($names) use ($constants) {
-                        return \implode('/', $names) . '=' . \var_export($constants[$names[0]], true);
-                    }, $ambiguous))
-                );
-            }
+            assert(self::noAmbiguousValues($publicConstants));
 
-            self::$constants[$class] = $constants;
-            self::$names[$class] = \array_keys($constants);
+            self::$constants[$class] = $publicConstants;
+            self::$names[$class] = \array_keys($publicConstants);
         }
 
         return self::$constants[$class];
+    }
+
+    /**
+     * Assert that the given enumeration class doesn't define ambiguous enumerator values
+     * @param array $constants
+     * @return bool
+     */
+    private static function noAmbiguousValues(array $constants)
+    {
+        foreach ($constants as $value) {
+            $names = \array_keys($constants, $value, true);
+            if (\count($names) > 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
