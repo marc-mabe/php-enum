@@ -383,10 +383,6 @@ class EnumTest extends TestCase
 
     public function testIsSerializableIssue()
     {
-        if (PHP_VERSION_ID < 50400) {
-            $this->markTestSkipped('This test is for PHP-5.4 and upper only');
-        }
-
         $enum1 = SerializableEnum::INT();
         $enum2 = unserialize(serialize($enum1));
 
