@@ -192,10 +192,13 @@ abstract class Enum
         $constants = self::detectConstants(static::class);
         $name      = \array_search($value, $constants, true);
         if ($name === false) {
-            $message = \is_scalar($value)
-                ? 'Unknown value ' . \var_export($value, true)
-                : 'Invalid value of type ' . (\is_object($value) ? \get_class($value) : \gettype($value));
-            throw new InvalidArgumentException($message);
+            throw new InvalidArgumentException(sprintf(
+                'Unknown value %s for enumeration %s',
+                \is_scalar($value)
+                    ? \var_export($value, true)
+                    : 'of type ' . (\is_object($value) ? \get_class($value) : \gettype($value)),
+                static::class
+            ));
         }
 
         if (!isset(self::$instances[static::class][$name])) {

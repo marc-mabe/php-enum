@@ -15,6 +15,7 @@ use MabeEnumTest\TestAsset\ConstVisibilityEnumExtended;
 use MabeEnumTest\TestAsset\SerializableEnum;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Unit tests for the class MabeEnum\Enum
@@ -27,24 +28,41 @@ class EnumTest extends TestCase
 {
     public function setUp()
     {
-        $enumRefl = new ReflectionClass(Enum::class);
-
-        $constantsProp = $enumRefl->getProperty('constants');
-        $namesProp = $enumRefl->getProperty('names');
-        $instancesProp = $enumRefl->getProperty('instances');
-
-        $constantsProp->setAccessible(true);
-        $namesProp->setAccessible(true);
-        $instancesProp->setAccessible(true);
-
-        $constantsProp->setValue(null, []);
-        $namesProp->setValue(null, []);
-        $instancesProp->setValue(null, []);
+        $this->resetStaticEnumProps();
     }
 
     public function tearDown()
     {
         assert_options(ASSERT_ACTIVE, 1);
+    }
+
+    /**
+     * Un-initialize all known enumerations
+     */
+    private function resetStaticEnumProps()
+    {
+        $enumRefl = new ReflectionClass(Enum::class);
+        $enumPropsRefl = $enumRefl->getProperties(ReflectionProperty::IS_STATIC);
+        foreach ($enumPropsRefl as $enumPropRefl) {
+            $enumPropRefl->setAccessible(true);
+            $enumPropRefl->setValue([]);
+        }
+    }
+
+    /**
+     * Test that Enumeration getters works fine after Enum::byName()
+     * as Enum::byName() does not initialize the enumeration directly
+     */
+    public function testByNameEnumGettersWorks()
+    {
+        $this->resetStaticEnumProps();
+        $this->assertSame(EnumBasic::ONE, EnumBasic::byName('ONE')->getValue());
+
+        $this->resetStaticEnumProps();
+        $this->assertSame('ONE', EnumBasic::byName('ONE')->getName());
+
+        $this->resetStaticEnumProps();
+        $this->assertSame(0, EnumBasic::byName('ONE')->getOrdinal());
     }
 
     public function testGetNameReturnsConstantNameOfCurrentValue()
@@ -100,19 +118,31 @@ class EnumTest extends TestCase
     public function testGetWithNonStrictValueThrowsInvalidArgumentException()
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Unknown value '2' for enumeration MabeEnumTest\\TestAsset\\EnumBasic");
         EnumBasic::get((string)EnumBasic::TWO);
     }
 
     public function testGetWithInvalidValueThrowsInvalidArgumentException()
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Unknown value 'unknown' for enumeration MabeEnumTest\\TestAsset\\EnumBasic");
         EnumBasic::get('unknown');
+    }
+
+    public function testGetWithInvalidArrayValueThrowsInvalidArgumentException()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Unknown value of type array for enumeration MabeEnumTest\\TestAsset\\EnumBasic");
+        EnumBasic::get(array());
     }
 
     public function testGetWithInvalidTypeOfValueThrowsInvalidArgumentException()
     {
         $this->expectException(InvalidArgumentException::class);
-        EnumBasic::get(array());
+        $this->expectExceptionMessage(
+            "Unknown value of type " . get_class($this) . " for enumeration MabeEnumTest\\TestAsset\\EnumBasic"
+        );
+        EnumBasic::get($this);
     }
 
     public function testGetByInstance()
