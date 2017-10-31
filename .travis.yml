@@ -26,6 +26,9 @@ matrix:
     - php: 7.1
       env:
         - CODE_COVERAGE="1"
+    - php: 7.2
+      env:
+        - CODE_COVERAGE="1"
     - php: nightly
 
     # HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
