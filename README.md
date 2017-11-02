@@ -143,37 +143,78 @@ $user->setStatus(ExtendedUserStatus::EXTENDED());
 ```
 
 Now the setter receives a status it doesn't know about but allows it.
-If your `User` class doesn't allow it the following is the recommanded way:
+
+#### Solution 1: Finilize the numeration
+
+```php
+final class UserStatus extends Enum
+{
+    // ...
+}
+
+class User
+{
+    protected $status;
+
+    public function setStatus(UserStatus $status)
+    {
+        $this->status = $status;
+    }
+}
+````
+
+* Nice and obvious solution
+
+* Resulting behaviour matches native enumeration implementation of most other languages (like Java)
+
+But as this library emulates enumerations it has a view downsides:
+
+* Enumerator values can not be used directly
+  * `$user->setStatus(UserStatus::ACTIVE)` fails
+  * `$user->setStatus(UserStatus::ACTIVE())` works
+
+* Does not help if the enumeration was defined in an external library
+
+
+#### Solution 2: Using `Enum::get()`
 
 ```php
 class User
 {
-    // ...
     public function setStatus($status)
     {
         $this->status = UserStatus::get($status);
     }
-    // ...
 }
 ```
 
-Now you are 100% sure to work with an exact instance of `UserStatus`.
+* Makes sure the resulting enumerator exactly matches an enumeration. (Inherited enumerators as not allowed).
 
-If the setter receives an `ExtendedUserStatus` an exception will be thrown
-because inheritance is not allowed with `Enum::get`.
+* Allows enumerator values directly
+  * `$user->setStatus(UserStatus::ACTIVE)` works
+  * `$user->setStatus(UserStatus::ACTIVE())` works
 
-On the same time this method will accept scalar values matching one of the
-defined values of `UserStatus` and returns an instance of it.
+* Also works for enumerations defined in external libraries
+
+But of course this solution has downsides, too:
+
+* Looses declarative type-hint
+
+* A bit slower
+
 
 ## EnumSet
 
 An `EnumSet` groups enumerators of the same enumeration type together.
 
-It implements `Iterator` and `Countable` so it's simple to iterate the set
-or count all attached enumerators of it with `foreach` and `count()`.
+It implements `Iterator` and `Countable`
+so elements can be iterated and counted like a normal array
+using `foreach` and `count()`.
 
-Internally it's based on a bitset of a binary string so the order will be
-by the ordinal number by design.
+Internally it's based on a bitset. Integer bitset or binary bitset
+depending on how many enumerators are defined for the given enumeration.
+
+Enumerators attached to an `EnumSet` are unique and ordered based on it's ordinal number by design.
 
 ```php
 use MabeEnum\EnumSet;
@@ -181,27 +222,40 @@ use MabeEnum\EnumSet;
 // create a new EnumSet
 $enumSet = new EnumSet('UserStatus');
 
+
 // attach enumerators (by value or by instance)
 $enumSet->attach(UserStatus::INACTIVE);
 $enumSet->attach(UserStatus::ACTIVE());
 $enumSet->attach(UserStatus::DELETED());
 
+
 // detach enumerators (by value or by instance)
 $enumSet->detach(UserStatus::INACTIVE);
 $enumSet->detach(UserStatus::DELETED());
 
+
 // contains enumerators (by value or by instance)
 $enumSet->contains(UserStatus::INACTIVE); // bool
+
 
 // count number of attached enumerations
 $enumSet->count();
 count($enumSet);
+
 
 // convert to array
 $enumSet->getValues();      // List of enumerator values
 $enumSet->getEnumerators(); // List of enumerator instances
 $enumSet->getNames();       // List of enumerator names
 $enumSet->getOrdinals();    // List of ordinal numbers
+
+
+// iterating over the set
+foreach ($enumSet as $ordinal => $enum) {
+    gettype($ordinal);  // int (the ordinal number of the enumerator)
+    get_class($enum);   // UserStatus (enumerator object)
+}
+
 
 // compare two EnumSets
 $enumSet->isEqual($other);    // Check if the EnumSet is the same as other
@@ -218,13 +272,16 @@ $enumSet->symDiff($other);   // Produce a new set with enumerators in either thi
 
 An `EnumMap` maps enumerators of the same type to data assigned to.
 
-Internally an `EnumMap` is based of `SplObjectStorage`.
+It implements `ArrayAccess`, `Countable` and `SeekableIterator`
+so elements can be accessed, iterated and counted like a normal array
+using `$enumMap[$key]`, `foreach` and `count()`.
 
 ```php
 use MabeEnum\EnumMap;
 
 // create a new EnumMap
 $enumMap = new EnumMap('UserStatus');
+
 
 // read and write key-value-pairs like an array
 $enumMap[UserStatus::INACTIVE] = 'inaktiv';
@@ -249,6 +306,11 @@ $enumMap[UserStatus::DELETED()];  // 'gelöscht';
 isset($enumMap[UserStatus::DELETED()]); // true
 unset($enumMap[UserStatus::DELETED()]);
 isset($enumMap[UserStatus::DELETED()]); // false
+
+
+// count number of attached elements
+$enumMap->count();
+count($enumMap);
 
 
 // support for null aware exists check
@@ -284,6 +346,9 @@ instance and you could result in two different instance of the same enumeration.
 
 **Use it with caution!**
 
+PS: `EnumSet` and `EnumMap` are serializable by default as long as you don't set other non-serializable values.
+
+
 ### Example of using EnumSerializableTrait
 
 ```php
@@ -313,7 +378,7 @@ var_dump($north2->is($north1)); // returns TRUE - equality works in both directi
 
 * `SplEnum` is not build-in into PHP and requires pecl extension installed.
 * Instances of the same value of an `SplEnum` are not the same instance.
-* `SplEnum` doesn't have implemented `EnumMap` or `EnumSet`.
+* No support for `EnumMap` or `EnumSet`.
 
 
 # Install
