@@ -2,7 +2,6 @@
 
 namespace MabeEnum;
 
-use AssertionError;
 use ReflectionClass;
 use InvalidArgumentException;
 use LogicException;
@@ -341,7 +340,6 @@ abstract class Enum
      *
      * @param string $class
      * @return array
-     * @throws AssertionError On ambiguous constant values
      */
     private static function detectConstants($class)
     {
