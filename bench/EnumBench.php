@@ -103,7 +103,7 @@ class EnumBench
         }
     }
 
-    public function benchGetConstants()
+    public function benchDetectConstants()
     {
         $this->resetStaticEnumProps();
         Enum66::getConstants();
