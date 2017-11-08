@@ -188,8 +188,11 @@ abstract class Enum
      */
     final public static function byValue($value)
     {
-        $constants = self::detectConstants(static::class);
-        $name      = \array_search($value, $constants, true);
+        if (!isset(self::$names[static::class])) {
+            self::detectConstants(static::class);
+        }
+
+        $name = \array_search($value, self::$constants[static::class], true);
         if ($name === false) {
             throw new InvalidArgumentException(sprintf(
                 'Unknown value %s for enumeration %s',
@@ -201,7 +204,7 @@ abstract class Enum
         }
 
         if (!isset(self::$instances[static::class][$name])) {
-            self::$instances[static::class][$name] = new static($constants[$name]);
+            self::$instances[static::class][$name] = new static(self::$constants[static::class][$name]);
         }
 
         return self::$instances[static::class][$name];
@@ -258,8 +261,7 @@ abstract class Enum
             return self::$instances[static::class][$name];
         }
 
-        $const = static::class . '::' . $name;
-        return self::$instances[static::class][$name] = new static(\constant($const), $ordinal);
+        return self::$instances[static::class][$name] = new static(self::$constants[static::class][$name], $ordinal);
     }
 
     /**

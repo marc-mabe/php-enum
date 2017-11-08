@@ -50,9 +50,10 @@ class EnumBench
     public function init()
     {
         $enumRefl = new ReflectionClass(Enum::class);
-        $this->enumPropsRefl = $enumRefl->getProperties(ReflectionProperty::IS_STATIC);
-        foreach ($this->enumPropsRefl as $enumPropRefl) {
+        $enumPropsRefl = $enumRefl->getProperties(ReflectionProperty::IS_STATIC);
+        foreach ($enumPropsRefl as $enumPropRefl) {
             $enumPropRefl->setAccessible(true);
+            $this->enumPropsRefl[$enumPropRefl->getName()] = $enumPropRefl;
         }
 
         $this->names       = Enum66::getNames();
@@ -61,11 +62,16 @@ class EnumBench
         $this->enumerators = Enum66::getEnumerators();
     }
 
-    private function resetStaticEnumProps()
+    private function destructEnumerations()
     {
         foreach ($this->enumPropsRefl as $enumPropRefl) {
             $enumPropRefl->setValue([]);
         }
+    }
+
+    private function destructEnumerationInstances()
+    {
+        $this->enumPropsRefl['instances']->setValue([]);
     }
 
     public function benchGetName()
@@ -105,7 +111,7 @@ class EnumBench
 
     public function benchDetectConstants()
     {
-        $this->resetStaticEnumProps();
+        $this->destructEnumerations();
         Enum66::getConstants();
     }
 
@@ -136,6 +142,22 @@ class EnumBench
         }
     }
 
+    public function benchByValueAndInitialize()
+    {
+        foreach ($this->values as $value) {
+            $this->destructEnumerations();
+            Enum66::byValue($value);
+        }
+    }
+
+    public function benchByValueAndInstantiate()
+    {
+        $this->destructEnumerationInstances();
+        foreach ($this->values as $value) {
+            Enum66::byValue($value);
+        }
+    }
+
     public function benchByName()
     {
         foreach ($this->names as $name) {
@@ -143,8 +165,40 @@ class EnumBench
         }
     }
 
+    public function benchByNameAndInitialize()
+    {
+        foreach ($this->names as $name) {
+            $this->destructEnumerations();
+            Enum66::byName($name);
+        }
+    }
+
+    public function benchByNameAndInstantiate()
+    {
+        $this->destructEnumerationInstances();
+        foreach ($this->names as $name) {
+            Enum66::byName($name);
+        }
+    }
+
     public function benchByOrdinal()
     {
+        foreach ($this->ordinals as $ord) {
+            Enum66::byOrdinal($ord);
+        }
+    }
+
+    public function benchByOrdinalAndInitialize()
+    {
+        foreach ($this->ordinals as $ord) {
+            $this->destructEnumerations();
+            Enum66::byOrdinal($ord);
+        }
+    }
+
+    public function benchByOrdinalAndInstantiate()
+    {
+        $this->destructEnumerationInstances();
         foreach ($this->ordinals as $ord) {
             Enum66::byOrdinal($ord);
         }
