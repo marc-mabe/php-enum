@@ -188,7 +188,7 @@ abstract class Enum
      */
     final public static function byValue($value)
     {
-        if (!isset(self::$names[static::class])) {
+        if (!isset(self::$constants[static::class])) {
             self::detectConstants(static::class);
         }
 
