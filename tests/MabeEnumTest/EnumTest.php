@@ -388,6 +388,9 @@ class EnumTest extends TestCase
         if (PHP_VERSION_ID < 70100) {
             $this->markTestSkipped('This test is for PHP-7.1 and upper only');
         }
+        if (defined('HHVM_VERSION')) {
+            $this->markTestSkipped('HHVM does not support constant visibility');
+        }
 
         $constants = ConstVisibilityEnum::getConstants();
         $this->assertSame(array(
@@ -400,6 +403,9 @@ class EnumTest extends TestCase
     {
         if (PHP_VERSION_ID < 70100) {
             $this->markTestSkipped('This test is for PHP-7.1 and upper only');
+        }
+        if (defined('HHVM_VERSION')) {
+            $this->markTestSkipped('HHVM does not support constant visibility');
         }
 
         $constants = ConstVisibilityEnumExtended::getConstants();
