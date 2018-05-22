@@ -4,7 +4,6 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/marc-mabe/php-enum/badges/coverage.png?s=8442d532fad964fd3d8afe493ac2d0d65162306a)](https://scrutinizer-ci.com/g/marc-mabe/php-enum/)
 [![Total Downloads](https://poser.pugx.org/marc-mabe/php-enum/downloads.png)](https://packagist.org/packages/marc-mabe/php-enum)
 [![Latest Stable](https://poser.pugx.org/marc-mabe/php-enum/v/stable.png)](https://packagist.org/packages/marc-mabe/php-enum)
-[![Dependency Status](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master/badge.png)](https://www.versioneye.com/php/marc-mabe:php-enum/dev-master)
 
 This is a native PHP implementation to add enumeration support to PHP >= 5.3.
 It's an abstract class that needs to be extended to use it.
