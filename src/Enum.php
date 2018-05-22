@@ -369,7 +369,10 @@ abstract class Enum
                 $publicConstants = $scopeConstants + $publicConstants;
             } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
 
-            assert(self::noAmbiguousValues($publicConstants));
+            assert(
+                self::noAmbiguousValues($publicConstants),
+                "Ambiguous enumerator values detected for {$class}"
+            );
 
             self::$constants[$class] = $publicConstants;
             self::$names[$class] = \array_keys($publicConstants);
@@ -379,7 +382,7 @@ abstract class Enum
     }
 
     /**
-     * Assert that the given enumeration class doesn't define ambiguous enumerator values
+     * Test that the given constants does not contain ambiguous values
      * @param array $constants
      * @return bool
      */
