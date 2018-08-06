@@ -299,7 +299,8 @@ abstract class Enum
         }
         return self::$names[static::class];
     }
-    /*
+    
+    /**
      * Get a list of enumerator ordinal numbers
      *
      * @return int[]
