@@ -13,7 +13,7 @@ use LogicException;
  * @copyright Copyright (c) 2017 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
-abstract class Enum
+abstract class Enum implements \JsonSerializable
 {
     /**
      * The selected enumerator value
@@ -98,6 +98,17 @@ abstract class Enum
     final public function __wakeup()
     {
         throw new LogicException('Enums are not serializable');
+    }
+
+    /**
+     * Get the value when enumerator is jsonSerialized
+     *
+     * @return bool|float|int|mixed|null|string
+     */
+
+    final public function jsonSerialize()
+    {
+        return $this->getValue();
     }
 
     /**
