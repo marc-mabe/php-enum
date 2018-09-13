@@ -323,6 +323,17 @@ abstract class Enum
     }
 
     /**
+     * Is the given name part of this enumeration
+     *
+     * @param string $name
+     * @return bool
+     */
+    final public static function hasName($name)
+    {
+        return \is_string($name) && \defined("static::$name");
+    }
+
+    /**
      * Is the given enumerator part of this enumeration
      * 
      * @param static|null|bool|int|float|string $value

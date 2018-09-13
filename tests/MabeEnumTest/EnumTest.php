@@ -385,6 +385,19 @@ class EnumTest extends TestCase
         unserialize('O:' . strlen(EnumBasic::class) . ':"' . EnumBasic::class . '":0:{}');
     }
 
+    public function testHasName()
+    {
+        $enum = EnumBasic::ONE();
+
+        $this->assertFalse($enum->hasName(''));
+        $this->assertFalse($enum->hasName(false));
+        $this->assertFalse($enum->hasName(true));
+        $this->assertFalse($enum->hasName('str'));
+        $this->assertFalse($enum->hasName(new \stdClass()));
+        $this->assertTrue($enum->hasName('ONE'));
+        $this->assertTrue($enum->hasName('STR'));
+    }
+
     public function testHas()
     {
         $enum = EnumBasic::ONE();
