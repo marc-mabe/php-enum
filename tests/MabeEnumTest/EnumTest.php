@@ -389,23 +389,23 @@ class EnumTest extends TestCase
     {
         $enum = EnumBasic::ONE();
 
-        $this->assertFalse($enum->hasName(''));
-        $this->assertFalse($enum->hasName(false));
-        $this->assertFalse($enum->hasName(true));
-        $this->assertFalse($enum->hasName('str'));
-        $this->assertFalse($enum->hasName(new \stdClass()));
-        $this->assertTrue($enum->hasName('ONE'));
-        $this->assertTrue($enum->hasName('STR'));
+        $this->assertFalse($enum::hasName(''));
+        $this->assertFalse($enum::hasName(false));
+        $this->assertFalse($enum::hasName(true));
+        $this->assertFalse($enum::hasName('str'));
+        $this->assertFalse($enum::hasName(new \stdClass()));
+        $this->assertTrue($enum::hasName('ONE'));
+        $this->assertTrue($enum::hasName('STR'));
     }
 
     public function testHas()
     {
         $enum = EnumBasic::ONE();
 
-        $this->assertFalse($enum->has('invalid'));
-        $this->assertFalse($enum->has(EnumInheritance::ONE()));
-        $this->assertTrue($enum->has(EnumBasic::ONE()));
-        $this->assertTrue($enum->has(EnumBasic::ONE));
+        $this->assertFalse($enum::has('invalid'));
+        $this->assertFalse($enum::has(EnumInheritance::ONE()));
+        $this->assertTrue($enum::has(EnumBasic::ONE()));
+        $this->assertTrue($enum::has(EnumBasic::ONE));
     }
     
     public function testConstVisibility()
