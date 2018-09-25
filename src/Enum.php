@@ -405,7 +405,7 @@ abstract class Enum
      * This will be called automatically on calling a method
      * with the same name of a defined enumerator.
      *
-     * @param string $method The name of the enumeraotr (called as method)
+     * @param string $method The name of the enumerator (called as method)
      * @param array  $args   There should be no arguments
      * @return static
      * @throws InvalidArgumentException On an invalid or unknown name
