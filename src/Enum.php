@@ -323,19 +323,41 @@ abstract class Enum
     }
 
     /**
-     * Is the given enumerator part of this enumeration
+     * Test if the given enumerator is part of this enumeration
      * 
      * @param static|null|bool|int|float|string $value
      * @return bool
      */
-    final public static function has($value)
+    final public static function has($enumerator)
     {
-        if ($value instanceof static && \get_class($value) === static::class) {
+        if ($enumerator instanceof static && \get_class($enumerator) === static::class) {
             return true;
         }
 
+        return static::hasValue($enumerator);
+    }
+
+    /**
+     * Test if the given enumerator value is part of this enumeration
+     *
+     * @param null|bool|int|float|string $value
+     * @return bool
+     */
+    final public static function hasValue($value)
+    {
         $constants = self::detectConstants(static::class);
         return \in_array($value, $constants, true);
+    }
+
+    /**
+     * Test if the given enumerator name is part of this enumeration
+     *
+     * @param string $name
+     * @return bool
+     */
+    final public static function hasName($name)
+    {
+        return \is_string($name) && \defined("static::$name");
     }
 
     /**
