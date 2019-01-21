@@ -87,7 +87,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Search for the given value
-     * @param mixed $value
+     * @param null|bool|int|float|string|array $value
      * @param bool $strict Use strict type comparison
      * @return Enum|null The found key or NULL
      */
@@ -104,8 +104,8 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Test if the given enumerator exists
-     * @param Enum|null|boolean|int|float|string $enumerator
-     * @return boolean
+     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @return bool
      * @see offsetExists
      */
     public function contains($enumerator)
@@ -122,8 +122,8 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Test if the given enumerator key exists and is not NULL
-     * @param Enum|null|boolean|int|float|string $enumerator
-     * @return boolean
+     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @return bool
      * @see contains
      */
     public function offsetExists($enumerator)
@@ -140,7 +140,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Get mapped data for the given enumerator
-     * @param Enum|null|boolean|int|float|string $enumerator
+     * @param Enum|null|bool|int|float|string|array $enumerator
      * @return mixed
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -160,8 +160,8 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Attach a new enumerator or overwrite an existing one
-     * @param Enum|null|boolean|int|float|string $enumerator
-     * @param mixed                              $value
+     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param mixed                                 $value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see attach()
@@ -179,7 +179,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Detach an existing enumerator
-     * @param Enum|null|boolean|int|float|string $enumerator
+     * @param Enum|null|bool|int|float|string|array $enumerator
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see detach()
@@ -256,7 +256,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Test if the iterator is in a valid state
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {
