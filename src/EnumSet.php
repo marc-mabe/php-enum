@@ -106,7 +106,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Attach a new enumerator or overwrite an existing one
-     * @param Enum|null|boolean|int|float|string $enumerator
+     * @param Enum|null|bool|int|float|string|array $enumerator
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -118,7 +118,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Detach the given enumerator
-     * @param Enum|null|boolean|int|float|string $enumerator
+     * @param Enum|null|bool|int|float|string|array $enumerator
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -130,8 +130,8 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Test if the given enumerator was attached
-     * @param Enum|null|boolean|int|float|string $enumerator
-     * @return boolean
+     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @return bool
      */
     public function contains($enumerator)
     {
@@ -233,7 +233,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Test if the iterator is in a valid state
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {
@@ -710,7 +710,7 @@ class EnumSet implements Iterator, Countable
      * Get a bit at the given ordinal number
      *
      * @param int $ordinal Ordinal number of bit to get
-     * @return boolean
+     * @return bool
      */
     public function getBit($ordinal)
     {
@@ -727,7 +727,7 @@ class EnumSet implements Iterator, Countable
      * This is the binary bitset implementation.
      *
      * @param int $ordinal Ordinal number of bit to get
-     * @return boolean
+     * @return bool
      * @see getBit
      * @see doGetBitInt
      */
@@ -742,7 +742,7 @@ class EnumSet implements Iterator, Countable
      * This is the integer bitset implementation.
      * 
      * @param int $ordinal Ordinal number of bit to get
-     * @return boolean
+     * @return bool
      * @see getBit
      * @see doGetBitBin
      */

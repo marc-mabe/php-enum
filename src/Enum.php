@@ -18,7 +18,7 @@ abstract class Enum
     /**
      * The selected enumerator value
      *
-     * @var null|bool|int|float|string
+     * @var null|bool|int|float|string|array
      */
     private $value;
 
@@ -53,8 +53,8 @@ abstract class Enum
     /**
      * Constructor
      *
-     * @param null|bool|int|float|string $value   The value of the enumerator
-     * @param int|null                   $ordinal The ordinal number of the enumerator
+     * @param null|bool|int|float|string|array $value   The value of the enumerator
+     * @param int|null                         $ordinal The ordinal number of the enumerator
      */
     final private function __construct($value, $ordinal = null)
     {
@@ -103,7 +103,7 @@ abstract class Enum
     /**
      * Get the value of the enumerator
      *
-     * @return null|bool|int|float|string
+     * @return null|bool|int|float|string|array
      */
     final public function getValue()
     {
@@ -164,7 +164,7 @@ abstract class Enum
     /**
      * Get an enumerator instance of the given enumerator value or instance
      *
-     * @param static|null|bool|int|float|string $enumerator
+     * @param static|null|bool|int|float|string|array $enumerator
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
@@ -325,7 +325,7 @@ abstract class Enum
     /**
      * Test if the given enumerator is part of this enumeration
      * 
-     * @param static|null|bool|int|float|string $value
+     * @param static|null|bool|int|float|string|array $value
      * @return bool
      */
     final public static function has($enumerator)
