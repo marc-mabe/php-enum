@@ -143,6 +143,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @param Enum|null|bool|int|float|string|array $enumerator
      * @return mixed
      * @throws InvalidArgumentException On an invalid given enumerator
+     * @throws UnexpectedValueException If the given enumerator does not exist in this map
      */
     public function offsetGet($enumerator)
     {
@@ -198,6 +199,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     /**
      * Seeks to the given iterator position.
      * @param int $pos
+     * @throws OutOfBoundsException On an invalid position
      */
     public function seek($pos)
     {

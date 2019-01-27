@@ -183,8 +183,8 @@ class EnumSet implements Iterator, Countable
      * Go to the first valid iterator position.
      * If no valid iterator position was found the iterator position will be 0.
      * @return void
-     * @see doRewindBin
-     * @see doRewindInt
+     * @uses doRewindBin()
+     * @uses doRewindInt()
      */
     public function rewind()
     {
@@ -198,8 +198,8 @@ class EnumSet implements Iterator, Countable
      * This is the binary bitset implementation.
      *
      * @return void
-     * @see rewind
-     * @see doRewindInt
+     * @see rewind()
+     * @see doRewindInt()
      */
     private function doRewindBin()
     {
@@ -218,8 +218,8 @@ class EnumSet implements Iterator, Countable
      * This is the binary bitset implementation.
      *
      * @return void
-     * @see rewind
-     * @see doRewindBin
+     * @see rewind()
+     * @see doRewindBin()
      */
     private function doRewindInt()
     {
@@ -246,8 +246,8 @@ class EnumSet implements Iterator, Countable
      * Count the number of elements
      *
      * @return int
-     * @see doCountBin
-     * @see doCountInt
+     * @uses doCountBin()
+     * @uses doCountInt()
      */
     public function count()
     {
@@ -260,8 +260,8 @@ class EnumSet implements Iterator, Countable
      * This is the binary bitset implementation.
      *
      * @return int
-     * @see count
-     * @see doCountInt
+     * @see count()
+     * @see doCountInt()
      */
     private function doCountBin()
     {
@@ -293,8 +293,8 @@ class EnumSet implements Iterator, Countable
      * This is the integer bitset implementation.
      *
      * @return int
-     * @see count
-     * @see doCountBin
+     * @see count()
+     * @see doCountBin()
      */
     private function doCountInt()
     {
@@ -376,6 +376,7 @@ class EnumSet implements Iterator, Countable
      *
      * @param EnumSet $other EnumSet of the same enumeration to produce the union
      * @return EnumSet
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
     public function union(EnumSet $other)
     {
@@ -396,6 +397,7 @@ class EnumSet implements Iterator, Countable
      *
      * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
      * @return EnumSet
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
     public function intersect(EnumSet $other)
     {
@@ -416,6 +418,7 @@ class EnumSet implements Iterator, Countable
      *
      * @param EnumSet $other EnumSet of the same enumeration to produce the diff
      * @return EnumSet
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
     public function diff(EnumSet $other)
     {
@@ -436,6 +439,7 @@ class EnumSet implements Iterator, Countable
      *
      * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
      * @return EnumSet
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
     public function symDiff(EnumSet $other)
     {
@@ -454,6 +458,8 @@ class EnumSet implements Iterator, Countable
     /**
      * Get ordinal numbers of the defined enumerators as array
      * @return int[]
+     * @uses  doGetOrdinalsBin()
+     * @uses  doGetOrdinalsInt()
      */
     public function getOrdinals()
     {
@@ -466,8 +472,8 @@ class EnumSet implements Iterator, Countable
      * This is the binary bitset implementation.
      *
      * @return int[]
-     * @see getOrdinals
-     * @see goGetOrdinalsInt
+     * @see getOrdinals()
+     * @see goGetOrdinalsInt()
      */
     private function doGetOrdinalsBin()
     {
@@ -496,8 +502,8 @@ class EnumSet implements Iterator, Countable
      * This is the integer bitset implementation.
      *
      * @return int[]
-     * @see getOrdinals
-     * @see doGetOrdinalsBin
+     * @see getOrdinals()
+     * @see doGetOrdinalsBin()
      */
     private function doGetOrdinalsInt()
     {
@@ -558,6 +564,8 @@ class EnumSet implements Iterator, Countable
      * Get binary bitset in little-endian order
      * 
      * @return string
+     * @uses doGetBinaryBitsetLeBin()
+     * @uses doGetBinaryBitsetLeInt()
      */
     public function getBinaryBitsetLe()
     {
@@ -570,6 +578,8 @@ class EnumSet implements Iterator, Countable
      * This is the binary bitset implementation.
      *
      * @return string
+     * @see getBinaryBitsetLe()
+     * @see doGetBinaryBitsetLeInt()
      */
     private function doGetBinaryBitsetLeBin()
     {
@@ -582,6 +592,8 @@ class EnumSet implements Iterator, Countable
      * This is the integer bitset implementation.
      *
      * @return string
+     * @see getBinaryBitsetLe()
+     * @see doGetBinaryBitsetLeBin()
      */
     private function doGetBinaryBitsetLeInt()
     {
@@ -597,7 +609,9 @@ class EnumSet implements Iterator, Countable
      * @param string $bitset
      * @return void
      * @throws InvalidArgumentException On a non string is given as Parameter
-     * @throws InvalidArgumentException On Out-Of-Range bits given as input bitset
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     * @uses doSetBinaryBitsetLeBin()
+     * @uses doSetBinaryBitsetLeInt()
      */
     public function setBinaryBitsetLe($bitset)
     {
@@ -618,7 +632,9 @@ class EnumSet implements Iterator, Countable
      *
      * @param string $bitset
      * @return void
-     * @throws InvalidArgumentException On Out-Of-Range bits given as input bitset
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     * @see setBinaryBitsetLeBin()
+     * @see doSetBinaryBitsetLeInt()
      */
     private function doSetBinaryBitsetLeBin($bitset)
     {
@@ -630,7 +646,7 @@ class EnumSet implements Iterator, Countable
             $bitset .= \str_repeat("\0", $size - $sizeIn);
         } elseif ($sizeIn > $size) {
             if (\ltrim(\substr($bitset, $size), "\0") !== '') {
-                throw new InvalidArgumentException('Out-Of-Range bits detected');
+                throw new InvalidArgumentException('out-of-range bits detected');
             }
             $bitset = \substr($bitset, 0, $size);
         }
@@ -641,7 +657,7 @@ class EnumSet implements Iterator, Countable
             $lastByte         = $bitset[$size - 1];
             $lastByteExpected = \chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
             if ($lastByte !== $lastByteExpected) {
-                throw new InvalidArgumentException('Out-Of-Range bits detected');
+                throw new InvalidArgumentException('out-of-range bits detected');
             }
 
             $this->bitset = \substr($bitset, 0, -1) . $lastByteExpected;
@@ -657,7 +673,9 @@ class EnumSet implements Iterator, Countable
      *
      * @param string $bitset
      * @return void
-     * @throws InvalidArgumentException On Out-Of-Range bits given as input bitset
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     * @see setBinaryBitsetLeBin()
+     * @see doSetBinaryBitsetLeBin()
      */
     private function doSetBinaryBitsetLeInt($bitset)
     {
@@ -667,14 +685,14 @@ class EnumSet implements Iterator, Countable
             $ord = \ord($bitset[$i]);
 
             if ($ord && $i > \PHP_INT_SIZE - 1) {
-                throw new InvalidArgumentException('Out-Of-Range bits detected');
+                throw new InvalidArgumentException('out-of-range bits detected');
             }
 
             $int |= $ord << (8 * $i);
         }
 
         if ($int & (~0 << $this->ordinalMax)) {
-            throw new InvalidArgumentException('Out-Of-Range bits detected');
+            throw new InvalidArgumentException('out-of-range bits detected');
         }
 
         $this->bitset = $int;
@@ -698,7 +716,7 @@ class EnumSet implements Iterator, Countable
      * @param string $bitset
      * @return void
      * @throws InvalidArgumentException On a non string is given as Parameter
-     * @throws InvalidArgumentException On Out-Of-Range bits given as input bitset
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
      */
     public function setBinaryBitsetBe($bitset)
     {
@@ -713,6 +731,9 @@ class EnumSet implements Iterator, Countable
      *
      * @param int $ordinal Ordinal number of bit to get
      * @return bool
+     * @throws InvalidArgumentException If the given ordinal number is out-of-range
+     * @uses doGetBitBin()
+     * @uses doGetBitInt()
      */
     public function getBit($ordinal)
     {
@@ -730,8 +751,8 @@ class EnumSet implements Iterator, Countable
      *
      * @param int $ordinal Ordinal number of bit to get
      * @return bool
-     * @see getBit
-     * @see doGetBitInt
+     * @see getBit()
+     * @see doGetBitInt()
      */
     private function doGetBitBin($ordinal)
     {
@@ -745,8 +766,8 @@ class EnumSet implements Iterator, Countable
      * 
      * @param int $ordinal Ordinal number of bit to get
      * @return bool
-     * @see getBit
-     * @see doGetBitBin
+     * @see getBit()
+     * @see doGetBitBin()
      */
     private function doGetBitInt($ordinal)
     {
@@ -756,13 +777,14 @@ class EnumSet implements Iterator, Countable
     /**
      * Set a bit at the given ordinal number
      *
-     * @param int $ordinal Ordnal number of bit to set
+     * @param int $ordinal Ordinal number of bit to set
      * @param bool $bit    The bit to set
      * @return void
-     * @see doSetBitBin
-     * @see doSetBitInt
-     * @see doUnsetBin
-     * @see doUnsetInt
+     * @throws InvalidArgumentException If the given ordinal number is out-of-range
+     * @uses doSetBitBin()
+     * @uses doSetBitInt()
+     * @uses doUnsetBitBin()
+     * @uses doUnsetBitInt()
      */
     public function setBit($ordinal, $bit)
     {
@@ -782,10 +804,10 @@ class EnumSet implements Iterator, Countable
      *
      * This is the binary bitset implementation.
      * 
-     * @param int $ordinal Ordnal number of bit to set
+     * @param int $ordinal Ordinal number of bit to set
      * @return void
-     * @see setBit
-     * @see doSetBitInt
+     * @see setBit()
+     * @see doSetBitInt()
      */
     private function doSetBitBin($ordinal)
     {
@@ -798,10 +820,10 @@ class EnumSet implements Iterator, Countable
      *
      * This is the binary bitset implementation.
      *
-     * @param int $ordinal Ordnal number of bit to set
+     * @param int $ordinal Ordinal number of bit to set
      * @return void
-     * @see setBit
-     * @see doSetBitBin
+     * @see setBit()
+     * @see doSetBitBin()
      */
     private function doSetBitInt($ordinal)
     {
@@ -815,8 +837,8 @@ class EnumSet implements Iterator, Countable
      *
      * @param int $ordinal Ordinal number of bit to unset
      * @return void
-     * @see setBit
-     * @see doUnsetBitInt
+     * @see setBit()
+     * @see doUnsetBitInt()
      */
     private function doUnsetBitBin($ordinal)
     {
@@ -831,8 +853,8 @@ class EnumSet implements Iterator, Countable
      *
      * @param int $ordinal Ordinal number of bit to unset
      * @return void
-     * @see setBit
-     * @see doUnsetBitBin
+     * @see setBit()
+     * @see doUnsetBitBin()
      */
     private function doUnsetBitInt($ordinal)
     {
