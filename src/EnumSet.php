@@ -114,8 +114,7 @@ class EnumSet implements Iterator, Countable
      */
     public function attach($enumerator): void
     {
-        $enumeration = $this->enumeration;
-        $this->{$this->fnDoSetBit}($enumeration::get($enumerator)->getOrdinal());
+        $this->{$this->fnDoSetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
     }
 
     /**
@@ -126,8 +125,7 @@ class EnumSet implements Iterator, Countable
      */
     public function detach($enumerator): void
     {
-        $enumeration = $this->enumeration;
-        $this->{$this->fnDoUnsetBit}($enumeration::get($enumerator)->getOrdinal());
+        $this->{$this->fnDoUnsetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
     }
 
     /**
@@ -137,8 +135,7 @@ class EnumSet implements Iterator, Countable
      */
     public function contains($enumerator): bool
     {
-        $enumeration = $this->enumeration;
-        return $this->{$this->fnDoGetBit}($enumeration::get($enumerator)->getOrdinal());
+        return $this->{$this->fnDoGetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
     }
 
     /* Iterator */
@@ -150,8 +147,7 @@ class EnumSet implements Iterator, Countable
     public function current(): ?Enum
     {
         if ($this->valid()) {
-            $enumeration = $this->enumeration;
-            return $enumeration::byOrdinal($this->ordinal);
+            return ($this->enumeration)::byOrdinal($this->ordinal);
         }
 
         return null;
