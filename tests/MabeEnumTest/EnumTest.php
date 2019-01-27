@@ -314,11 +314,7 @@ class EnumTest extends TestCase
     public function testEnabledAssertAmbiguousEnumeratorValues()
     {
         $this->expectException(AssertionError::class);
-
-        if (\PHP_VERSION_ID >= 70000 && strpos(\PHP_VERSION, 'hhvm') === false) {
-            // The assertion error contains the assertion description as exception message since PHP-7
-            $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumAmbiguous::class);
-        }
+        $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumAmbiguous::class);
 
         EnumAmbiguous::get('unknown');
     }
@@ -334,11 +330,7 @@ class EnumTest extends TestCase
     public function testExtendedEnabledAssertAmbiguousEnumeratorValues()
     {
         $this->expectException(AssertionError::class);
-
-        if (\PHP_VERSION_ID >= 70000 && strpos(\PHP_VERSION, 'hhvm') === false) {
-            // The assertion error contains the assertion description as exception message since PHP-7
-            $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumExtendedAmbiguous::class);
-        }
+        $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumExtendedAmbiguous::class);
 
         EnumExtendedAmbiguous::get('unknown');
     }
@@ -414,13 +406,6 @@ class EnumTest extends TestCase
 
     public function testConstVisibility()
     {
-        if (PHP_VERSION_ID < 70100) {
-            $this->markTestSkipped('This test is for PHP-7.1 and upper only');
-        }
-        if (defined('HHVM_VERSION')) {
-            $this->markTestSkipped('HHVM does not support constant visibility');
-        }
-
         $constants = ConstVisibilityEnum::getConstants();
         $this->assertSame(array(
             'IPUB' => ConstVisibilityEnum::IPUB,
@@ -430,13 +415,6 @@ class EnumTest extends TestCase
     
     public function testConstVisibilityExtended()
     {
-        if (PHP_VERSION_ID < 70100) {
-            $this->markTestSkipped('This test is for PHP-7.1 and upper only');
-        }
-        if (defined('HHVM_VERSION')) {
-            $this->markTestSkipped('HHVM does not support constant visibility');
-        }
-
         $constants = ConstVisibilityEnumExtended::getConstants();
         $this->assertSame(array(
             'IPUB'  => ConstVisibilityEnumExtended::IPUB,

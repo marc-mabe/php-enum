@@ -365,35 +365,27 @@ abstract class Enum
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
-            $publicConstants  = [];
+            $allConstants  = [];
 
             do {
                 $scopeConstants = [];
-                if (\PHP_VERSION_ID >= 70100 && method_exists(ReflectionClass::class, 'getReflectionConstants')) {
-                    // Since PHP-7.1 visibility modifiers are allowed for class constants
-                    // for enumerations we are only interested in public once.
-                    // NOTE: HHVM > 3.26.2 still does not support private/protected constants.
-                    //       It allows the visibility keyword but ignores it.
-                    foreach ($reflection->getReflectionConstants() as $reflConstant) {
-                        if ($reflConstant->isPublic()) {
-                            $scopeConstants[ $reflConstant->getName() ] = $reflConstant->getValue();
-                        }
+                // Enumerators must be defined as public class constants
+                foreach ($reflection->getReflectionConstants() as $reflConstant) {
+                    if ($reflConstant->isPublic()) {
+                        $scopeConstants[ $reflConstant->getName() ] = $reflConstant->getValue();
                     }
-                } else {
-                    // In PHP < 7.1 all class constants were public by definition
-                    $scopeConstants = $reflection->getConstants();
                 }
 
-                $publicConstants = $scopeConstants + $publicConstants;
+                $allConstants = $scopeConstants + $allConstants;
             } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
 
             assert(
-                self::noAmbiguousValues($publicConstants),
+                self::noAmbiguousValues($allConstants),
                 "Ambiguous enumerator values detected for {$class}"
             );
 
-            self::$constants[$class] = $publicConstants;
-            self::$names[$class] = \array_keys($publicConstants);
+            self::$constants[$class] = $allConstants;
+            self::$names[$class] = \array_keys($allConstants);
         }
 
         return self::$constants[$class];
