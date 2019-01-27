@@ -119,8 +119,7 @@ abstract class Enum
      */
     final public function getName(): string
     {
-        $ordinal = $this->ordinal !== null ? $this->ordinal : $this->getOrdinal();
-        return self::$names[static::class][$ordinal];
+        return self::$names[static::class][$this->ordinal ?: $this->getOrdinal()];
     }
 
     /**
@@ -226,9 +225,9 @@ abstract class Enum
             return self::$instances[static::class][$name];
         }
 
-        $const = static::class . '::' . $name;
+        $const = static::class . "::{$name}";
         if (!\defined($const)) {
-            throw new InvalidArgumentException($const . ' not defined');
+            throw new InvalidArgumentException("{$const} not defined");
         }
 
         return self::$instances[static::class][$name] = new static(\constant($const));
@@ -356,7 +355,7 @@ abstract class Enum
      */
     final public static function hasName(string $name): bool
     {
-        return \defined("static::$name");
+        return \defined("static::{$name}");
     }
 
     /**

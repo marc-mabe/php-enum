@@ -97,8 +97,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     {
         $ord = \array_search($value, $this->map, $strict);
         if ($ord !== false) {
-            $enumeration = $this->enumeration;
-            return $enumeration::byOrdinal($ord);
+            return ($this->enumeration)::byOrdinal($ord);
         }
 
         return null;
@@ -113,8 +112,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     public function contains($enumerator): bool
     {
         try {
-            $enumeration = $this->enumeration;
-            $ord  = $enumeration::get($enumerator)->getOrdinal();
+            $ord  = ($this->enumeration)::get($enumerator)->getOrdinal();
             return array_key_exists($ord, $this->map);
         } catch (InvalidArgumentException $e) {
             // An invalid enumerator can't be contained in this map
@@ -131,9 +129,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     public function offsetExists($enumerator): bool
     {
         try {
-            $enumeration = $this->enumeration;
-            $ord  = $enumeration::get($enumerator)->getOrdinal();
-            return isset($this->map[$ord]);
+            return isset($this->map[($this->enumeration)::get($enumerator)->getOrdinal()]);
         } catch (InvalidArgumentException $e) {
             // An invalid enumerator can't be an offset of this map
             return false;
@@ -149,8 +145,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function offsetGet($enumerator)
     {
-        $enumeration = $this->enumeration;
-        $enumerator  = $enumeration::get($enumerator);
+        $enumerator = ($this->enumeration)::get($enumerator);
         $ord = $enumerator->getOrdinal();
         if (!isset($this->map[$ord]) && !array_key_exists($ord, $this->map)) {
             throw new UnexpectedValueException(sprintf(
@@ -172,8 +167,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function offsetSet($enumerator, $value = null): void
     {
-        $enumeration = $this->enumeration;
-        $ord = $enumeration::get($enumerator)->getOrdinal();
+        $ord = ($this->enumeration)::get($enumerator)->getOrdinal();
 
         if (!array_key_exists($ord, $this->map)) {
             $this->ordinals[] = $ord;
@@ -190,8 +184,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function offsetUnset($enumerator): void
     {
-        $enumeration = $this->enumeration;
-        $ord = $enumeration::get($enumerator)->getOrdinal();
+        $ord = ($this->enumeration)::get($enumerator)->getOrdinal();
 
         if (($idx = \array_search($ord, $this->ordinals, true)) !== false) {
             unset($this->map[$ord], $this->ordinals[$idx]);
@@ -237,8 +230,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
             return null;
         }
 
-        $enumeration = $this->enumeration;
-        return $enumeration::byOrdinal($this->ordinals[$this->pos]);
+        return ($this->enumeration)::byOrdinal($this->ordinals[$this->pos]);
     }
 
     /**
