@@ -87,7 +87,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
 
     /**
      * Search for the given value
-     * @param null|bool|int|float|string|array $value
+     * @param mixed $value
      * @param bool $strict Use strict type comparison
      * @return Enum|null The found key or NULL
      */
