@@ -112,7 +112,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     public function contains($enumerator): bool
     {
         try {
-            $ord  = ($this->enumeration)::get($enumerator)->getOrdinal();
+            $ord = ($this->enumeration)::get($enumerator)->getOrdinal();
             return array_key_exists($ord, $this->map);
         } catch (InvalidArgumentException $e) {
             // An invalid enumerator can't be contained in this map

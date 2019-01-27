@@ -306,7 +306,7 @@ abstract class Enum
     final public static function getOrdinals(): array
     {
         $count = \count(self::detectConstants(static::class));
-        return $count === 0 ? [] : \range(0, $count - 1);
+        return $count ? \range(0, $count - 1) : [];
     }
 
     /**
@@ -328,11 +328,8 @@ abstract class Enum
      */
     final public static function has($enumerator): bool
     {
-        if ($enumerator instanceof static && \get_class($enumerator) === static::class) {
-            return true;
-        }
-
-        return static::hasValue($enumerator);
+        return ($enumerator instanceof static && \get_class($enumerator) === static::class)
+            || static::hasValue($enumerator);
     }
 
     /**
