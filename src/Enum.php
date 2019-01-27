@@ -340,7 +340,7 @@ abstract class Enum
     /**
      * Test if the given enumerator value is part of this enumeration
      *
-     * @param null|bool|int|float|string $value
+     * @param null|bool|int|float|string|array $value
      * @return bool
      */
     final public static function hasValue($value)
