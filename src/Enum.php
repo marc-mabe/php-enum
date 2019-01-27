@@ -325,7 +325,7 @@ abstract class Enum
     /**
      * Test if the given enumerator is part of this enumeration
      * 
-     * @param static|null|bool|int|float|string|array $value
+     * @param static|null|bool|int|float|string|array $enumerator
      * @return bool
      */
     final public static function has($enumerator)
