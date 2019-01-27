@@ -348,11 +348,8 @@ class EnumSet implements Iterator, Countable
      */
     public function isSubset(EnumSet $other): bool
     {
-        if ($this->enumeration !== $other->enumeration) {
-            return false;
-        }
-
-        return ($this->bitset & $other->bitset) === $this->bitset;
+        return $this->enumeration === $other->enumeration
+            && ($this->bitset & $other->bitset) === $this->bitset;
     }
 
     /**
@@ -362,11 +359,8 @@ class EnumSet implements Iterator, Countable
      */
     public function isSuperset(EnumSet $other): bool
     {
-        if ($this->enumeration !== $other->enumeration) {
-            return false;
-        }
-
-        return ($this->bitset | $other->bitset) === $this->bitset;
+        return $this->enumeration === $other->enumeration
+            && ($this->bitset | $other->bitset) === $this->bitset;
     }
 
     /**
