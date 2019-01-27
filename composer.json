@@ -1,6 +1,6 @@
 {
     "name": "marc-mabe/php-enum",
-    "description": "Simple and fast implementation of enumerations with native PHP>=5.6",
+    "description": "Simple and fast implementation of enumerations with native PHP",
     "type": "library",
     "keywords": [
         "enum", "enumeration", "enumerator",
@@ -17,15 +17,12 @@
     }],
     "license": "BSD-3-Clause",
     "require": {
-        "php":            ">=5.6",
+        "php":            ">=7.2",
         "ext-reflection": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7 || ^6.0",
-        "phpbench/phpbench": "@dev",
-
-        "lstrojny/functional-php": "HHVM: variadic params with type constraints are not supported in non-Hack",
-        "lstrojny/functional-php": "1.2.* || 1.0.*"
+        "phpunit/phpunit": "^6.0",
+        "phpbench/phpbench": "^0.15.0"
     },
     "autoload": {
         "psr-4": {
