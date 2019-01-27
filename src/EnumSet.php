@@ -514,7 +514,7 @@ class EnumSet implements Iterator, Countable
 
     /**
      * Get values of the defined enumerators as array
-     * @return null[]|bool[]|int[]|float[]|string[]
+     * @return mixed[]
      */
     public function getValues()
     {
