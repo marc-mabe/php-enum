@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MabeEnum;
 
 use RuntimeException;
@@ -31,7 +33,7 @@ trait EnumSerializableTrait
      * This will be called automatically on `serialize()` if the enumeration implements the `Serializable` interface
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return \serialize($this->getValue());
     }

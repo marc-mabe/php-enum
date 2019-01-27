@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MabeEnum;
 
 use Countable;
@@ -63,7 +65,7 @@ class EnumSet implements Iterator, Countable
      * @param string $enumeration The classname of the enumeration
      * @throws InvalidArgumentException
      */
-    public function __construct($enumeration)
+    public function __construct(string $enumeration)
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(\sprintf(
@@ -99,7 +101,7 @@ class EnumSet implements Iterator, Countable
      * Get the classname of the enumeration
      * @return string
      */
-    public function getEnumeration()
+    public function getEnumeration(): string
     {
         return $this->enumeration;
     }
@@ -110,7 +112,7 @@ class EnumSet implements Iterator, Countable
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function attach($enumerator)
+    public function attach($enumerator): void
     {
         $enumeration = $this->enumeration;
         $this->{$this->fnDoSetBit}($enumeration::get($enumerator)->getOrdinal());
@@ -122,7 +124,7 @@ class EnumSet implements Iterator, Countable
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function detach($enumerator)
+    public function detach($enumerator): void
     {
         $enumeration = $this->enumeration;
         $this->{$this->fnDoUnsetBit}($enumeration::get($enumerator)->getOrdinal());
@@ -133,7 +135,7 @@ class EnumSet implements Iterator, Countable
      * @param Enum|null|bool|int|float|string|array $enumerator
      * @return bool
      */
-    public function contains($enumerator)
+    public function contains($enumerator): bool
     {
         $enumeration = $this->enumeration;
         return $this->{$this->fnDoGetBit}($enumeration::get($enumerator)->getOrdinal());
@@ -145,7 +147,7 @@ class EnumSet implements Iterator, Countable
      * Get the current enumerator
      * @return Enum|null Returns the current enumerator or NULL on an invalid iterator position
      */
-    public function current()
+    public function current(): ?Enum
     {
         if ($this->valid()) {
             $enumeration = $this->enumeration;
@@ -159,7 +161,7 @@ class EnumSet implements Iterator, Countable
      * Get the ordinal number of the current iterator position
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->ordinal;
     }
@@ -169,7 +171,7 @@ class EnumSet implements Iterator, Countable
      * If no valid iterator position is found the iterator position will be the last possible + 1.
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         do {
             if (++$this->ordinal >= $this->ordinalMax) {
@@ -186,7 +188,7 @@ class EnumSet implements Iterator, Countable
      * @uses doRewindBin()
      * @uses doRewindInt()
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->{$this->fnDoRewind}();
     }
@@ -201,7 +203,7 @@ class EnumSet implements Iterator, Countable
      * @see rewind()
      * @see doRewindInt()
      */
-    private function doRewindBin()
+    private function doRewindBin(): void
     {
         if (\ltrim($this->bitset, "\0") !== '') {
             $this->ordinal = -1;
@@ -221,7 +223,7 @@ class EnumSet implements Iterator, Countable
      * @see rewind()
      * @see doRewindBin()
      */
-    private function doRewindInt()
+    private function doRewindInt(): void
     {
         if ($this->bitset) {
             $this->ordinal = -1;
@@ -235,7 +237,7 @@ class EnumSet implements Iterator, Countable
      * Test if the iterator is in a valid state
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->ordinal !== $this->ordinalMax && $this->{$this->fnDoGetBit}($this->ordinal);
     }
@@ -249,7 +251,7 @@ class EnumSet implements Iterator, Countable
      * @uses doCountBin()
      * @uses doCountInt()
      */
-    public function count()
+    public function count(): int
     {
         return $this->{$this->fnDoCount}();
     }
@@ -263,7 +265,7 @@ class EnumSet implements Iterator, Countable
      * @see count()
      * @see doCountInt()
      */
-    private function doCountBin()
+    private function doCountBin(): int
     {
         $count   = 0;
         $bitset  = $this->bitset;
@@ -296,7 +298,7 @@ class EnumSet implements Iterator, Countable
      * @see count()
      * @see doCountBin()
      */
-    private function doCountInt()
+    private function doCountInt(): int
     {
         $count  = 0;
         $bitset = $this->bitset;
@@ -337,7 +339,7 @@ class EnumSet implements Iterator, Countable
      * @param EnumSet $other
      * @return bool
      */
-    public function isEqual(EnumSet $other)
+    public function isEqual(EnumSet $other): bool
     {
         return $this->enumeration === $other->enumeration
             && $this->bitset === $other->bitset;
@@ -348,7 +350,7 @@ class EnumSet implements Iterator, Countable
      * @param EnumSet $other
      * @return bool
      */
-    public function isSubset(EnumSet $other)
+    public function isSubset(EnumSet $other): bool
     {
         if ($this->enumeration !== $other->enumeration) {
             return false;
@@ -362,7 +364,7 @@ class EnumSet implements Iterator, Countable
      * @param EnumSet $other
      * @return bool
      */
-    public function isSuperset(EnumSet $other)
+    public function isSuperset(EnumSet $other): bool
     {
         if ($this->enumeration !== $other->enumeration) {
             return false;
@@ -378,7 +380,7 @@ class EnumSet implements Iterator, Countable
      * @return EnumSet
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
-    public function union(EnumSet $other)
+    public function union(EnumSet $other): EnumSet
     {
         if ($this->enumeration !== $other->enumeration) {
             throw new InvalidArgumentException(\sprintf(
@@ -399,7 +401,7 @@ class EnumSet implements Iterator, Countable
      * @return EnumSet
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
-    public function intersect(EnumSet $other)
+    public function intersect(EnumSet $other): EnumSet
     {
         if ($this->enumeration !== $other->enumeration) {
             throw new InvalidArgumentException(\sprintf(
@@ -420,7 +422,7 @@ class EnumSet implements Iterator, Countable
      * @return EnumSet
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
-    public function diff(EnumSet $other)
+    public function diff(EnumSet $other): EnumSet
     {
         if ($this->enumeration !== $other->enumeration) {
             throw new InvalidArgumentException(\sprintf(
@@ -441,7 +443,7 @@ class EnumSet implements Iterator, Countable
      * @return EnumSet
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
-    public function symDiff(EnumSet $other)
+    public function symDiff(EnumSet $other): EnumSet
     {
         if ($this->enumeration !== $other->enumeration) {
             throw new InvalidArgumentException(\sprintf(
@@ -461,7 +463,7 @@ class EnumSet implements Iterator, Countable
      * @uses  doGetOrdinalsBin()
      * @uses  doGetOrdinalsInt()
      */
-    public function getOrdinals()
+    public function getOrdinals(): array
     {
         return $this->{$this->fnDoGetOrdinals}();
     }
@@ -475,7 +477,7 @@ class EnumSet implements Iterator, Countable
      * @see getOrdinals()
      * @see goGetOrdinalsInt()
      */
-    private function doGetOrdinalsBin()
+    private function doGetOrdinalsBin(): array
     {
         $ordinals = [];
         $bitset   = $this->bitset;
@@ -505,7 +507,7 @@ class EnumSet implements Iterator, Countable
      * @see getOrdinals()
      * @see doGetOrdinalsBin()
      */
-    private function doGetOrdinalsInt()
+    private function doGetOrdinalsInt(): array
     {
         $ordinals   = [];
         $ordinalMax = $this->ordinalMax;
@@ -522,7 +524,7 @@ class EnumSet implements Iterator, Countable
      * Get values of the defined enumerators as array
      * @return mixed[]
      */
-    public function getValues()
+    public function getValues(): array
     {
         $enumeration = $this->enumeration;
         $values      = [];
@@ -536,7 +538,7 @@ class EnumSet implements Iterator, Countable
      * Get names of the defined enumerators as array
      * @return string[]
      */
-    public function getNames()
+    public function getNames(): array
     {
         $enumeration = $this->enumeration;
         $names       = [];
@@ -550,7 +552,7 @@ class EnumSet implements Iterator, Countable
      * Get the defined enumerators as array
      * @return Enum[]
      */
-    public function getEnumerators()
+    public function getEnumerators(): array
     {
         $enumeration = $this->enumeration;
         $enumerators = [];
@@ -567,7 +569,7 @@ class EnumSet implements Iterator, Countable
      * @uses doGetBinaryBitsetLeBin()
      * @uses doGetBinaryBitsetLeInt()
      */
-    public function getBinaryBitsetLe()
+    public function getBinaryBitsetLe(): string
     {
         return $this->{$this->fnDoGetBinaryBitsetLe}();
     }
@@ -581,7 +583,7 @@ class EnumSet implements Iterator, Countable
      * @see getBinaryBitsetLe()
      * @see doGetBinaryBitsetLeInt()
      */
-    private function doGetBinaryBitsetLeBin()
+    private function doGetBinaryBitsetLeBin(): string
     {
         return $this->bitset;
     }
@@ -595,7 +597,7 @@ class EnumSet implements Iterator, Countable
      * @see getBinaryBitsetLe()
      * @see doGetBinaryBitsetLeBin()
      */
-    private function doGetBinaryBitsetLeInt()
+    private function doGetBinaryBitsetLeInt(): string
     {
         $bin = \pack(\PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
         return \substr($bin, 0, (int)\ceil($this->ordinalMax / 8));
@@ -608,17 +610,12 @@ class EnumSet implements Iterator, Countable
      * 
      * @param string $bitset
      * @return void
-     * @throws InvalidArgumentException On a non string is given as Parameter
      * @throws InvalidArgumentException On out-of-range bits given as input bitset
      * @uses doSetBinaryBitsetLeBin()
      * @uses doSetBinaryBitsetLeInt()
      */
-    public function setBinaryBitsetLe($bitset)
+    public function setBinaryBitsetLe(string $bitset): void
     {
-        if (!\is_string($bitset)) {
-            throw new InvalidArgumentException('Bitset must be a string');
-        }
-
         $this->{$this->fnDoSetBinaryBitsetLe}($bitset);
 
         // reset the iterator position
@@ -636,7 +633,7 @@ class EnumSet implements Iterator, Countable
      * @see setBinaryBitsetLeBin()
      * @see doSetBinaryBitsetLeInt()
      */
-    private function doSetBinaryBitsetLeBin($bitset)
+    private function doSetBinaryBitsetLeBin(string $bitset): void
     {
         $size   = \strlen($this->bitset);
         $sizeIn = \strlen($bitset);
@@ -677,7 +674,7 @@ class EnumSet implements Iterator, Countable
      * @see setBinaryBitsetLeBin()
      * @see doSetBinaryBitsetLeBin()
      */
-    private function doSetBinaryBitsetLeInt($bitset)
+    private function doSetBinaryBitsetLeInt(string $bitset): void
     {
         $len = \strlen($bitset);
         $int = 0;
@@ -703,7 +700,7 @@ class EnumSet implements Iterator, Countable
      * 
      * @return string
      */
-    public function getBinaryBitsetBe()
+    public function getBinaryBitsetBe(): string
     {
         return \strrev($this->bitset);
     }
@@ -715,14 +712,10 @@ class EnumSet implements Iterator, Countable
      * 
      * @param string $bitset
      * @return void
-     * @throws InvalidArgumentException On a non string is given as Parameter
      * @throws InvalidArgumentException On out-of-range bits given as input bitset
      */
-    public function setBinaryBitsetBe($bitset)
+    public function setBinaryBitsetBe(string $bitset): void
     {
-        if (!\is_string($bitset)) {
-            throw new InvalidArgumentException('Bitset must be a string');
-        }
         $this->setBinaryBitsetLe(\strrev($bitset));
     }
 
@@ -735,7 +728,7 @@ class EnumSet implements Iterator, Countable
      * @uses doGetBitBin()
      * @uses doGetBitInt()
      */
-    public function getBit($ordinal)
+    public function getBit(int $ordinal): bool
     {
         if ($ordinal < 0 || $ordinal > $this->ordinalMax) {
             throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->ordinalMax}");
@@ -754,7 +747,7 @@ class EnumSet implements Iterator, Countable
      * @see getBit()
      * @see doGetBitInt()
      */
-    private function doGetBitBin($ordinal)
+    private function doGetBitBin(int $ordinal): bool
     {
         return (\ord($this->bitset[(int) ($ordinal / 8)]) & 1 << ($ordinal % 8)) !== 0;
     }
@@ -769,7 +762,7 @@ class EnumSet implements Iterator, Countable
      * @see getBit()
      * @see doGetBitBin()
      */
-    private function doGetBitInt($ordinal)
+    private function doGetBitInt(int $ordinal): bool
     {
         return (bool)($this->bitset & (1 << $ordinal));
     }
@@ -786,7 +779,7 @@ class EnumSet implements Iterator, Countable
      * @uses doUnsetBitBin()
      * @uses doUnsetBitInt()
      */
-    public function setBit($ordinal, $bit)
+    public function setBit(int $ordinal, bool $bit): void
     {
         if ($ordinal < 0 || $ordinal > $this->ordinalMax) {
             throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->ordinalMax}");
@@ -809,7 +802,7 @@ class EnumSet implements Iterator, Countable
      * @see setBit()
      * @see doSetBitInt()
      */
-    private function doSetBitBin($ordinal)
+    private function doSetBitBin(int $ordinal): void
     {
         $byte = (int) ($ordinal / 8);
         $this->bitset[$byte] = $this->bitset[$byte] | \chr(1 << ($ordinal % 8));
@@ -825,7 +818,7 @@ class EnumSet implements Iterator, Countable
      * @see setBit()
      * @see doSetBitBin()
      */
-    private function doSetBitInt($ordinal)
+    private function doSetBitInt(int $ordinal): void
     {
         $this->bitset = $this->bitset | (1 << $ordinal);
     }
@@ -840,7 +833,7 @@ class EnumSet implements Iterator, Countable
      * @see setBit()
      * @see doUnsetBitInt()
      */
-    private function doUnsetBitBin($ordinal)
+    private function doUnsetBitBin(int $ordinal): void
     {
         $byte = (int) ($ordinal / 8);
         $this->bitset[$byte] = $this->bitset[$byte] & \chr(~(1 << ($ordinal % 8)));
@@ -856,7 +849,7 @@ class EnumSet implements Iterator, Countable
      * @see setBit()
      * @see doUnsetBitBin()
      */
-    private function doUnsetBitInt($ordinal)
+    private function doUnsetBitInt(int $ordinal): void
     {
         $this->bitset = $this->bitset & ~(1 << $ordinal);
     }
