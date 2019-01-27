@@ -698,6 +698,7 @@ class EnumSet implements Iterator, Countable
      * @param string $bitset
      * @return void
      * @throws InvalidArgumentException On a non string is given as Parameter
+     * @throws InvalidArgumentException On Out-Of-Range bits given as input bitset
      */
     public function setBinaryBitsetBe($bitset)
     {
