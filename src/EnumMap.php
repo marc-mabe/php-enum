@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MabeEnum;
 
 use ArrayAccess;
@@ -47,7 +49,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @param string $enumeration The classname of the enumeration type
      * @throws InvalidArgumentException
      */
-    public function __construct($enumeration)
+    public function __construct(string $enumeration)
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(\sprintf(
@@ -62,7 +64,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * Get the classname of the enumeration
      * @return string
      */
-    public function getEnumeration()
+    public function getEnumeration(): string
     {
         return $this->enumeration;
     }
@@ -71,7 +73,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * Get a list of map keys
      * @return Enum[]
      */
-    public function getKeys()
+    public function getKeys(): array
     {
         return \array_map([$this->enumeration, 'byOrdinal'], $this->ordinals);
     }
@@ -80,7 +82,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * Get a list of map values
      * @return mixed[]
      */
-    public function getValues()
+    public function getValues(): array
     {
         return \array_values($this->map);
     }
@@ -91,7 +93,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @param bool $strict Use strict type comparison
      * @return Enum|null The found key or NULL
      */
-    public function search($value, $strict = false)
+    public function search($value, bool $strict = false): ?Enum
     {
         $ord = \array_search($value, $this->map, $strict);
         if ($ord !== false) {
@@ -108,7 +110,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @return bool
      * @see offsetExists
      */
-    public function contains($enumerator)
+    public function contains($enumerator): bool
     {
         try {
             $enumeration = $this->enumeration;
@@ -126,7 +128,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @return bool
      * @see contains
      */
-    public function offsetExists($enumerator)
+    public function offsetExists($enumerator): bool
     {
         try {
             $enumeration = $this->enumeration;
@@ -168,7 +170,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see attach()
      */
-    public function offsetSet($enumerator, $value = null)
+    public function offsetSet($enumerator, $value = null): void
     {
         $enumeration = $this->enumeration;
         $ord = $enumeration::get($enumerator)->getOrdinal();
@@ -186,7 +188,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see detach()
      */
-    public function offsetUnset($enumerator)
+    public function offsetUnset($enumerator): void
     {
         $enumeration = $this->enumeration;
         $ord = $enumeration::get($enumerator)->getOrdinal();
@@ -202,7 +204,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @param int $pos
      * @throws OutOfBoundsException On an invalid position
      */
-    public function seek($pos)
+    public function seek($pos): void
     {
         $pos = (int)$pos;
         if (!isset($this->ordinals[$pos])) {
@@ -229,7 +231,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * Get the current key
      * @return Enum|null
      */
-    public function key()
+    public function key(): ?Enum
     {
         if (!isset($this->ordinals[$this->pos])) {
             return null;
@@ -243,7 +245,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * Reset the iterator position to zero.
      * @return void
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->pos = 0;
     }
@@ -252,7 +254,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * Increment the iterator position by one.
      * @return void
      */
-    public function next()
+    public function next(): void
     {
         ++$this->pos;
     }
@@ -261,7 +263,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * Test if the iterator is in a valid state
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->ordinals[$this->pos]);
     }
@@ -271,7 +273,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return \count($this->ordinals);
     }

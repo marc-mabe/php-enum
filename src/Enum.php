@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MabeEnum;
 
 use ReflectionClass;
@@ -68,7 +70,7 @@ abstract class Enum
      * @return string
      * @see getName()
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getName();
     }
@@ -115,7 +117,7 @@ abstract class Enum
      *
      * @return string
      */
-    final public function getName()
+    final public function getName(): string
     {
         $ordinal = $this->ordinal !== null ? $this->ordinal : $this->getOrdinal();
         return self::$names[static::class][$ordinal];
@@ -126,7 +128,7 @@ abstract class Enum
      *
      * @return int
      */
-    final public function getOrdinal()
+    final public function getOrdinal(): int
     {
         if ($this->ordinal === null) {
             $ordinal = 0;
@@ -147,10 +149,10 @@ abstract class Enum
     /**
      * Compare this enumerator against another and check if it's the same.
      *
-     * @param mixed $enumerator
+     * @param static|null|bool|int|float|string|array $enumerator An enumerator object or value
      * @return bool
      */
-    final public function is($enumerator)
+    final public function is($enumerator): bool
     {
         return $this === $enumerator || $this->value === $enumerator
 
@@ -164,12 +166,12 @@ abstract class Enum
     /**
      * Get an enumerator instance of the given enumerator value or instance
      *
-     * @param static|null|bool|int|float|string|array $enumerator
+     * @param static|null|bool|int|float|string|array $enumerator An enumerator object or value
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function get($enumerator)
+    final public static function get($enumerator): self
     {
         if ($enumerator instanceof static && \get_class($enumerator) === static::class) {
             return $enumerator;
@@ -181,12 +183,12 @@ abstract class Enum
     /**
      * Get an enumerator instance by the given value
      *
-     * @param null|bool|int|float|string|array $value
+     * @param null|bool|int|float|string|array $value Enumerator value
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function byValue($value)
+    final public static function byValue($value): self
     {
         if (!isset(self::$constants[static::class])) {
             self::detectConstants(static::class);
@@ -218,9 +220,8 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous values
      */
-    final public static function byName($name)
+    final public static function byName(string $name): self
     {
-        $name = (string) $name;
         if (isset(self::$instances[static::class][$name])) {
             return self::$instances[static::class][$name];
         }
@@ -236,15 +237,13 @@ abstract class Enum
     /**
      * Get an enumeration instance by the given ordinal number
      *
-     * @param int $ordinal The ordinal number or the enumerator
+     * @param int $ordinal The ordinal number of the enumerator
      * @return static
      * @throws InvalidArgumentException On an invalid ordinal number
      * @throws LogicException           On ambiguous values
      */
-    final public static function byOrdinal($ordinal)
+    final public static function byOrdinal(int $ordinal): self
     {
-        $ordinal = (int) $ordinal;
-
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
         }
@@ -269,7 +268,7 @@ abstract class Enum
      *
      * @return static[]
      */
-    final public static function getEnumerators()
+    final public static function getEnumerators(): array
     {
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
@@ -282,7 +281,7 @@ abstract class Enum
      *
      * @return mixed[]
      */
-    final public static function getValues()
+    final public static function getValues(): array
     {
         return \array_values(self::detectConstants(static::class));
     }
@@ -292,7 +291,7 @@ abstract class Enum
      *
      * @return string[]
      */
-    final public static function getNames()
+    final public static function getNames(): array
     {
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
@@ -305,7 +304,7 @@ abstract class Enum
      *
      * @return int[]
      */
-    final public static function getOrdinals()
+    final public static function getOrdinals(): array
     {
         $count = \count(self::detectConstants(static::class));
         return $count === 0 ? [] : \range(0, $count - 1);
@@ -317,7 +316,7 @@ abstract class Enum
      * @return array
      * @throws LogicException On ambiguous constant values
      */
-    final public static function getConstants()
+    final public static function getConstants(): array
     {
         return self::detectConstants(static::class);
     }
@@ -328,7 +327,7 @@ abstract class Enum
      * @param static|null|bool|int|float|string|array $enumerator
      * @return bool
      */
-    final public static function has($enumerator)
+    final public static function has($enumerator): bool
     {
         if ($enumerator instanceof static && \get_class($enumerator) === static::class) {
             return true;
@@ -343,7 +342,7 @@ abstract class Enum
      * @param null|bool|int|float|string|array $value
      * @return bool
      */
-    final public static function hasValue($value)
+    final public static function hasValue($value): bool
     {
         $constants = self::detectConstants(static::class);
         return \in_array($value, $constants, true);
@@ -355,9 +354,9 @@ abstract class Enum
      * @param string $name
      * @return bool
      */
-    final public static function hasName($name)
+    final public static function hasName(string $name): bool
     {
-        return \is_string($name) && \defined("static::$name");
+        return \defined("static::$name");
     }
 
     /**
@@ -366,7 +365,7 @@ abstract class Enum
      * @param string $class
      * @return array
      */
-    private static function detectConstants($class)
+    private static function detectConstants(string $class): array
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
@@ -409,7 +408,7 @@ abstract class Enum
      * @param array $constants
      * @return bool
      */
-    private static function noAmbiguousValues(array $constants)
+    private static function noAmbiguousValues(array $constants): bool
     {
         foreach ($constants as $value) {
             $names = \array_keys($constants, $value, true);
@@ -433,7 +432,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function __callStatic($method, array $args)
+    final public static function __callStatic(string $method, array $args): self
     {
         return self::byName($method);
     }

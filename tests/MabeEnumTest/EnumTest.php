@@ -397,10 +397,7 @@ class EnumTest extends TestCase
     public function testHasName()
     {
         $this->assertFalse(EnumBasic::hasName(''));
-        $this->assertFalse(EnumBasic::hasName(false));
-        $this->assertFalse(EnumBasic::hasName(true));
         $this->assertFalse(EnumBasic::hasName('str'));
-        $this->assertFalse(EnumBasic::hasName(new \stdClass()));
         $this->assertTrue(EnumBasic::hasName('ONE'));
         $this->assertTrue(EnumBasic::hasName('STR'));
     }

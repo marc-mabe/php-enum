@@ -420,14 +420,6 @@ class EnumSetTest extends TestCase
         $enumSet->setBinaryBitsetLe($newBitset);
     }
 
-    public function testSetBinaryBitsetLeBinArgumentExceptionIfNotString()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        
-        $enum = new EnumSet(Enum65::class);
-        $enum->setBinaryBitsetLe(0);
-    }
-
     public function testSetBinaryBitsetLeInt()
     {
         $enumSet = new EnumSet(Enum32::class);
@@ -484,14 +476,6 @@ class EnumSetTest extends TestCase
         $this->assertTrue($enumSet->contains(Enum65::SIXTYFIVE));
         $this->assertTrue($enumSet->contains(Enum65::SIXTYFOUR));
         $this->assertTrue($enumSet->count() == 3);
-    }
-
-    public function testSetBinaryBitsetBeArgumentExceptionIfNotString()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        
-        $enum = new EnumSet(Enum65::class);
-        $enum->setBinaryBitsetBe(0);
     }
 
     public function testCountingEmptyEnumEmptySet()
