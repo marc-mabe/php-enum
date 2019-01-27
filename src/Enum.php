@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use LogicException;
 
 /**
- * Class to implement enumerations for PHP 5 (without SplEnum)
+ * Abstract base enumeration class.
  *
  * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
@@ -58,7 +58,7 @@ abstract class Enum
      * @param null|bool|int|float|string|array $value   The value of the enumerator
      * @param int|null                         $ordinal The ordinal number of the enumerator
      */
-    final private function __construct($value, $ordinal = null)
+    final private function __construct($value, int $ordinal = null)
     {
         $this->value   = $value;
         $this->ordinal = $ordinal;
