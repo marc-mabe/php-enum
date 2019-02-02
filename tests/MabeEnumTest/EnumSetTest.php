@@ -451,7 +451,7 @@ class EnumSetTest extends TestCase
         $enumSet = new EnumSet(EnumBasic::class);
 
         $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
-        $enumSet->setBinaryBitsetLe("\x0A\xFF\x01");
+        $enumSet->setBinaryBitsetLe("\x0A\xFF\x02");
     }
 
     public function testSetBinaryBitsetLeIntOutOfRangeBitsOfExtendedBytes2()
