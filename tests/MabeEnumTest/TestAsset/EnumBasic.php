@@ -41,6 +41,7 @@ class EnumBasic extends Enum
     const NINE  = 9;
     const ZERO  = 0;
 
+    const ARR           = [0, 0.1, 'str', null, true, false];
     const FLOAT         = 0.123;
     const STR           = 'str';
     const STR_EMPTY     = '';

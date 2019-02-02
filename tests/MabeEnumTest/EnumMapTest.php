@@ -107,6 +107,14 @@ class EnumMapTest extends TestCase
         $enumMap->offsetGet(EnumBasic::ONE);
     }
 
+    public function testOffsetGetMissingArrayKey()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+
+        $this->expectException(UnexpectedValueException::class);
+        $enumMap->offsetGet(EnumBasic::ARR);
+    }
+
     public function testIterate()
     {
         $enumMap = new EnumMap(EnumBasic::class);

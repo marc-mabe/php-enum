@@ -90,12 +90,13 @@ class EnumTest extends TestCase
             'EIGHT'         => 8,
             'NINE'          => 9,
             'ZERO'          => 0,
-            'FLOAT'         => 0.123,
-            'STR'           => 'str',
-            'STR_EMPTY'     => '',
-            'NIL'           => null,
-            'BOOLEAN_TRUE'  => true,
-            'BOOLEAN_FALSE' => false,
+            'ARR'           => EnumInheritance::ARR,
+            'FLOAT'         => EnumInheritance::FLOAT,
+            'STR'           => EnumInheritance::STR,
+            'STR_EMPTY'     => EnumInheritance::STR_EMPTY,
+            'NIL'           => EnumInheritance::NIL,
+            'BOOLEAN_TRUE'  => EnumInheritance::BOOLEAN_TRUE,
+            'BOOLEAN_FALSE' => EnumInheritance::BOOLEAN_FALSE,
             'INHERITANCE'   => 'Inheritance',
         ), EnumInheritance::getConstants());
 
@@ -105,7 +106,7 @@ class EnumTest extends TestCase
 
         $enum = EnumInheritance::get(EnumInheritance::INHERITANCE);
         $this->assertSame(EnumInheritance::INHERITANCE, $enum->getValue());
-        $this->assertSame(16, $enum->getOrdinal());
+        $this->assertSame(17, $enum->getOrdinal());
     }
 
     public function testGetWithStrictValue()
@@ -279,15 +280,15 @@ class EnumTest extends TestCase
 
     public function testInstantiateUsingOrdinalNumber()
     {
-        $enum = EnumInheritance::byOrdinal(16);
-        $this->assertSame(16, $enum->getOrdinal());
+        $enum = EnumInheritance::byOrdinal(17);
+        $this->assertSame(17, $enum->getOrdinal());
         $this->assertSame('INHERITANCE', $enum->getName());
     }
 
     public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException()
     {
         $this->expectException(InvalidArgumentException::class);
-        EnumInheritance::byOrdinal(17);
+        EnumInheritance::byOrdinal(18);
     }
 
     public function testInstantiateByName()

@@ -148,11 +148,12 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     public function offsetGet($enumerator)
     {
         $enumeration = $this->enumeration;
-        $ord = $enumeration::get($enumerator)->getOrdinal();
+        $enumerator  = $enumeration::get($enumerator);
+        $ord = $enumerator->getOrdinal();
         if (!isset($this->map[$ord]) && !array_key_exists($ord, $this->map)) {
-            throw new UnexpectedValueException(\sprintf(
-                "Enumerator '%s' could not be found",
-                \is_object($enumerator) ? $enumerator->getValue() : $enumerator
+            throw new UnexpectedValueException(sprintf(
+                'Enumerator %s could not be found',
+                \var_export($enumerator->getValue(), true)
             ));
         }
 
