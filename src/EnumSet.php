@@ -641,7 +641,7 @@ class EnumSet implements Iterator, Countable
         // truncate out-of-range bits of last byte
         $lastByteMaxOrd = $this->ordinalMax % 8;
         if ($lastByteMaxOrd !== 0) {
-            $lastByte         = $bitset[$size - 1];
+            $lastByte         = $bitset[-1];
             $lastByteExpected = \chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
             if ($lastByte !== $lastByteExpected) {
                 throw new InvalidArgumentException('out-of-range bits detected');
