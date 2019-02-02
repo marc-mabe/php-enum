@@ -12,9 +12,9 @@ use UnexpectedValueException;
 /**
  * A map of enumerators (EnumMap<T>) and mixed values.
  *
- * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2017 Marc Bennewitz
+ * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  */
 class EnumMap implements ArrayAccess, Countable, SeekableIterator
 {

@@ -10,9 +10,9 @@ use InvalidArgumentException;
  * A set of enumerators of the given enumeration (EnumSet<T>)
  * based on an integer or binary bitset depending of given enumeration size.
  *
- * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2017 Marc Bennewitz
+ * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  */
 class EnumSet implements Iterator, Countable
 {

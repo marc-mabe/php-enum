@@ -13,9 +13,9 @@ use UnexpectedValueException;
 /**
  * Unit tests for the class MabeEnum\EnumMap
  *
- * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2017 Marc Bennewitz
+ * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  */
 class EnumMapTest extends TestCase
 {
