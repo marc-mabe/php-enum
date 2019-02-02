@@ -69,8 +69,8 @@ class EnumSet implements Iterator, Countable
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(\sprintf(
-                "%s can handle subclasses of '%s' only",
-                static::class,
+                '%s can handle subclasses of %s only',
+                __METHOD__,
                 Enum::class
             ));
         }
@@ -301,7 +301,7 @@ class EnumSet implements Iterator, Countable
 
         // PHP does not support right shift unsigned
         if ($bitset < 0) {
-            $count = 1;
+            $count  = 1;
             $bitset = $bitset & \PHP_INT_MAX;
         }
 

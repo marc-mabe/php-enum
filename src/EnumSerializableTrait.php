@@ -70,7 +70,6 @@ trait EnumSerializableTrait
                 self::$instances[$class][$name] = $enumerator;
             }
         };
-        $closure = $closure->bindTo($this, Enum::class);
-        $closure();
+        $closure->bindTo($this, Enum::class)();
     }
 }
