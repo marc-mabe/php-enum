@@ -365,7 +365,7 @@ abstract class Enum
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
-            $allConstants  = [];
+            $constants  = [];
 
             do {
                 $scopeConstants = [];
@@ -376,16 +376,16 @@ abstract class Enum
                     }
                 }
 
-                $allConstants = $scopeConstants + $allConstants;
+                $constants = $scopeConstants + $constants;
             } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
 
             assert(
-                self::noAmbiguousValues($allConstants),
+                self::noAmbiguousValues($constants),
                 "Ambiguous enumerator values detected for {$class}"
             );
 
-            self::$constants[$class] = $allConstants;
-            self::$names[$class] = \array_keys($allConstants);
+            self::$constants[$class] = $constants;
+            self::$names[$class] = \array_keys($constants);
         }
 
         return self::$constants[$class];

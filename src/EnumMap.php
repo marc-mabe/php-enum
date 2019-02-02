@@ -9,6 +9,7 @@ use Countable;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use SeekableIterator;
+use TypeError;
 use UnexpectedValueException;
 
 /**
@@ -53,7 +54,8 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(\sprintf(
-                "This EnumMap can handle subclasses of '%s' only",
+                '%s can handle subclasses of %s only',
+                 __CLASS__,
                 Enum::class
             ));
         }
@@ -199,7 +201,14 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function seek($pos): void
     {
-        $pos = (int)$pos;
+        if (!is_int($pos)) {
+            throw new TypeError(\sprintf(
+                'Argument 1 passed to %s() must be of the type int, %s given',
+                __METHOD__,
+                gettype($pos)
+            ));
+        }
+
         if (!isset($this->ordinals[$pos])) {
             throw new OutOfBoundsException("Position {$pos} not found");
         }

@@ -319,6 +319,18 @@ class EnumMapTest extends TestCase
         $enumMap->seek(2);
     }
 
+    public function testSeekThrowsTypeError()
+    {
+        $enumMap = new EnumMap(EnumBasic::class);
+
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage(
+            'Argument 1 passed to ' . EnumMap::class . '::seek() must be of the type int, string given'
+        );
+
+        $enumMap->seek('0');
+    }
+
     public function testSerializable()
     {
         $enumMap = new EnumMap(EnumBasic::class);
