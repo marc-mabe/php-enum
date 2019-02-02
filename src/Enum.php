@@ -181,7 +181,7 @@ abstract class Enum
     /**
      * Get an enumerator instance by the given value
      *
-     * @param mixed $value
+     * @param null|bool|int|float|string|array $value
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values

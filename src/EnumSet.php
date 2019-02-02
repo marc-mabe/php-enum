@@ -74,7 +74,7 @@ class EnumSet implements Iterator, Countable
         }
 
         $this->enumeration = $enumeration;
-        $this->ordinalMax  = count($enumeration::getConstants());
+        $this->ordinalMax  = \count($enumeration::getConstants());
 
         // By default the bitset is initialized as integer bitset
         // in case the enumeraton has more enumerators then integer bits

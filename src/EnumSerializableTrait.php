@@ -55,7 +55,7 @@ trait EnumSerializableTrait
             throw new RuntimeException($message);
         }
 
-        $class      = \get_class($this);
+        $class      = static::class;
         $enumerator = $this;
         $closure    = function () use ($class, $name, $value, $enumerator) {
             if ($value !== null && $this->value !== null) {
