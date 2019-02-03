@@ -249,7 +249,8 @@ abstract class Enum
 
         if (!isset(self::$names[static::class][$ordinal])) {
             throw new InvalidArgumentException(\sprintf(
-                'Invalid ordinal number, must between 0 and %s',
+                'Invalid ordinal number %s, must between 0 and %s',
+                $ordinal,
                 \count(self::$names[static::class]) - 1
             ));
         }
