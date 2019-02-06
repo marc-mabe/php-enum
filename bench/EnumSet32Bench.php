@@ -48,38 +48,103 @@ class EnumSet32Bench
         $this->enumerators = Enum32::getEnumerators();
 
         $this->emptySet = new EnumSet(Enum32::class);
-        $this->fullSet  = new EnumSet(Enum32::class);
-        foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->attach($enumerator);
-        }
+        $this->fullSet  = new EnumSet(Enum32::class, $this->enumerators);
     }
 
     public function benchAttachEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->emptySet->attach($enumerator);
+            $this->emptySet->attachEnumerator($enumerator);
+        }
+    }
+
+    public function benchWithEnumerator()
+    {
+        foreach ($this->enumerators as $enumerator) {
+            $this->emptySet->withEnumerator($enumerator);
+        }
+    }
+
+    public function benchAttachEnumerators()
+    {
+        $this->emptySet->withEnumerators($this->enumerators);
+    }
+
+    public function benchWithEnumerators()
+    {
+        $this->emptySet->attachEnumerators($this->enumerators);
+    }
+
+    public function benchWithValue()
+    {
+        foreach ($this->values as $value) {
+            $this->emptySet->withEnumerator($value);
         }
     }
 
     public function benchAttachValue()
     {
         foreach ($this->values as $value) {
-            $this->emptySet->attach($value);
+            $this->emptySet->attachEnumerator($value);
         }
+    }
+
+    public function benchAttachValues()
+    {
+        $this->emptySet->attachEnumerators($this->values);
+    }
+
+    public function benchWithValues()
+    {
+        $this->emptySet->withEnumerators($this->values);
     }
 
     public function benchDetachEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->detach($enumerator);
+            $this->fullSet->detachEnumerator($enumerator);
         }
+    }
+
+    public function benchWithoutEnumerator()
+    {
+        foreach ($this->enumerators as $enumerator) {
+            $this->fullSet->withoutEnumerator($enumerator);
+        }
+    }
+
+    public function benchDetachEnumerators()
+    {
+        $this->fullSet->detachEnumerators($this->enumerators);
+    }
+
+    public function benchWithoutEnumerators()
+    {
+        $this->fullSet->withoutEnumerators($this->enumerators);
     }
 
     public function benchDetachValue()
     {
         foreach ($this->values as $value) {
-            $this->fullSet->detach($value);
+            $this->fullSet->detachEnumerator($value);
         }
+    }
+
+    public function benchWithoutValue()
+    {
+        foreach ($this->values as $value) {
+            $this->fullSet->withoutEnumerator($value);
+        }
+    }
+
+    public function benchDetachValues()
+    {
+        $this->fullSet->detachEnumerators($this->values);
+    }
+
+    public function benchWithoutValues()
+    {
+        $this->fullSet->withoutEnumerators($this->values);
     }
 
     public function benchContainsEnumerator()
@@ -135,24 +200,44 @@ class EnumSet32Bench
         $this->fullSet->isSuperset($this->fullSet);
     }
 
-    public function benchUnion()
+    public function benchSetUnion()
     {
-        $this->fullSet->union($this->emptySet);
+        $this->fullSet->setUnion($this->emptySet);
     }
 
-    public function benchIntersect()
+    public function benchWithUnion()
     {
-        $this->fullSet->intersect($this->emptySet);
+        $this->fullSet->withUnion($this->emptySet);
     }
 
-    public function benchDiff()
+    public function benchSetIntersect()
     {
-        $this->fullSet->diff($this->emptySet);
+        $this->fullSet->setIntersect($this->emptySet);
     }
 
-    public function benchSymDiff()
+    public function benchWithIntersect()
     {
-        $this->fullSet->symDiff($this->emptySet);
+        $this->fullSet->withIntersect($this->emptySet);
+    }
+
+    public function benchSetDiff()
+    {
+        $this->fullSet->setDiff($this->emptySet);
+    }
+
+    public function benchWithDiff()
+    {
+        $this->fullSet->withDiff($this->emptySet);
+    }
+
+    public function benchSetSymDiff()
+    {
+        $this->fullSet->setSymDiff($this->emptySet);
+    }
+
+    public function benchWithSymDiff()
+    {
+        $this->fullSet->withSymDiff($this->emptySet);
     }
 
     public function benchGetOrdinalsFull()
