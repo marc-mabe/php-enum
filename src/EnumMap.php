@@ -95,7 +95,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @param bool $strict Use strict type comparison
      * @return Enum|null The found key or NULL
      */
-    public function search($value, bool $strict = false): ?Enum
+    public function search($value, bool $strict = false)
     {
         $ord = \array_search($value, $this->map, $strict);
         if ($ord !== false) {
