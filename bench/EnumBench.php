@@ -115,6 +115,11 @@ class EnumBench
         Enum66::getConstants();
     }
 
+    public function benchGetConstants()
+    {
+        Enum66::getConstants();
+    }
+
     public function benchGetValues()
     {
         Enum66::getValues();
@@ -142,14 +147,6 @@ class EnumBench
         }
     }
 
-    public function benchByValueAndInitialize()
-    {
-        foreach ($this->values as $value) {
-            $this->destructEnumerations();
-            Enum66::byValue($value);
-        }
-    }
-
     public function benchByValueAndInstantiate()
     {
         $this->destructEnumerationInstances();
@@ -165,14 +162,6 @@ class EnumBench
         }
     }
 
-    public function benchByNameAndInitialize()
-    {
-        foreach ($this->names as $name) {
-            $this->destructEnumerations();
-            Enum66::byName($name);
-        }
-    }
-
     public function benchByNameAndInstantiate()
     {
         $this->destructEnumerationInstances();
@@ -184,14 +173,6 @@ class EnumBench
     public function benchByOrdinal()
     {
         foreach ($this->ordinals as $ord) {
-            Enum66::byOrdinal($ord);
-        }
-    }
-
-    public function benchByOrdinalAndInitialize()
-    {
-        foreach ($this->ordinals as $ord) {
-            $this->destructEnumerations();
             Enum66::byOrdinal($ord);
         }
     }
