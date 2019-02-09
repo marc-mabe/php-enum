@@ -58,7 +58,7 @@ abstract class Enum
      * @param null|bool|int|float|string|array $value   The value of the enumerator
      * @param int|null                         $ordinal The ordinal number of the enumerator
      */
-    final private function __construct($value, int $ordinal = null)
+    final private function __construct($value, $ordinal = null)
     {
         $this->value   = $value;
         $this->ordinal = $ordinal;
@@ -117,7 +117,7 @@ abstract class Enum
      *
      * @return string
      */
-    final public function getName(): string
+    final public function getName()
     {
         return self::$names[static::class][$this->ordinal ?: $this->getOrdinal()];
     }
@@ -127,7 +127,7 @@ abstract class Enum
      *
      * @return int
      */
-    final public function getOrdinal(): int
+    final public function getOrdinal()
     {
         if ($this->ordinal === null) {
             $ordinal = 0;
@@ -151,7 +151,7 @@ abstract class Enum
      * @param static|null|bool|int|float|string|array $enumerator An enumerator object or value
      * @return bool
      */
-    final public function is($enumerator): bool
+    final public function is($enumerator)
     {
         return $this === $enumerator || $this->value === $enumerator
 
@@ -170,7 +170,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function get($enumerator): self
+    final public static function get($enumerator)
     {
         if ($enumerator instanceof static && \get_class($enumerator) === static::class) {
             return $enumerator;
@@ -187,7 +187,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function byValue($value): self
+    final public static function byValue($value)
     {
         if (!isset(self::$constants[static::class])) {
             self::detectConstants(static::class);
@@ -219,7 +219,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous values
      */
-    final public static function byName(string $name): self
+    final public static function byName(string $name)
     {
         if (isset(self::$instances[static::class][$name])) {
             return self::$instances[static::class][$name];
@@ -241,7 +241,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid ordinal number
      * @throws LogicException           On ambiguous values
      */
-    final public static function byOrdinal(int $ordinal): self
+    final public static function byOrdinal(int $ordinal)
     {
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
@@ -268,7 +268,7 @@ abstract class Enum
      *
      * @return static[]
      */
-    final public static function getEnumerators(): array
+    final public static function getEnumerators()
     {
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
@@ -281,7 +281,7 @@ abstract class Enum
      *
      * @return mixed[]
      */
-    final public static function getValues(): array
+    final public static function getValues()
     {
         return \array_values(self::detectConstants(static::class));
     }
@@ -291,7 +291,7 @@ abstract class Enum
      *
      * @return string[]
      */
-    final public static function getNames(): array
+    final public static function getNames()
     {
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
@@ -304,7 +304,7 @@ abstract class Enum
      *
      * @return int[]
      */
-    final public static function getOrdinals(): array
+    final public static function getOrdinals()
     {
         $count = \count(self::detectConstants(static::class));
         return $count ? \range(0, $count - 1) : [];
@@ -316,7 +316,7 @@ abstract class Enum
      * @return array
      * @throws LogicException On ambiguous constant values
      */
-    final public static function getConstants(): array
+    final public static function getConstants()
     {
         return self::detectConstants(static::class);
     }
@@ -327,7 +327,7 @@ abstract class Enum
      * @param static|null|bool|int|float|string|array $enumerator
      * @return bool
      */
-    final public static function has($enumerator): bool
+    final public static function has($enumerator)
     {
         return ($enumerator instanceof static && \get_class($enumerator) === static::class)
             || static::hasValue($enumerator);
@@ -339,7 +339,7 @@ abstract class Enum
      * @param null|bool|int|float|string|array $value
      * @return bool
      */
-    final public static function hasValue($value): bool
+    final public static function hasValue($value)
     {
         $constants = self::detectConstants(static::class);
         return \in_array($value, $constants, true);
@@ -351,7 +351,7 @@ abstract class Enum
      * @param string $name
      * @return bool
      */
-    final public static function hasName(string $name): bool
+    final public static function hasName(string $name)
     {
         return \defined("static::{$name}");
     }
@@ -362,7 +362,7 @@ abstract class Enum
      * @param string $class
      * @return array
      */
-    private static function detectConstants(string $class): array
+    private static function detectConstants($class)
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
@@ -397,7 +397,7 @@ abstract class Enum
      * @param array $constants
      * @return bool
      */
-    private static function noAmbiguousValues(array $constants): bool
+    private static function noAmbiguousValues($constants)
     {
         foreach ($constants as $value) {
             $names = \array_keys($constants, $value, true);
@@ -421,7 +421,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function __callStatic(string $method, array $args): self
+    final public static function __callStatic(string $method, array $args)
     {
         return self::byName($method);
     }
