@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace MabeEnum;
 
 use Countable;
-use Iterator;
 use InvalidArgumentException;
+use Iterator;
+use IteratorAggregate;
+use OutOfBoundsException;
 
 /**
  * A set of enumerators of the given enumeration (EnumSet<T>)
@@ -16,7 +18,7 @@ use InvalidArgumentException;
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  */
-class EnumSet implements Iterator, Countable
+class EnumSet implements IteratorAggregate, Countable
 {
     /**
      * The classname of the Enumeration
@@ -25,16 +27,10 @@ class EnumSet implements Iterator, Countable
     private $enumeration;
 
     /**
-     * Ordinal number of current iterator position
+     * Number of enumerators defined in the enumeration
      * @var int
      */
-    private $ordinal = 0;
-
-    /**
-     * Highest possible ordinal number
-     * @var int
-     */
-    private $ordinalMax;
+    private $enumerationCount;
 
     /**
      * Integer or binary (little endian) bitset
@@ -49,7 +45,7 @@ class EnumSet implements Iterator, Countable
      * 
      * @var string
      */
-    private $fnDoRewind            = 'doRewindInt';
+    private $fnDoGetIterator       = 'doGetIteratorInt';
     private $fnDoCount             = 'doCountInt';
     private $fnDoGetOrdinals       = 'doGetOrdinalsInt';
     private $fnDoGetBit            = 'doGetBitInt';
@@ -75,18 +71,18 @@ class EnumSet implements Iterator, Countable
             ));
         }
 
-        $this->enumeration = $enumeration;
-        $this->ordinalMax  = \count($enumeration::getConstants());
+        $this->enumeration      = $enumeration;
+        $this->enumerationCount = \count($enumeration::getConstants());
 
         // By default the bitset is initialized as integer bitset
         // in case the enumeraton has more enumerators then integer bits
         // we will switch this into a binary bitset
-        if ($this->ordinalMax > \PHP_INT_SIZE * 8) {
+        if ($this->enumerationCount > \PHP_INT_SIZE * 8) {
             // init binary bitset with zeros
-            $this->bitset = \str_repeat("\0", (int)\ceil($this->ordinalMax / 8));
+            $this->bitset = \str_repeat("\0", (int)\ceil($this->enumerationCount / 8));
 
             // switch internal binary bitset functions
-            $this->fnDoRewind            = 'doRewindBin';
+            $this->fnDoGetIterator       = 'doGetIteratorBin';
             $this->fnDoCount             = 'doCountBin';
             $this->fnDoGetOrdinals       = 'doGetOrdinalsBin';
             $this->fnDoGetBit            = 'doGetBitBin';
@@ -138,104 +134,77 @@ class EnumSet implements Iterator, Countable
         return $this->{$this->fnDoGetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
     }
 
-    /* Iterator */
+    /* IteratorAggregate */
 
     /**
-     * Get the current enumerator
-     * @return Enum|null Returns the current enumerator or NULL on an invalid iterator position
+     * Get a new iterator
+     * @return Iterator
+     * @uses doGetIteratorInt()
+     * @uses doGetIteratorBin()
      */
-    public function current(): ?Enum
+    public function getIterator(): Iterator
     {
-        if ($this->valid()) {
-            return ($this->enumeration)::byOrdinal($this->ordinal);
-        }
+        return $this->{$this->fnDoGetIterator}();
 
-        return null;
-    }
-
-    /**
-     * Get the ordinal number of the current iterator position
-     * @return int
-     */
-    public function key(): int
-    {
-        return $this->ordinal;
-    }
-
-    /**
-     * Go to the next valid iterator position.
-     * If no valid iterator position is found the iterator position will be the last possible + 1.
-     * @return void
-     */
-    public function next(): void
-    {
-        do {
-            if (++$this->ordinal >= $this->ordinalMax) {
-                $this->ordinal = $this->ordinalMax;
-                return;
+        /*
+        $ordinal          = 0;
+        $enumerationCount = $this->enumerationCount;
+        $fnDoGetBit       = $this->fnDoGetBit;
+        for (; $ordinal < $enumerationCount; ++$ordinal) {
+            if ($this->{$fnDoGetBit}($ordinal)) {
+                yield $ordinal => ($this->enumeration)::byOrdinal($ordinal);
             }
-        } while (!$this->{$this->fnDoGetBit}($this->ordinal));
+        }
+        */
     }
 
     /**
-     * Go to the first valid iterator position.
-     * If no valid iterator position was found the iterator position will be 0.
-     * @return void
-     * @uses doRewindBin()
-     * @uses doRewindInt()
-     */
-    public function rewind(): void
-    {
-        $this->{$this->fnDoRewind}();
-    }
-
-    /**
-     * Go to the first valid iterator position.
-     * If no valid iterator position was found the iterator position will be 0.
+     * Get a new Iterator.
      *
      * This is the binary bitset implementation.
      *
-     * @return void
-     * @see rewind()
-     * @see doRewindInt()
+     * @return Iterator
+     * @see getIterator()
+     * @see goGetIteratorInt()
      */
-    private function doRewindBin(): void
+    private function doGetIteratorBin(): Iterator
     {
-        if (\ltrim($this->bitset, "\0") !== '') {
-            $this->ordinal = -1;
-            $this->next();
-        } else {
-            $this->ordinal = 0;
+        $bitset   = $this->bitset;
+        $byteLen  = \strlen($bitset);
+        for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
+            if ($bitset[$bytePos] === "\0") {
+                // fast skip null byte
+                continue;
+            }
+
+            $ord = \ord($bitset[$bytePos]);
+            for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
+                if ($ord & (1 << $bitPos)) {
+                    $ordinal = $bytePos * 8 + $bitPos;
+                    yield $ordinal => ($this->enumeration)::byOrdinal($ordinal);
+                }
+            }
         }
     }
 
     /**
-     * Go to the first valid iterator position.
-     * If no valid iterator position was found the iterator position will be 0.
+     * Get a new Iterator.
      *
-     * This is the binary bitset implementation.
+     * This is the integer bitset implementation.
      *
-     * @return void
-     * @see rewind()
-     * @see doRewindBin()
+     * @return Iterator
+     * @see getIterator()
+     * @see doGetIteratorBin()
      */
-    private function doRewindInt(): void
+    private function doGetIteratorInt(): Iterator
     {
-        if ($this->bitset) {
-            $this->ordinal = -1;
-            $this->next();
-        } else {
-            $this->ordinal = 0;
+        $count  = $this->enumerationCount;
+        $bitset = $this->bitset;
+        for ($ordinal = 0; $ordinal < $count; ++$ordinal) {
+            if ($bitset & (1 << $ordinal)) {
+                yield $ordinal => ($this->enumeration)::byOrdinal($ordinal);
+            }
         }
-    }
-
-    /**
-     * Test if the iterator is in a valid state
-     * @return bool
-     */
-    public function valid(): bool
-    {
-        return $this->ordinal !== $this->ordinalMax && $this->{$this->fnDoGetBit}($this->ordinal);
     }
 
     /* Countable */
@@ -499,12 +468,12 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetOrdinalsInt(): array
     {
-        $ordinals   = [];
-        $ordinalMax = $this->ordinalMax;
-        $bitset     = $this->bitset;
-        for ($ord = 0; $ord < $ordinalMax; ++$ord) {
-            if ($bitset & (1 << $ord)) {
-                $ordinals[] = $ord;
+        $ordinals = [];
+        $count    = $this->enumerationCount;
+        $bitset   = $this->bitset;
+        for ($ordinal = 0; $ordinal < $count; ++$ordinal) {
+            if ($bitset & (1 << $ordinal)) {
+                $ordinals[] = $ordinal;
             }
         }
         return $ordinals;
@@ -590,7 +559,7 @@ class EnumSet implements Iterator, Countable
     private function doGetBinaryBitsetLeInt(): string
     {
         $bin = \pack(\PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
-        return \substr($bin, 0, (int)\ceil($this->ordinalMax / 8));
+        return \substr($bin, 0, (int)\ceil($this->enumerationCount / 8));
     }
 
     /**
@@ -607,9 +576,6 @@ class EnumSet implements Iterator, Countable
     public function setBinaryBitsetLe(string $bitset): void
     {
         $this->{$this->fnDoSetBinaryBitsetLe}($bitset);
-
-        // reset the iterator position
-        $this->rewind();
     }
 
     /**
@@ -639,7 +605,7 @@ class EnumSet implements Iterator, Countable
         }
 
         // truncate out-of-range bits of last byte
-        $lastByteMaxOrd = $this->ordinalMax % 8;
+        $lastByteMaxOrd = $this->enumerationCount % 8;
         if ($lastByteMaxOrd !== 0) {
             $lastByte         = $bitset[-1];
             $lastByteExpected = \chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
@@ -678,7 +644,7 @@ class EnumSet implements Iterator, Countable
             $int |= $ord << (8 * $i);
         }
 
-        if ($int & (~0 << $this->ordinalMax)) {
+        if ($int & (~0 << $this->enumerationCount)) {
             throw new InvalidArgumentException('out-of-range bits detected');
         }
 
@@ -720,8 +686,8 @@ class EnumSet implements Iterator, Countable
      */
     public function getBit(int $ordinal): bool
     {
-        if ($ordinal < 0 || $ordinal > $this->ordinalMax) {
-            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->ordinalMax}");
+        if ($ordinal < 0 || $ordinal > $this->enumerationCount) {
+            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->enumerationCount}");
         }
 
         return $this->{$this->fnDoGetBit}($ordinal);
@@ -771,8 +737,8 @@ class EnumSet implements Iterator, Countable
      */
     public function setBit(int $ordinal, bool $bit): void
     {
-        if ($ordinal < 0 || $ordinal > $this->ordinalMax) {
-            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->ordinalMax}");
+        if ($ordinal < 0 || $ordinal > $this->enumerationCount) {
+            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->enumerationCount}");
         }
 
         if ($bit) {
