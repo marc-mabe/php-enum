@@ -145,17 +145,6 @@ class EnumSet implements IteratorAggregate, Countable
     public function getIterator(): Iterator
     {
         return $this->{$this->fnDoGetIterator}();
-
-        /*
-        $ordinal          = 0;
-        $enumerationCount = $this->enumerationCount;
-        $fnDoGetBit       = $this->fnDoGetBit;
-        for (; $ordinal < $enumerationCount; ++$ordinal) {
-            if ($this->{$fnDoGetBit}($ordinal)) {
-                yield $ordinal => ($this->enumeration)::byOrdinal($ordinal);
-            }
-        }
-        */
     }
 
     /**
