@@ -82,28 +82,14 @@ class EnumSet32Bench
         }
     }
 
-    public function benchContainsEnumeratorTrue()
+    public function benchContainsEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
             $this->fullSet->contains($enumerator);
         }
     }
 
-    public function benchContainsEnumeratorFalse()
-    {
-        foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->contains($enumerator);
-        }
-    }
-
-    public function benchContainsValueTrue()
-    {
-        foreach ($this->values as $value) {
-            $this->fullSet->contains($value);
-        }
-    }
-
-    public function benchContainsValueFalse()
+    public function benchContainsValue()
     {
         foreach ($this->values as $value) {
             $this->fullSet->contains($value);
