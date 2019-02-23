@@ -54,84 +54,42 @@ class EnumSet66Bench
         }
     }
 
-    public function benchAttachEnumeratorOnEmpty()
+    public function benchAttachEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
             $this->emptySet->attach($enumerator);
         }
     }
 
-    public function benchAttachValueOnEmpty()
+    public function benchAttachValue()
     {
         foreach ($this->values as $value) {
             $this->emptySet->attach($value);
         }
     }
 
-    public function benchAttachEnumeratorOnFull()
-    {
-        foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->attach($enumerator);
-        }
-    }
-
-    public function benchAttachValueOnFull()
-    {
-        foreach ($this->values as $value) {
-            $this->fullSet->attach($value);
-        }
-    }
-
-    public function benchDetachEnumeratorOnEmpty()
+    public function benchDetachEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
             $this->emptySet->detach($enumerator);
         }
     }
 
-    public function benchDetachValueOnEmpty()
+    public function benchDetachValue()
     {
         foreach ($this->values as $value) {
             $this->emptySet->detach($value);
         }
     }
 
-    public function benchDetachEnumeratorOnFull()
-    {
-        foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->detach($enumerator);
-        }
-    }
-
-    public function benchDetachValueOnFull()
-    {
-        foreach ($this->values as $value) {
-            $this->fullSet->detach($value);
-        }
-    }
-
-    public function benchContainsEnumeratorTrue()
+    public function benchContainsEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
             $this->fullSet->contains($enumerator);
         }
     }
 
-    public function benchContainsValueTrue()
-    {
-        foreach ($this->values as $value) {
-            $this->fullSet->contains($value);
-        }
-    }
-
-    public function benchContainsEnumeratorFalse()
-    {
-        foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->contains($enumerator);
-        }
-    }
-
-    public function benchContainsValueFalse()
+    public function benchContainsValue()
     {
         foreach ($this->values as $value) {
             $this->fullSet->contains($value);

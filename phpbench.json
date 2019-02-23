@@ -1,5 +1,12 @@
 {
   "bootstrap": "bench/bootstrap.php",
   "path": "bench/",
-  "retry_threshold": 5
+  "retry_threshold": 2,
+  "php_disable_ini": true,
+  "php_config": {
+    "zend_extension": ["opcache.so"],
+    "extension": [ "json.so" ],
+    "zend.assertions": -1,
+    "opcache.enable_cli": 1
+  }
 }
