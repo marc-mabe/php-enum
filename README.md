@@ -304,7 +304,7 @@ $enumSet = $enumSet->withSymDiff($other);   // Enumerators in either this and ot
 
 An `EnumMap` maps enumerators of the same type to data assigned to.
 
-It implements `ArrayAccess`, `Countable` and `SeekableIterator`
+It implements `ArrayAccess`, `Countable` and `IteratorAggregate`
 so elements can be accessed, iterated and counted like a normal array
 using `$enumMap[$key]`, `foreach` and `count()`.
 

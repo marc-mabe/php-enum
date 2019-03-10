@@ -7,9 +7,8 @@ namespace MabeEnum;
 use ArrayAccess;
 use Countable;
 use InvalidArgumentException;
-use OutOfBoundsException;
-use SeekableIterator;
-use TypeError;
+use Iterator;
+use IteratorAggregate;
 use UnexpectedValueException;
 
 /**
@@ -19,7 +18,7 @@ use UnexpectedValueException;
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  */
-class EnumMap implements ArrayAccess, Countable, SeekableIterator
+class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 {
     /**
      * The classname of the enumeration type
@@ -32,18 +31,6 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      * @var array
      */
     private $map = [];
-
-    /**
-     * List of ordinal numbers
-     * @var int[]
-     */
-    private $ordinals = [];
-
-    /**
-     * Current iterator position
-     * @var int
-     */
-    private $pos = 0;
 
     /**
      * Constructor
@@ -77,7 +64,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function getKeys(): array
     {
-        return \array_map([$this->enumeration, 'byOrdinal'], $this->ordinals);
+        return \array_map([$this->enumeration, 'byOrdinal'], \array_keys($this->map));
     }
 
     /**
@@ -115,7 +102,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     {
         try {
             $ord = ($this->enumeration)::get($enumerator)->getOrdinal();
-            return array_key_exists($ord, $this->map);
+            return \array_key_exists($ord, $this->map);
         } catch (InvalidArgumentException $e) {
             // An invalid enumerator can't be contained in this map
             return false;
@@ -149,7 +136,7 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     {
         $enumerator = ($this->enumeration)::get($enumerator);
         $ord = $enumerator->getOrdinal();
-        if (!isset($this->map[$ord]) && !array_key_exists($ord, $this->map)) {
+        if (!isset($this->map[$ord]) && !\array_key_exists($ord, $this->map)) {
             throw new UnexpectedValueException(sprintf(
                 'Enumerator %s could not be found',
                 \var_export($enumerator->getValue(), true)
@@ -170,10 +157,6 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     public function offsetSet($enumerator, $value = null): void
     {
         $ord = ($this->enumeration)::get($enumerator)->getOrdinal();
-
-        if (!array_key_exists($ord, $this->map)) {
-            $this->ordinals[] = $ord;
-        }
         $this->map[$ord] = $value;
     }
 
@@ -187,86 +170,20 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
     public function offsetUnset($enumerator): void
     {
         $ord = ($this->enumeration)::get($enumerator)->getOrdinal();
+        unset($this->map[$ord]);
+    }
 
-        if (($idx = \array_search($ord, $this->ordinals, true)) !== false) {
-            unset($this->map[$ord], $this->ordinals[$idx]);
-            $this->ordinals = \array_values($this->ordinals);
+    /**
+     * Get a new Iterator.
+     *
+     * @return Iterator
+     */
+    public function getIterator(): Iterator
+    {
+        $map = $this->map;
+        foreach ($map as $ordinal => $value) {
+            yield ($this->enumeration)::byOrdinal($ordinal) => $value;
         }
-    }
-
-    /**
-     * Seeks to the given iterator position.
-     * @param int $pos
-     * @throws OutOfBoundsException On an invalid position
-     */
-    public function seek($pos): void
-    {
-        if (!is_int($pos)) {
-            throw new TypeError(\sprintf(
-                'Argument 1 passed to %s() must be of the type int, %s given',
-                __METHOD__,
-                gettype($pos)
-            ));
-        }
-
-        if (!isset($this->ordinals[$pos])) {
-            throw new OutOfBoundsException("Position {$pos} not found");
-        }
-
-        $this->pos = $pos;
-    }
-
-    /**
-     * Get the current value
-     * @return mixed
-     */
-    public function current()
-    {
-        if (!isset($this->ordinals[$this->pos])) {
-            return null;
-        }
-
-        return $this->map[$this->ordinals[$this->pos]];
-    }
-
-    /**
-     * Get the current key
-     * @return Enum|null
-     */
-    public function key(): ?Enum
-    {
-        if (!isset($this->ordinals[$this->pos])) {
-            return null;
-        }
-
-        return ($this->enumeration)::byOrdinal($this->ordinals[$this->pos]);
-    }
-
-    /**
-     * Reset the iterator position to zero.
-     * @return void
-     */
-    public function rewind(): void
-    {
-        $this->pos = 0;
-    }
-
-    /**
-     * Increment the iterator position by one.
-     * @return void
-     */
-    public function next(): void
-    {
-        ++$this->pos;
-    }
-
-    /**
-     * Test if the iterator is in a valid state
-     * @return bool
-     */
-    public function valid(): bool
-    {
-        return isset($this->ordinals[$this->pos]);
     }
 
     /**
@@ -276,6 +193,6 @@ class EnumMap implements ArrayAccess, Countable, SeekableIterator
      */
     public function count(): int
     {
-        return \count($this->ordinals);
+        return \count($this->map);
     }
 }
