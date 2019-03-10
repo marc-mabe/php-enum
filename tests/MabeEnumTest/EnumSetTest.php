@@ -23,60 +23,132 @@ use PHPUnit\Framework\TestCase;
  */
 class EnumSetTest extends TestCase
 {
-    public function testBasic()
+    public function testBasicMutable()
     {
         $set = new EnumSet(EnumBasic::class);
         $this->assertSame(EnumBasic::class, $set->getEnumeration());
 
-        $enum1  = EnumBasic::ONE();
-        $enum2  = EnumBasic::TWO();
+        $enum1 = EnumBasic::ONE();
+        $enum2 = EnumBasic::TWO();
 
         $this->assertFalse($set->contains($enum1));
-        $this->assertNull($set->attach($enum1));
-        $this->assertTrue($set->contains($enum1));
 
+        $set = $set->withEnumerator($enum1);
+        $this->assertTrue($set->contains($enum1));
         $this->assertFalse($set->contains($enum2));
-        $this->assertNull($set->attach($enum2));
+
+        $set = $set->withEnumerator($enum2);
         $this->assertTrue($set->contains($enum2));
 
-        $this->assertNull($set->detach($enum1));
+        $set = $set->withoutEnumerator($enum1);
         $this->assertFalse($set->contains($enum1));
 
-        $this->assertNull($set->detach($enum2));
+        $set = $set->withoutEnumerator($enum2);
         $this->assertFalse($set->contains($enum2));
     }
 
-    public function testBasicWithConstantValuesAsEnums()
+    public function testBasicImmutable()
+    {
+        $set = new EnumSet(EnumBasic::class);
+        $this->assertSame(EnumBasic::class, $set->getEnumeration());
+
+        $enum1 = EnumBasic::ONE();
+        $enum2 = EnumBasic::TWO();
+
+        $this->assertFalse($set->contains($enum1));
+
+        $set->attachEnumerator($enum1);
+        $this->assertTrue($set->contains($enum1));
+        $this->assertFalse($set->contains($enum2));
+
+        $set->attachEnumerator($enum2);
+        $this->assertTrue($set->contains($enum2));
+
+        $set->detachEnumerator($enum1);
+        $this->assertFalse($set->contains($enum1));
+
+        $set->detachEnumerator($enum2);
+        $this->assertFalse($set->contains($enum2));
+    }
+
+    public function testBasicMutableWithConstantValuesAsEnums()
     {
         $set = new EnumSet(EnumBasic::class);
 
-        $enum1  = EnumBasic::ONE;
-        $enum2  = EnumBasic::TWO;
+        $enum1 = EnumBasic::ONE;
+        $enum2 = EnumBasic::TWO;
 
         $this->assertFalse($set->contains($enum1));
-        $this->assertNull($set->attach($enum1));
-        $this->assertTrue($set->contains($enum1));
 
+        $set->attachEnumerator($enum1);
+        $this->assertTrue($set->contains($enum1));
         $this->assertFalse($set->contains($enum2));
-        $this->assertNull($set->attach($enum2));
+
+        $set->attachEnumerator($enum2);
         $this->assertTrue($set->contains($enum2));
 
-        $this->assertNull($set->detach($enum1));
+        $set->detachEnumerator($enum1);
         $this->assertFalse($set->contains($enum1));
 
-        $this->assertNull($set->detach($enum2));
+        $set->detachEnumerator($enum2);
         $this->assertFalse($set->contains($enum2));
+    }
+
+    public function testBasicImmutableWithConstantValuesAsEnums()
+    {
+        $set = new EnumSet(EnumBasic::class);
+
+        $enum1 = EnumBasic::ONE;
+        $enum2 = EnumBasic::TWO;
+
+        $this->assertFalse($set->contains($enum1));
+
+        $set = $set->withEnumerator($enum1);
+        $this->assertTrue($set->contains($enum1));
+        $this->assertFalse($set->contains($enum2));
+
+        $set = $set->withEnumerator($enum2);
+        $this->assertTrue($set->contains($enum2));
+
+        $set = $set->withoutEnumerator($enum1);
+        $this->assertFalse($set->contains($enum1));
+
+        $set = $set->withoutEnumerator($enum2);
+        $this->assertFalse($set->contains($enum2));
+    }
+
+    public function testInitArrayEnumerators()
+    {
+        $set = new EnumSet(EnumBasic::class, [EnumBasic::ONE, EnumBasic::TWO()]);
+
+        $this->assertTrue($set->contains(EnumBasic::ONE));
+        $this->assertTrue($set->contains(EnumBasic::TWO));
+        $this->assertFalse($set->contains(EnumBasic::THREE));
+    }
+
+    public function testInitInterableEnumerators()
+    {
+        $generator = (function() {
+            yield EnumBasic::ONE();
+            yield EnumBasic::TWO;
+        })();
+
+        $set = new EnumSet(EnumBasic::class, $generator);
+
+        $this->assertTrue($set->contains(EnumBasic::ONE));
+        $this->assertTrue($set->contains(EnumBasic::TWO));
+        $this->assertFalse($set->contains(EnumBasic::THREE));
     }
 
     public function testUnique()
     {
         $set = new EnumSet(EnumBasic::class);
 
-        $set->attach(EnumBasic::ONE());
-        $set->attach(EnumBasic::ONE);
+        $set = $set->withEnumerator(EnumBasic::ONE());
+        $set = $set->withEnumerator(EnumBasic::ONE);
 
-        $set->attach(EnumBasic::TWO());
-        $set->attach(EnumBasic::TWO);
+        $set = $set->withEnumerator(EnumBasic::TWO());
+        $set = $set->withEnumerator(EnumBasic::TWO);
 
         $this->assertSame(2, $set->count());
     }
@@ -98,23 +170,89 @@ class EnumSetTest extends TestCase
      * @param string $enumeration
      * @dataProvider getIntegerEnumerations
      */
-    public function testSetAllEnumerators(string $enumeration)
+    public function testAttachAllEnumerators(string $enumeration)
     {
         $set = new EnumSet($enumeration);
+
+        // attach all enumerators
         foreach ($enumeration::getConstants() as $value) {
             $this->assertFalse($set->contains($value));
-            $set->attach($value);
+            $set->attachEnumerator($value);
+            $this->assertTrue($set->contains($value));
+        }
+
+        // check enumerator count
+        $this->assertSame(count($enumeration::getConstants()), $set->count());
+
+        // datch all enumerators
+        foreach ($enumeration::getConstants() as $value) {
+            $this->assertTrue($set->contains($value));
+            $set->detachEnumerator($value);
+            $this->assertFalse($set->contains($value));
+        }
+
+        $this->assertSame(0, $set->count());
+    }
+
+    /**
+     * @param string $enumeration
+     * @dataProvider getIntegerEnumerations
+     */
+    public function testAttachAllEnumeratorsAtOnce(string $enumeration)
+    {
+        $set = new EnumSet($enumeration);
+
+        // attach all enumerators at once
+        $set->attachEnumerators($enumeration::getConstants());
+        $this->assertSame(count($enumeration::getConstants()), $set->count());
+
+        // detach all enumerators at once
+        $set->detachEnumerators($enumeration::getConstants());
+        $this->assertSame(0, $set->count());
+    }
+
+    /**
+     * @param string $enumeration
+     * @dataProvider getIntegerEnumerations
+     */
+    public function testWithAllEnumerators(string $enumeration)
+    {
+        $set = new EnumSet($enumeration);
+
+        // with all enumerators
+        foreach ($enumeration::getConstants() as $value) {
+            $this->assertFalse($set->contains($value));
+            $set = $set->withEnumerator($value);
             $this->assertTrue($set->contains($value));
         }
 
         $this->assertSame(count($enumeration::getConstants()), $set->count());
 
-        $expectedOrdinal = 0;
-        foreach ($set as $ordinal => $enum) {
-            $this->assertSame($expectedOrdinal, $ordinal);
-            $this->assertSame($expectedOrdinal, $enum->getOrdinal());
-            $expectedOrdinal++;
+        // without all enumerators
+        foreach ($enumeration::getConstants() as $value) {
+            $this->assertTrue($set->contains($value));
+            $set = $set->withoutEnumerator($value);
+            $this->assertFalse($set->contains($value));
         }
+
+        $this->assertSame(0, $set->count());
+    }
+
+    /**
+     * @param string $enumeration
+     * @dataProvider getIntegerEnumerations
+     */
+    public function testWithAllEnumeratorsAtOnce(string $enumeration)
+    {
+        $set = new EnumSet($enumeration);
+
+        // with all enumerators at once
+        $set = $set->withEnumerators($enumeration::getConstants());
+        $this->assertSame(count($enumeration::getConstants()), $set->count());
+
+        // without all enumerators at once
+        $set = $set->withoutEnumerators($enumeration::getConstants());
+        $this->assertSame(0, $set->count());
     }
 
     /**
@@ -135,7 +273,7 @@ class EnumSetTest extends TestCase
     public function testGetBit()
     {
         $set = new EnumSet(EnumBasic::class);
-        $set->attach(EnumBasic::TWO);
+        $set = $set->withEnumerator(EnumBasic::TWO);
 
         $this->assertFalse($set->getBit(EnumBasic::ONE()->getOrdinal()));
         $this->assertTrue($set->getBit(EnumBasic::TWO()->getOrdinal()));
@@ -160,6 +298,17 @@ class EnumSetTest extends TestCase
         $this->assertFalse($set->getBit(EnumBasic::TWO()->getOrdinal()));
     }
 
+    public function testWithBit()
+    {
+        $set = new EnumSet(EnumBasic::class);
+
+        $set = $set->withBit(EnumBasic::TWO()->getOrdinal(), true);
+        $this->assertTrue($set->getBit(EnumBasic::TWO()->getOrdinal()));
+
+        $set = $set->withBit(EnumBasic::TWO()->getOrdinal(), false);
+        $this->assertFalse($set->getBit(EnumBasic::TWO()->getOrdinal()));
+    }
+
     public function testSetBitOutOfRange()
     {
         $set = new EnumSet(EnumBasic::class);
@@ -177,25 +326,25 @@ class EnumSetTest extends TestCase
         $enum3 = Enum65::SIXTYFIVE;
         $enum4 = Enum65::SIXTYFOUR;
 
-        $this->assertNull($set->attach($enum1));
+        $set = $set->withEnumerator($enum1);
         $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x00\x00", $set->getBinaryBitsetLe());
         $this->assertTrue($set->contains($enum1));
 
-        $this->assertNull($set->attach($enum2));
+        $set = $set->withEnumerator($enum2);
         $this->assertSame("\x03\x00\x00\x00\x00\x00\x00\x00\x00", $set->getBinaryBitsetLe());
         $this->assertTrue($set->contains($enum2));
 
-        $this->assertNull($set->attach($enum3));
+        $set = $set->withEnumerator($enum3);
         $this->assertSame("\x03\x00\x00\x00\x00\x00\x00\x00\x01", $set->getBinaryBitsetLe());
         $this->assertTrue($set->contains($enum3));
 
-        $this->assertNull($set->attach($enum4));
+        $set = $set->withEnumerator($enum4);
         $this->assertSame("\x03\x00\x00\x00\x00\x00\x00\x80\x01", $set->getBinaryBitsetLe());
         $this->assertTrue($set->contains($enum4));
         
         $this->assertSame(4, $set->count());
 
-        $this->assertNull($set->detach($enum2));
+        $set = $set->withoutEnumerator($enum2);
         $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x80\x01", $set->getBinaryBitsetLe());
         $this->assertFalse($set->contains($enum2));
         
@@ -211,25 +360,25 @@ class EnumSetTest extends TestCase
         $enum3 = Enum65::SIXTYFIVE;
         $enum4 = Enum65::SIXTYFOUR;
 
-        $this->assertNull($set->attach($enum1));
+        $set = $set->withEnumerator($enum1);
         $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x01", $set->getBinaryBitsetBe());
         $this->assertTrue($set->contains($enum1));
 
-        $this->assertNull($set->attach($enum2));
+        $set = $set->withEnumerator($enum2);
         $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x03", $set->getBinaryBitsetBe());
         $this->assertTrue($set->contains($enum2));
 
-        $this->assertNull($set->attach($enum3));
+        $set = $set->withEnumerator($enum3);
         $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x00\x03", $set->getBinaryBitsetBe());
         $this->assertTrue($set->contains($enum3));
 
-        $this->assertNull($set->attach($enum4));
+        $set = $set->withEnumerator($enum4);
         $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x03", $set->getBinaryBitsetBe());
         $this->assertTrue($set->contains($enum4));
         
         $this->assertSame(4, $set->count());
 
-        $this->assertNull($set->detach($enum2));
+        $set = $set->withoutEnumerator($enum2);
         $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x01", $set->getBinaryBitsetBe());
         $this->assertFalse($set->contains($enum2));
         
@@ -248,38 +397,50 @@ class EnumSetTest extends TestCase
         $this->assertSame(3, $set->count());
     }
 
-    public function testSetBinaryBitsetLeBinShort()
+    public function testWithBinaryBitsetLeBin()
     {
         $set = new EnumSet(Enum65::class);
-        $set->setBinaryBitsetLe("\x0A");
+        $set = $set->withBinaryBitsetLe("\x01\x00\x00\x00\x00\x00\x00\x80\x01");
+
+        $this->assertContains(Enum65::ONE(), $set);
+        $this->assertNotContains(Enum65::TWO(), $set);
+        $this->assertContains(Enum65::SIXTYFIVE(), $set);
+        $this->assertContains(Enum65::SIXTYFOUR(), $set);
+        $this->assertSame(3, $set->count());
+    }
+
+    public function testWithBinaryBitsetLeBinShort()
+    {
+        $set = new EnumSet(Enum65::class);
+        $set = $set->withBinaryBitsetLe("\x0A");
         $this->assertSame("\x0A\x00\x00\x00\x00\x00\x00\x00\x00", $set->getBinaryBitsetLe());
     }
 
-    public function testSetBinaryBitsetLeBinLong()
+    public function testWithBinaryBitsetLeBinLong()
     {
         $set = new EnumSet(Enum65::class);
         $bitset = "\x0A\xFF\x00\x00\x00\x00\x00\x00\x00";
-        $set->setBinaryBitsetLe($bitset . "\x00\x00\x00\x00\x00\x00\x00");
+        $set = $set->withBinaryBitsetLe($bitset . "\x00\x00\x00\x00\x00\x00\x00");
         $this->assertSame($bitset, $set->getBinaryBitsetLe());
     }
 
-    public function testSetBinaryBitsetLeBinOutOfRangeBitsOfExtendedBytes1()
+    public function testWithBinaryBitsetLeBinOutOfRangeBitsOfExtendedBytes1()
     {
         $set = new EnumSet(Enum65::class);
 
         $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
-        $set->setBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x00\x02");
+        $set = $set->withBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x00\x02");
     }
 
-    public function testSetBinaryBitsetLeBinOutOfRangeBitsOfExtendedBytes2()
+    public function testWithBinaryBitsetLeBinOutOfRangeBitsOfExtendedBytes2()
     {
         $set = new EnumSet(Enum65::class);
 
         $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
-        $set->setBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x02");
+        $set->withBinaryBitsetLe("\xff\xff\xff\xff\xff\xff\xff\xff\x02");
     }
 
-    public function testSetBinaryBitsetLeBinOutOfRangeBitsOfLastValidByte()
+    public function testWithBinaryBitsetLeBinOutOfRangeBitsOfLastValidByte()
     {
         // using Enum65 to detect Out-Of-Range bits of last valid byte
         // Enum65 has max. ordinal number of 2 of the last byte. -> 0001
@@ -288,13 +449,13 @@ class EnumSetTest extends TestCase
         $newBitset = substr($bitset, 0, -1) . "\x02";
 
         $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
-        $set->setBinaryBitsetLe($newBitset);
+        $set->withBinaryBitsetLe($newBitset);
     }
 
-    public function testSetBinaryBitsetLeInt()
+    public function testWithBinaryBitsetLeInt()
     {
         $set = new EnumSet(Enum32::class);
-        $set->setBinaryBitsetLe("\x01\x00\x80\x01");
+        $set = $set->withBinaryBitsetLe("\x01\x00\x80\x01");
         $this->assertContains(Enum32::ONE(), $set);
         $this->assertNotContains(Enum32::TWO(), $set);
         $this->assertContains(Enum32::TWENTYFOUR(), $set);
@@ -302,30 +463,30 @@ class EnumSetTest extends TestCase
         $this->assertSame(3, $set->count());
     }
 
-    public function testSetBinaryBitsetLeIntShort()
+    public function testWithBinaryBitsetLeIntShort()
     {
         $set = new EnumSet(Enum32::class);
-        $set->setBinaryBitsetLe("\x0A");
+        $set = $set->withBinaryBitsetLe("\x0A");
         $this->assertSame("\x0A\x00\x00\x00", $set->getBinaryBitsetLe());
     }
 
-    public function testSetBinaryBitsetLeIntOutOfRangeBitsOfExtendedBytes1()
+    public function testWithBinaryBitsetLeIntOutOfRangeBitsOfExtendedBytes1()
     {
         $set = new EnumSet(EnumBasic::class);
 
         $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
-        $set->setBinaryBitsetLe("\x0A\xFF\x02");
+        $set->withBinaryBitsetLe("\x0A\xFF\x02");
     }
 
-    public function testSetBinaryBitsetLeIntOutOfRangeBitsOfExtendedBytes2()
+    public function testWithBinaryBitsetLeIntOutOfRangeBitsOfExtendedBytes2()
     {
         $set = new EnumSet(EnumBasic::class);
 
         $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
-        $set->setBinaryBitsetLe("\x01\x01\x01\x01\x01\x01\x01\x01\x01");
+        $set->withBinaryBitsetLe("\x01\x01\x01\x01\x01\x01\x01\x01\x01");
     }
 
-    public function testSetBinaryBitsetLeIntOutOfRangeBitsOfLastValidByte()
+    public function testWithBinaryBitsetLeIntOutOfRangeBitsOfLastValidByte()
     {
         // using Enum65 to detect Out-Of-Range bits of last valid byte
         // Enum65 has max. ordinal number of 2 of the last byte. -> 0001
@@ -334,13 +495,25 @@ class EnumSetTest extends TestCase
         $newBitset = substr($bitset, 0, -1) . "\xFF";
 
         $this->expectException(InvalidArgumentException::class, 'Out-Of-Range');
-        $set->setBinaryBitsetLe($newBitset);
+        $set->withBinaryBitsetLe($newBitset);
     }
 
     public function testSetBinaryBitsetBe()
     {
         $set = new EnumSet(Enum65::class);
         $set->setBinaryBitsetBe("\x01\x80\x00\x00\x00\x00\x00\x00\x01");
+
+        $this->assertTrue($set->contains(Enum65::ONE));
+        $this->assertFalse($set->contains(Enum65::TWO));
+        $this->assertTrue($set->contains(Enum65::SIXTYFIVE));
+        $this->assertTrue($set->contains(Enum65::SIXTYFOUR));
+        $this->assertTrue($set->count() == 3);
+    }
+
+    public function testWithBinaryBitsetBe()
+    {
+        $set = new EnumSet(Enum65::class);
+        $set = $set->withBinaryBitsetBe("\x01\x80\x00\x00\x00\x00\x00\x00\x01");
 
         $this->assertTrue($set->contains(Enum65::ONE));
         $this->assertFalse($set->contains(Enum65::TWO));
@@ -359,7 +532,7 @@ class EnumSetTest extends TestCase
     {
         foreach (Enum32::getEnumerators() as $enum) {
             $set = new EnumSet(Enum32::class);
-            $set->attach($enum);
+            $set = $set->withEnumerator($enum);
             $this->assertSame(1, $set->count());
         }
     }
@@ -368,7 +541,7 @@ class EnumSetTest extends TestCase
     {
         foreach (Enum64::getEnumerators() as $enum) {
             $set = new EnumSet(Enum64::class);
-            $set->attach($enum);
+            $set = $set->withEnumerator($enum);
             $this->assertSame(1, $set->count());
         }
     }
@@ -377,7 +550,7 @@ class EnumSetTest extends TestCase
     {
         foreach (Enum66::getEnumerators() as $enum) {
             $set = new EnumSet(Enum66::class);
-            $set->attach($enum);
+            $set = $set->withEnumerator($enum);
             $this->assertSame(1, $set->count());
         }
     }
@@ -389,10 +562,10 @@ class EnumSetTest extends TestCase
         $this->assertTrue($set1->isEqual($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
             $this->assertFalse($set1->isEqual($set2));
 
-            $set2->attach($enumerator);
+            $set2 = $set2->withEnumerator($enumerator);
             $this->assertTrue($set1->isEqual($set2));
         }
     }
@@ -404,10 +577,10 @@ class EnumSetTest extends TestCase
         $this->assertFalse($set1->isEqual($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
             $this->assertFalse($set1->isEqual($set2));
 
-            $set2->attach($enumerator->getValue());
+            $set2 = $set2->withEnumerator($enumerator->getValue());
             $this->assertFalse($set1->isEqual($set2));
         }
     }
@@ -422,8 +595,8 @@ class EnumSetTest extends TestCase
         $this->assertTrue($set1->isSubset($set2));
 
         foreach (Enum32::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
-            $set2->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
+            $set2 = $set2->withEnumerator($enumerator);
             $this->assertTrue($set1->isSubset($set2));
         }
     }
@@ -434,7 +607,7 @@ class EnumSetTest extends TestCase
         $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
-            $set2->attach($enumerator);
+            $set2 = $set2->withEnumerator($enumerator);
             $this->assertTrue($set1->isSubset($set2));
         }
     }
@@ -445,7 +618,7 @@ class EnumSetTest extends TestCase
         $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
             $this->assertFalse($set1->isSubset($set2));
         }
     }
@@ -457,10 +630,10 @@ class EnumSetTest extends TestCase
         $this->assertFalse($set1->isSubset($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
             $this->assertFalse($set1->isSubset($set2));
 
-            $set2->attach($enumerator->getValue());
+            $set2 = $set2->withEnumerator($enumerator->getValue());
             $this->assertFalse($set1->isSubset($set2));
         }
     }
@@ -476,8 +649,8 @@ class EnumSetTest extends TestCase
         $this->assertTrue($set1->isSuperset($set2));
 
         foreach (Enum32::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
-            $set2->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
+            $set2 = $set2->withEnumerator($enumerator);
             $this->assertTrue($set1->isEqual($set2));
             $this->assertTrue($set1->isSuperset($set2));
         }
@@ -489,7 +662,7 @@ class EnumSetTest extends TestCase
         $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
             $this->assertTrue($set1->isSuperset($set2));
         }
     }
@@ -500,7 +673,7 @@ class EnumSetTest extends TestCase
         $set2 = new EnumSet(Enum32::class);
 
         foreach (Enum32::getEnumerators() as $enumerator) {
-            $set2->attach($enumerator);
+            $set2 = $set2->withEnumerator($enumerator);
             $this->assertFalse($set1->isSuperset($set2));
         }
     }
@@ -512,10 +685,10 @@ class EnumSetTest extends TestCase
         $this->assertFalse($set1->isSuperset($set2));
 
         foreach (EnumBasic::getEnumerators() as $enumerator) {
-            $set1->attach($enumerator);
+            $set1 = $set1->withEnumerator($enumerator);
             $this->assertFalse($set1->isSuperset($set2));
 
-            $set2->attach($enumerator->getValue());
+            $set2 = $set2->withEnumerator($enumerator->getValue());
             $this->assertFalse($set1->isSuperset($set2));
         }
     }
@@ -526,7 +699,7 @@ class EnumSetTest extends TestCase
         $this->assertSame([], $set->getOrdinals());
 
         foreach (EnumBasic::getConstants() as $value) {
-            $set->attach($value);
+            $set = $set->withEnumerator($value);
         }
 
         $this->assertSame(range(0, count(EnumBasic::getConstants()) - 1), $set->getOrdinals());
@@ -538,7 +711,7 @@ class EnumSetTest extends TestCase
         $this->assertSame([], $set->getOrdinals());
 
         foreach (Enum66::getConstants() as $value) {
-            $set->attach($value);
+            $set = $set->withEnumerator($value);
         }
 
         $this->assertSame(range(0, count(Enum66::getConstants()) - 1), $set->getOrdinals());
@@ -550,7 +723,7 @@ class EnumSetTest extends TestCase
         $this->assertSame([], $set->getEnumerators());
 
         foreach (EnumBasic::getConstants() as $value) {
-            $set->attach($value);
+            $set = $set->withEnumerator($value);
         }
 
         $this->assertSame(EnumBasic::getEnumerators(), $set->getEnumerators());
@@ -562,7 +735,7 @@ class EnumSetTest extends TestCase
         $this->assertSame([], $set->getValues());
 
         foreach (EnumBasic::getConstants() as $value) {
-            $set->attach($value);
+            $set = $set->withEnumerator($value);
         }
 
         $this->assertSame(array_values(EnumBasic::getConstants()), $set->getValues());
@@ -574,24 +747,44 @@ class EnumSetTest extends TestCase
         $this->assertSame([], $set->getNames());
 
         foreach (EnumBasic::getConstants() as $value) {
-            $set->attach($value);
+            $set = $set->withEnumerator($value);
         }
 
         $this->assertSame(array_keys(EnumBasic::getConstants()), $set->getNames());
     }
 
-    public function testUnion()
+    public function testSetUnion()
     {
         $set1 = new EnumSet(EnumBasic::class);
-        $set1->attach(EnumBasic::ONE);
-        $set1->attach(EnumBasic::TWO);
+        $set1->attachEnumerator(EnumBasic::ONE);
+        $set1->attachEnumerator(EnumBasic::TWO);
 
         $set2 = new EnumSet(EnumBasic::class);
-        $set2->attach(EnumBasic::TWO);
-        $set2->attach(EnumBasic::THREE);
-        $set2->attach(EnumBasic::FOUR);
+        $set2->attachEnumerator(EnumBasic::TWO);
+        $set2->attachEnumerator(EnumBasic::THREE);
+        $set2->attachEnumerator(EnumBasic::FOUR);
 
-        $rs = $set1->union($set2);
+        $set1->setUnion($set2);
+        $this->assertSame([
+            EnumBasic::ONE,
+            EnumBasic::TWO,
+            EnumBasic::THREE,
+            EnumBasic::FOUR,
+        ], $set1->getValues());
+    }
+
+    public function testWithUnion()
+    {
+        $set1 = new EnumSet(EnumBasic::class);
+        $set1 = $set1->withEnumerator(EnumBasic::ONE);
+        $set1 = $set1->withEnumerator(EnumBasic::TWO);
+
+        $set2 = new EnumSet(EnumBasic::class);
+        $set2 = $set2->withEnumerator(EnumBasic::TWO);
+        $set2 = $set2->withEnumerator(EnumBasic::THREE);
+        $set2 = $set2->withEnumerator(EnumBasic::FOUR);
+
+        $rs = $set1->withUnion($set2);
         $this->assertSame([
             EnumBasic::ONE,
             EnumBasic::TWO,
@@ -600,90 +793,141 @@ class EnumSetTest extends TestCase
         ], $rs->getValues());
     }
 
-    public function testUnionThrowsInvalidArgumentException()
+    public function testSetUnionThrowsInvalidArgumentException()
     {
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
         $this->expectException(InvalidArgumentException::class);
-        $set1->union($set2);
+        $set1->setUnion($set2);
     }
 
-    public function testIntersect()
+    public function testSetIntersect()
     {
         $set1 = new EnumSet(EnumBasic::class);
-        $set1->attach(EnumBasic::ONE);
-        $set1->attach(EnumBasic::TWO);
-        $set1->attach(EnumBasic::THREE);
+        $set1->attachEnumerator(EnumBasic::ONE);
+        $set1->attachEnumerator(EnumBasic::TWO);
+        $set1->attachEnumerator(EnumBasic::THREE);
 
         $set2 = new EnumSet(EnumBasic::class);
-        $set2->attach(EnumBasic::TWO);
-        $set2->attach(EnumBasic::THREE);
-        $set2->attach(EnumBasic::FOUR);
+        $set2->attachEnumerator(EnumBasic::TWO);
+        $set2->attachEnumerator(EnumBasic::THREE);
+        $set2->attachEnumerator(EnumBasic::FOUR);
 
-        $rs = $set1->intersect($set2);
+        $set1->setIntersect($set2);
+        $this->assertSame([EnumBasic::TWO, EnumBasic::THREE], $set1->getValues());
+    }
+
+    public function testWithIntersect()
+    {
+        $set1 = new EnumSet(EnumBasic::class);
+        $set1 = $set1->withEnumerator(EnumBasic::ONE);
+        $set1 = $set1->withEnumerator(EnumBasic::TWO);
+        $set1 = $set1->withEnumerator(EnumBasic::THREE);
+
+        $set2 = new EnumSet(EnumBasic::class);
+        $set2 = $set2->withEnumerator(EnumBasic::TWO);
+        $set2 = $set2->withEnumerator(EnumBasic::THREE);
+        $set2 = $set2->withEnumerator(EnumBasic::FOUR);
+
+        $rs = $set1->withIntersect($set2);
         $this->assertSame([EnumBasic::TWO, EnumBasic::THREE], $rs->getValues());
     }
 
-    public function testIntersectThrowsInvalidArgumentException()
+    public function testSetIntersectThrowsInvalidArgumentException()
     {
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
         $this->expectException(InvalidArgumentException::class);
-        $set1->intersect($set2);
+        $set1->setIntersect($set2);
     }
 
-    public function testDiff()
+    public function testSetDiff()
     {
         $set1 = new EnumSet(EnumBasic::class);
-        $set1->attach(EnumBasic::ONE);
-        $set1->attach(EnumBasic::TWO);
-        $set1->attach(EnumBasic::THREE);
+        $set1->attachEnumerator(EnumBasic::ONE);
+        $set1->attachEnumerator(EnumBasic::TWO);
+        $set1->attachEnumerator(EnumBasic::THREE);
 
         $set2 = new EnumSet(EnumBasic::class);
-        $set2->attach(EnumBasic::TWO);
-        $set2->attach(EnumBasic::THREE);
-        $set2->attach(EnumBasic::FOUR);
+        $set2->attachEnumerator(EnumBasic::TWO);
+        $set2->attachEnumerator(EnumBasic::THREE);
+        $set2->attachEnumerator(EnumBasic::FOUR);
 
-        $rs = $set1->diff($set2);
+        $set1->setDiff($set2);
+        $this->assertSame([EnumBasic::ONE], $set1->getValues());
+    }
+
+    public function testWithDiff()
+    {
+        $set1 = new EnumSet(EnumBasic::class);
+        $set1 = $set1->withEnumerator(EnumBasic::ONE);
+        $set1 = $set1->withEnumerator(EnumBasic::TWO);
+        $set1 = $set1->withEnumerator(EnumBasic::THREE);
+
+        $set2 = new EnumSet(EnumBasic::class);
+        $set2 = $set2->withEnumerator(EnumBasic::TWO);
+        $set2 = $set2->withEnumerator(EnumBasic::THREE);
+        $set2 = $set2->withEnumerator(EnumBasic::FOUR);
+
+        $rs = $set1->withDiff($set2);
         $this->assertSame([EnumBasic::ONE], $rs->getValues());
     }
 
-    public function testDiffThrowsInvalidArgumentException()
+    public function testSetDiffThrowsInvalidArgumentException()
     {
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
         $this->expectException(InvalidArgumentException::class);
-        $set1->diff($set2);
+        $set1->setDiff($set2);
     }
 
-    public function testSymDiff()
+    public function testSetSymDiff()
     {
         $set1 = new EnumSet(EnumBasic::class);
-        $set1->attach(EnumBasic::ONE);
-        $set1->attach(EnumBasic::TWO);
-        $set1->attach(EnumBasic::THREE);
+        $set1->attachEnumerator(EnumBasic::ONE);
+        $set1->attachEnumerator(EnumBasic::TWO);
+        $set1->attachEnumerator(EnumBasic::THREE);
 
         $set2 = new EnumSet(EnumBasic::class);
-        $set2->attach(EnumBasic::TWO);
-        $set2->attach(EnumBasic::THREE);
-        $set2->attach(EnumBasic::FOUR);
+        $set2->attachEnumerator(EnumBasic::TWO);
+        $set2->attachEnumerator(EnumBasic::THREE);
+        $set2->attachEnumerator(EnumBasic::FOUR);
 
-        $rs = $set1->symDiff($set2);
+        $set1->setSymDiff($set2);
+        $this->assertSame([
+            EnumBasic::ONE,
+            EnumBasic::FOUR,
+        ], $set1->getValues());
+    }
+
+    public function testWithSymDiff()
+    {
+        $set1 = new EnumSet(EnumBasic::class);
+        $set1 = $set1->withEnumerator(EnumBasic::ONE);
+        $set1 = $set1->withEnumerator(EnumBasic::TWO);
+        $set1 = $set1->withEnumerator(EnumBasic::THREE);
+
+        $set2 = new EnumSet(EnumBasic::class);
+        $set2 = $set2->withEnumerator(EnumBasic::TWO);
+        $set2 = $set2->withEnumerator(EnumBasic::THREE);
+        $set2 = $set2->withEnumerator(EnumBasic::FOUR);
+
+        $rs = $set1->withSymDiff($set2);
         $this->assertSame([
             EnumBasic::ONE,
             EnumBasic::FOUR,
         ], $rs->getValues());
     }
 
-    public function testSymDiffThrowsInvalidArgumentException()
+    public function testSetSymDiffThrowsInvalidArgumentException()
     {
         $set1 = new EnumSet(EnumBasic::class);
         $set2 = new EnumSet(Enum32::class);
 
         $this->expectException(InvalidArgumentException::class);
-        $set1->symDiff($set2);
+        $set1->setSymDiff($set2);
     }
 }
