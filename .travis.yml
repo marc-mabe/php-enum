@@ -35,7 +35,9 @@ matrix:
     - php: nightly
 
     # HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
-    - php: hhvm
+    - php: hhvm-3.27 # LTS
+      dist: trusty
+    - php: hhvm-3.30 # last with PHP support
       dist: trusty
   allow_failures:
     - php: nightly
