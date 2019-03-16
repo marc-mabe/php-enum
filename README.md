@@ -397,6 +397,28 @@ Download the last version from [Github](https://github.com/marc-mabe/php-enum/ta
 and extract it.
 
 
+# Versioning and Releases
+
+This project follows [SemVer](https://semver.org/) specification. 
+
+There are **no** [LTS](https://en.wikipedia.org/wiki/Long-term_support) releases
+and we don't have (fixed) time based release windows.
+Instead releases happen as necessary.
+
+We do support at least all maintained PHP versions.
+
+Bug fixes will be backported to the latest maintained minor release.
+
+Critical bug fixes and security relates fixes can also be backported to older releases.
+
+| Release | Status       | PHP-Version     |
+|---------|--------------|-----------------|
+| 1.x     | EOL          | \>=5.3          |
+| 2.x     | maintainance | \>=5.3 & HHVM<4 |
+| 3.x     | active       | \>=5.6 & HHVM<4 |
+| 4.x     | development  | \>=7.2          |
+
+
 # New BSD License
 
 The files in this archive are released under the New BSD License.
