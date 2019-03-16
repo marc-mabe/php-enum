@@ -378,9 +378,11 @@ abstract class Enum
 
             do {
                 $scopeConstants = array();
-                if (PHP_VERSION_ID >= 70100) {
+                if (\PHP_VERSION_ID >= 70100 && method_exists('ReflectionClass', 'getReflectionConstants')) {
                     // Since PHP-7.1 visibility modifiers are allowed for class constants
                     // for enumerations we are only interested in public once.
+                    // NOTE: HHVM > 3.26.2 still does not support private/protected constants.
+                    //       It allows the visibility keyword but ignores it.
                     foreach ($reflection->getReflectionConstants() as $reflConstant) {
                         if ($reflConstant->isPublic()) {
                             $scopeConstants[ $reflConstant->getName() ] = $reflConstant->getValue();
