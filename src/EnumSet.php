@@ -10,7 +10,7 @@ use Iterator;
 use IteratorAggregate;
 
 /**
- * A set of enumerators of the given enumeration (EnumSet<T>)
+ * A set of enumerators of the given enumeration (EnumSet<T extends Enum>)
  * based on an integer or binary bitset depending of given enumeration size.
  *
  * @copyright 2019 Marc Bennewitz
