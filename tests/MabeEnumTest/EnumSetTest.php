@@ -270,6 +270,36 @@ class EnumSetTest extends TestCase
         ];
     }
 
+    public function testAttachAtOnceAllOrNone()
+    {
+        $set = new EnumSet(EnumBasic::class);
+        $set->attachEnumerator(EnumBasic::ONE);
+
+        try {
+            $set->attachEnumerators([EnumBasic::TWO, 'unknown']);
+        } catch (InvalidArgumentException $e) {
+            // exception expected
+        } finally {
+            $this->assertTrue($set->contains(EnumBasic::ONE));
+            $this->assertFalse($set->contains(EnumBasic::TWO));
+        }
+    }
+
+    public function testDetachAtOnceAllOrNone()
+    {
+        $set = new EnumSet(EnumBasic::class);
+        $set->attachEnumerators([EnumBasic::ONE]);
+
+        try {
+            $set->detachEnumerators([EnumBasic::ONE, EnumBasic::TWO, 'unknown']);
+        } catch (InvalidArgumentException $e) {
+            // exception expected
+        } finally {
+            $this->assertTrue($set->contains(EnumBasic::ONE));
+            $this->assertFalse($set->contains(EnumBasic::TWO));
+        }
+    }
+
     public function testGetBit()
     {
         $set = new EnumSet(EnumBasic::class);

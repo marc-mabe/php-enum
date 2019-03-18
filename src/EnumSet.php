@@ -140,8 +140,16 @@ class EnumSet implements IteratorAggregate, Countable
      */
     public function attachEnumerators(iterable $enumerators): void
     {
-        foreach ($enumerators as $enumerator) {
-            $this->{$this->fnDoSetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+        $bitset = $this->bitset;
+
+        try {
+            foreach ($enumerators as $enumerator) {
+                $this->{$this->fnDoSetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+            }
+        } catch (\Throwable $e) {
+            // reset all changes until error happened
+            $this->bitset = $bitset;
+            throw $e;
         }
     }
 
@@ -192,8 +200,16 @@ class EnumSet implements IteratorAggregate, Countable
      */
     public function detachEnumerators(iterable $enumerators): void
     {
-        foreach ($enumerators as $enumerator) {
-            $this->{$this->fnDoUnsetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+        $bitset = $this->bitset;
+
+        try {
+            foreach ($enumerators as $enumerator) {
+                $this->{$this->fnDoUnsetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+            }
+        } catch (\Throwable $e) {
+            // reset all changes until error happened
+            $this->bitset = $bitset;
+            throw $e;
         }
     }
 
