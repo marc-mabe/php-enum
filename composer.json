@@ -22,10 +22,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7 || ^6.0",
-        "phpbench/phpbench": "@dev",
-
-        "lstrojny/functional-php": "HHVM: variadic params with type constraints are not supported in non-Hack",
-        "lstrojny/functional-php": "1.2.* || 1.0.*"
+        "phpbench/phpbench": "^0.16.9"
     },
     "autoload": {
         "psr-4": {
