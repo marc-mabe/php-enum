@@ -34,9 +34,9 @@ class EnumSetIteratorTest extends TestCase
     public function testIterateOrdered()
     {
         $set = new EnumSet(EnumBasic::class);
-        $set = $set->withEnumerator(EnumBasic::FOUR);
-        $set = $set->withEnumerator(EnumBasic::TWO);
-        $set = $set->withEnumerator(EnumBasic::SEVEN);
+        $set->add(EnumBasic::FOUR);
+        $set->add(EnumBasic::TWO);
+        $set->add(EnumBasic::SEVEN);
 
         $this->assertSame([
             1 => EnumBasic::TWO(),
@@ -48,8 +48,8 @@ class EnumSetIteratorTest extends TestCase
     public function testMultipleIterators()
     {
         $set = new EnumSet(EnumBasic::class);
-        $set = $set->withEnumerator(EnumBasic::ONE);
-        $set = $set->withEnumerator(EnumBasic::TWO);
+        $set->add(EnumBasic::ONE);
+        $set->add(EnumBasic::TWO);
 
         $it1 = $set->getIterator();
         $it2 = $set->getIterator();
@@ -62,7 +62,7 @@ class EnumSetIteratorTest extends TestCase
     public function testStartAtFirstValidPosition()
     {
         $set = new EnumSet(EnumBasic::class);
-        $set = $set->withEnumerator(EnumBasic::SEVEN);
+        $set->add(EnumBasic::SEVEN);
 
         $it = $set->getIterator();
         $this->assertSame(EnumBasic::SEVEN(), $it->current());
@@ -88,7 +88,7 @@ class EnumSetIteratorTest extends TestCase
         $set   = new EnumSet($enumeration);
         $count = count($enumeration::getConstants());
         $last  = $enumeration::byOrdinal($count - 1);
-        $set   = $set->withEnumerator($last);
+        $set->add($last);
 
         $it = $set->getIterator();
         $this->assertTrue($it->valid());

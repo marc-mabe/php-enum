@@ -238,9 +238,9 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
      * Test if the given enumerator key (object or value) exists.
      * @param Enum|null|bool|int|float|string|array $enumerator
      * @return bool
-     * @see offsetExists
+     * @see offsetExists()
      */
-    public function contains($enumerator): bool
+    public function has($enumerator): bool
     {
         try {
             $ord = ($this->enumeration)::get($enumerator)->getOrdinal();
@@ -251,13 +251,26 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
         }
     }
 
+    /**
+     * Test if the given enumerator key (object or value) exists.
+     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @return bool
+     * @see offsetExists()
+     * @see has()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function contains($enumerator): bool
+    {
+        return $this->has($enumerator);
+    }
+
     /* ArrayAccess */
 
     /**
      * Test if the given enumerator key (object or value) exists and is not NULL
      * @param Enum|null|bool|int|float|string|array $enumerator
      * @return bool
-     * @see contains
+     * @see contains()
      */
     public function offsetExists($enumerator): bool
     {
