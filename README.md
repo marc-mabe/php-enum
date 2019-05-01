@@ -187,7 +187,7 @@ class User
 }
 ```
 
-* Makes sure the resulting enumerator exactly matches an enumeration. (Inherited enumerators as not allowed).
+* Makes sure the resulting enumerator exactly matches an enumeration. (Inherited enumerators are not allowed).
 
 * Allows enumerator values directly
   * `$user->setStatus(UserStatus::ACTIVE)` works
@@ -216,8 +216,7 @@ ordinal number by design.
 It implements `IteratorAggregate` and `Countable` to be directly iterable with `foreach` and countable with `count()`.
 
 The `EnumSet` has a mutable and an immutable interface.
-Mutable methods starts with `set`, `attach` and `detach`.
-Immutable methods starts with `with` or `without`.
+Mutable methods starts with `set` or `remove` where immutable methods starts with `with`.
 
 ```php
 use MabeEnum\EnumSet;
@@ -227,36 +226,36 @@ $enumSet = new EnumSet('UserStatus', [UserStatus::ACTIVE()]);
 
 // modify an EnumSet (mutable interface)
 
-// attach enumerators (by value or by instance)
-$enumSet->attachEnumerators([UserStatus::INACTIVE, UserStatus::DELETED()]);
+// add enumerators (by value or by instance)
+$enumSet->addIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
 // or
-$enumSet->attachEnumerator(UserStatus::INACTIVE);
-$enumSet->attachEnumerator(UserStatus::DELETED());
+$enumSet->add(UserStatus::INACTIVE);
+$enumSet->add(UserStatus::DELETED());
 
-// detach enumerators (by value or by instance)
-$enumSet->detachEnumerators([UserStatus::INACTIVE, UserStatus::DELETED()]);
+// remove enumerators (by value or by instance)
+$enumSet->removeIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
 // or
-$enumSet->detachEnumerator(UserStatus::INACTIVE);
-$enumSet->detachEnumerator(UserStatus::DELETED());
+$enumSet->remove(UserStatus::INACTIVE);
+$enumSet->remove(UserStatus::DELETED());
 
 
 // The immutable interface will create a new EnumSet for each modification 
 
 // add enumerators (by value or by instance)
-$enumSet = $enumSet->withEnumerators([UserStatus::INACTIVE, UserStatus::DELETED()]);
+$enumSet = $enumSet->withIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
 // or
-$enumSet = $enumSet->withEnumerator(UserStatus::INACTIVE);
-$enumSet = $enumSet->withEnumerator(UserStatus::DELETED());
+$enumSet = $enumSet->with(UserStatus::INACTIVE);
+$enumSet = $enumSet->with(UserStatus::DELETED());
 
-// detach enumerators (by value or by instance)
-$enumSet->withoutEnumerators([UserStatus::INACTIVE, UserStatus::DELETED()]);
+// remove enumerators (by value or by instance)
+$enumSet->withoutIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
 // or
-$enumSet = $enumSet->withEnumerator(UserStatus::INACTIVE);
-$enumSet = $enumSet->withEnumerator(UserStatus::DELETED());
+$enumSet = $enumSet->without(UserStatus::INACTIVE);
+$enumSet = $enumSet->without(UserStatus::DELETED());
 
 
-// contains enumerators (by value or by instance)
-$enumSet->contains(UserStatus::INACTIVE); // bool
+// Tests if an enumerator exists (by value or by instance)
+$enumSet->has(UserStatus::INACTIVE); // bool
 
 
 // count the number of enumerators
@@ -347,14 +346,14 @@ count($enumMap);
 
 // support for null aware exists check
 $enumMap[UserStatus::NULL] = null;
-isset($enumMap[UserStatus::NULL]);    // false
-$enumMap->contains(UserStatus::NULL); // true
+isset($enumMap[UserStatus::NULL]); // false
+$enumMap->has(UserStatus::NULL);   // true
 
 
 // iterating over the map
 foreach ($enumMap as $enum => $value) {
     get_class($enum);  // UserStatus (enumerator object)
-    gettype($value);   // string (the value the enumerators maps to)
+    gettype($value);   // mixed (the value the enumerators maps to)
 }
 
 // get a list of keys (= a list of enumerator objects)
@@ -413,6 +412,11 @@ var_dump($north2->is($north1)); // returns TRUE - equality works in both directi
 * `SplEnum` is not build-in into PHP and requires pecl extension installed.
 * Instances of the same value of an `SplEnum` are not the same instance.
 * No support for `EnumMap` or `EnumSet`.
+
+
+# Changelog
+
+Changes are documented in the (release page)[https://github.com/marc-mabe/php-enum/releases].
 
 
 # Install

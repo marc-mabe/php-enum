@@ -159,6 +159,7 @@ class EnumSet implements IteratorAggregate, Countable
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see add()
+     * @see with()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
      */
     public function attach($enumerator): void
@@ -172,6 +173,7 @@ class EnumSet implements IteratorAggregate, Countable
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see remove()
+     * @see without()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
      */
     public function detach($enumerator): void
@@ -536,6 +538,8 @@ class EnumSet implements IteratorAggregate, Countable
      * @param EnumSet $other EnumSet of the same enumeration to produce the union
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withUnion()
+     * @see setUnion()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
      */
     public function union(EnumSet $other): self
@@ -563,6 +567,8 @@ class EnumSet implements IteratorAggregate, Countable
      * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withIntersect()
+     * @see setIntersect()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
      */
     public function intersect(EnumSet $other): self
@@ -590,6 +596,8 @@ class EnumSet implements IteratorAggregate, Countable
      * @param EnumSet $other EnumSet of the same enumeration to produce the diff
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withDiff()
+     * @see setDiff()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
      */
     public function diff(EnumSet $other): self
@@ -617,6 +625,8 @@ class EnumSet implements IteratorAggregate, Countable
      * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withSymDiff()
+     * @see setSymDiff()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
      */
     public function symDiff(EnumSet $other): self
