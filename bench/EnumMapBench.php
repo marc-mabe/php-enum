@@ -125,17 +125,17 @@ class EnumMapBench
         }
     }
 
-    public function benchContainsEnumerator()
+    public function benchHasEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->fullMap->contains($enumerator);
+            $this->fullMap->has($enumerator);
         }
     }
 
-    public function benchContainsValue()
+    public function benchHasValue()
     {
         foreach ($this->values as $value) {
-            $this->fullMap->contains($value);
+            $this->fullMap->has($value);
         }
     }
 
