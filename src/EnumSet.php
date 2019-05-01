@@ -531,6 +531,19 @@ class EnumSet implements IteratorAggregate, Countable
     }
 
     /**
+     * Create a new set with enumerators from both this and other (this | other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the union
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function union(EnumSet $other): self
+    {
+        return $this->withUnion($other);
+    }
+
+    /**
      * Create a new set with enumerators common to both this and other (this & other)
      *
      * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
@@ -545,7 +558,20 @@ class EnumSet implements IteratorAggregate, Countable
     }
 
     /**
-     * Modify this set with enumerators in this but not in other (this - other)
+     * Create a new set with enumerators common to both this and other (this & other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function intersect(EnumSet $other): self
+    {
+        return $this->withIntersect($other);
+    }
+
+    /**
+     * Create a new set with enumerators in this but not in other (this - other)
      *
      * @param EnumSet $other EnumSet of the same enumeration to produce the diff
      * @return static
@@ -556,6 +582,19 @@ class EnumSet implements IteratorAggregate, Countable
         $clone = clone $this;
         $clone->setDiff($other);
         return $clone;
+    }
+
+    /**
+     * Create a new set with enumerators in this but not in other (this - other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function diff(EnumSet $other): self
+    {
+        return $this->withDiff($other);
     }
 
     /**
@@ -570,6 +609,19 @@ class EnumSet implements IteratorAggregate, Countable
         $clone = clone $this;
         $clone->setSymDiff($other);
         return $clone;
+    }
+
+    /**
+     * Create a new set with enumerators in either this and other but not in both (this ^ other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function symDiff(EnumSet $other): self
+    {
+        return $this->withSymDiff($other);
     }
 
     /**
