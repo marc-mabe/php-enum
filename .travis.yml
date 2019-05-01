@@ -47,6 +47,9 @@ script:
       php -d 'zend.assertions=1' vendor/bin/phpunit --verbose;
     fi
 
+  # run benchmarks to make sure they are working fine
+  - php vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100
+
 after_script:
   - if [ "${CODE_COVERAGE}" == "1" ]; then
       php ocular.phar code-coverage:upload --format=php-clover coverage.clover;

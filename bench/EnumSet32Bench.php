@@ -54,97 +54,97 @@ class EnumSet32Bench
     public function benchAttachEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->emptySet->attachEnumerator($enumerator);
+            $this->emptySet->add($enumerator);
         }
     }
 
     public function benchWithEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->emptySet->withEnumerator($enumerator);
+            $this->emptySet->with($enumerator);
         }
     }
 
     public function benchAttachEnumerators()
     {
-        $this->emptySet->withEnumerators($this->enumerators);
+        $this->emptySet->withIterable($this->enumerators);
     }
 
     public function benchWithEnumerators()
     {
-        $this->emptySet->attachEnumerators($this->enumerators);
+        $this->emptySet->addIterable($this->enumerators);
     }
 
     public function benchWithValue()
     {
         foreach ($this->values as $value) {
-            $this->emptySet->withEnumerator($value);
+            $this->emptySet->with($value);
         }
     }
 
     public function benchAttachValue()
     {
         foreach ($this->values as $value) {
-            $this->emptySet->attachEnumerator($value);
+            $this->emptySet->add($value);
         }
     }
 
     public function benchAttachValues()
     {
-        $this->emptySet->attachEnumerators($this->values);
+        $this->emptySet->addIterable($this->values);
     }
 
     public function benchWithValues()
     {
-        $this->emptySet->withEnumerators($this->values);
+        $this->emptySet->withIterable($this->values);
     }
 
     public function benchDetachEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->detachEnumerator($enumerator);
+            $this->fullSet->remove($enumerator);
         }
     }
 
     public function benchWithoutEnumerator()
     {
         foreach ($this->enumerators as $enumerator) {
-            $this->fullSet->withoutEnumerator($enumerator);
+            $this->fullSet->without($enumerator);
         }
     }
 
     public function benchDetachEnumerators()
     {
-        $this->fullSet->detachEnumerators($this->enumerators);
+        $this->fullSet->removeIterable($this->enumerators);
     }
 
     public function benchWithoutEnumerators()
     {
-        $this->fullSet->withoutEnumerators($this->enumerators);
+        $this->fullSet->withoutIterable($this->enumerators);
     }
 
     public function benchDetachValue()
     {
         foreach ($this->values as $value) {
-            $this->fullSet->detachEnumerator($value);
+            $this->fullSet->remove($value);
         }
     }
 
     public function benchWithoutValue()
     {
         foreach ($this->values as $value) {
-            $this->fullSet->withoutEnumerator($value);
+            $this->fullSet->without($value);
         }
     }
 
     public function benchDetachValues()
     {
-        $this->fullSet->detachEnumerators($this->values);
+        $this->fullSet->removeIterable($this->values);
     }
 
     public function benchWithoutValues()
     {
-        $this->fullSet->withoutEnumerators($this->values);
+        $this->fullSet->withoutIterable($this->values);
     }
 
     public function benchContainsEnumerator()
