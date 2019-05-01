@@ -75,7 +75,7 @@ class EnumSet implements IteratorAggregate, Countable
         $this->enumerationCount = \count($enumeration::getConstants());
 
         // By default the bitset is initialized as integer bitset
-        // in case the enumeraton has more enumerators then integer bits
+        // in case the enumeration has more enumerators then integer bits
         // we will switch this into a binary bitset
         if ($this->enumerationCount > \PHP_INT_SIZE * 8) {
             // init binary bitset with zeros
