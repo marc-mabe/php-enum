@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MabeEnum;
 
 use ReflectionClass;
@@ -7,7 +9,7 @@ use InvalidArgumentException;
 use LogicException;
 
 /**
- * Class to implement enumerations for PHP 5 (without SplEnum)
+ * Abstract base enumeration class.
  *
  * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
@@ -68,7 +70,7 @@ abstract class Enum
      * @return string
      * @see getName()
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getName();
     }
@@ -117,8 +119,7 @@ abstract class Enum
      */
     final public function getName()
     {
-        $ordinal = $this->ordinal !== null ? $this->ordinal : $this->getOrdinal();
-        return self::$names[static::class][$ordinal];
+        return self::$names[static::class][$this->ordinal ?: $this->getOrdinal()];
     }
 
     /**
@@ -147,7 +148,7 @@ abstract class Enum
     /**
      * Compare this enumerator against another and check if it's the same.
      *
-     * @param mixed $enumerator
+     * @param static|null|bool|int|float|string|array $enumerator An enumerator object or value
      * @return bool
      */
     final public function is($enumerator)
@@ -164,7 +165,7 @@ abstract class Enum
     /**
      * Get an enumerator instance of the given enumerator value or instance
      *
-     * @param static|null|bool|int|float|string|array $enumerator
+     * @param static|null|bool|int|float|string|array $enumerator An enumerator object or value
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
@@ -181,7 +182,7 @@ abstract class Enum
     /**
      * Get an enumerator instance by the given value
      *
-     * @param null|bool|int|float|string|array $value
+     * @param null|bool|int|float|string|array $value Enumerator value
      * @return static
      * @throws InvalidArgumentException On an unknwon or invalid value
      * @throws LogicException           On ambiguous constant values
@@ -218,16 +219,15 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous values
      */
-    final public static function byName($name)
+    final public static function byName(string $name)
     {
-        $name = (string) $name;
         if (isset(self::$instances[static::class][$name])) {
             return self::$instances[static::class][$name];
         }
 
-        $const = static::class . '::' . $name;
+        $const = static::class . "::{$name}";
         if (!\defined($const)) {
-            throw new InvalidArgumentException($const . ' not defined');
+            throw new InvalidArgumentException("{$const} not defined");
         }
 
         return self::$instances[static::class][$name] = new static(\constant($const));
@@ -236,22 +236,21 @@ abstract class Enum
     /**
      * Get an enumeration instance by the given ordinal number
      *
-     * @param int $ordinal The ordinal number or the enumerator
+     * @param int $ordinal The ordinal number of the enumerator
      * @return static
      * @throws InvalidArgumentException On an invalid ordinal number
      * @throws LogicException           On ambiguous values
      */
-    final public static function byOrdinal($ordinal)
+    final public static function byOrdinal(int $ordinal)
     {
-        $ordinal = (int) $ordinal;
-
         if (!isset(self::$names[static::class])) {
             self::detectConstants(static::class);
         }
 
         if (!isset(self::$names[static::class][$ordinal])) {
             throw new InvalidArgumentException(\sprintf(
-                'Invalid ordinal number, must between 0 and %s',
+                'Invalid ordinal number %s, must between 0 and %s',
+                $ordinal,
                 \count(self::$names[static::class]) - 1
             ));
         }
@@ -308,7 +307,7 @@ abstract class Enum
     final public static function getOrdinals()
     {
         $count = \count(self::detectConstants(static::class));
-        return $count === 0 ? [] : \range(0, $count - 1);
+        return $count ? \range(0, $count - 1) : [];
     }
 
     /**
@@ -330,11 +329,8 @@ abstract class Enum
      */
     final public static function has($enumerator)
     {
-        if ($enumerator instanceof static && \get_class($enumerator) === static::class) {
-            return true;
-        }
-
-        return static::hasValue($enumerator);
+        return ($enumerator instanceof static && \get_class($enumerator) === static::class)
+            || static::hasValue($enumerator);
     }
 
     /**
@@ -355,9 +351,9 @@ abstract class Enum
      * @param string $name
      * @return bool
      */
-    final public static function hasName($name)
+    final public static function hasName(string $name)
     {
-        return \is_string($name) && \defined("static::$name");
+        return \defined("static::{$name}");
     }
 
     /**
@@ -370,35 +366,27 @@ abstract class Enum
     {
         if (!isset(self::$constants[$class])) {
             $reflection = new ReflectionClass($class);
-            $publicConstants  = [];
+            $constants  = [];
 
             do {
                 $scopeConstants = [];
-                if (\PHP_VERSION_ID >= 70100 && method_exists(ReflectionClass::class, 'getReflectionConstants')) {
-                    // Since PHP-7.1 visibility modifiers are allowed for class constants
-                    // for enumerations we are only interested in public once.
-                    // NOTE: HHVM > 3.26.2 still does not support private/protected constants.
-                    //       It allows the visibility keyword but ignores it.
-                    foreach ($reflection->getReflectionConstants() as $reflConstant) {
-                        if ($reflConstant->isPublic()) {
-                            $scopeConstants[ $reflConstant->getName() ] = $reflConstant->getValue();
-                        }
+                // Enumerators must be defined as public class constants
+                foreach ($reflection->getReflectionConstants() as $reflConstant) {
+                    if ($reflConstant->isPublic()) {
+                        $scopeConstants[ $reflConstant->getName() ] = $reflConstant->getValue();
                     }
-                } else {
-                    // In PHP < 7.1 all class constants were public by definition
-                    $scopeConstants = $reflection->getConstants();
                 }
 
-                $publicConstants = $scopeConstants + $publicConstants;
+                $constants = $scopeConstants + $constants;
             } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
 
             assert(
-                self::noAmbiguousValues($publicConstants),
+                self::noAmbiguousValues($constants),
                 "Ambiguous enumerator values detected for {$class}"
             );
 
-            self::$constants[$class] = $publicConstants;
-            self::$names[$class] = \array_keys($publicConstants);
+            self::$constants[$class] = $constants;
+            self::$names[$class] = \array_keys($constants);
         }
 
         return self::$constants[$class];
@@ -409,7 +397,7 @@ abstract class Enum
      * @param array $constants
      * @return bool
      */
-    private static function noAmbiguousValues(array $constants)
+    private static function noAmbiguousValues($constants)
     {
         foreach ($constants as $value) {
             $names = \array_keys($constants, $value, true);
@@ -433,7 +421,7 @@ abstract class Enum
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous constant values
      */
-    final public static function __callStatic($method, array $args)
+    final public static function __callStatic(string $method, array $args)
     {
         return self::byName($method);
     }

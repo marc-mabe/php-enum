@@ -1,20 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MabeEnum;
 
 use Countable;
-use Iterator;
 use InvalidArgumentException;
+use Iterator;
+use IteratorAggregate;
 
 /**
- * A set of enumerators of the given enumeration (EnumSet<T>)
+ * A set of enumerators of the given enumeration (EnumSet<T extends Enum>)
  * based on an integer or binary bitset depending of given enumeration size.
  *
  * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  */
-class EnumSet implements Iterator, Countable
+class EnumSet implements IteratorAggregate, Countable
 {
     /**
      * The classname of the Enumeration
@@ -23,16 +26,10 @@ class EnumSet implements Iterator, Countable
     private $enumeration;
 
     /**
-     * Ordinal number of current iterator position
+     * Number of enumerators defined in the enumeration
      * @var int
      */
-    private $ordinal = 0;
-
-    /**
-     * Highest possible ordinal number
-     * @var int
-     */
-    private $ordinalMax;
+    private $enumerationCount;
 
     /**
      * Integer or binary (little endian) bitset
@@ -47,7 +44,7 @@ class EnumSet implements Iterator, Countable
      * 
      * @var string
      */
-    private $fnDoRewind            = 'doRewindInt';
+    private $fnDoGetIterator       = 'doGetIteratorInt';
     private $fnDoCount             = 'doCountInt';
     private $fnDoGetOrdinals       = 'doGetOrdinalsInt';
     private $fnDoGetBit            = 'doGetBitInt';
@@ -61,30 +58,31 @@ class EnumSet implements Iterator, Countable
      * Constructor
      *
      * @param string $enumeration The classname of the enumeration
+     * @param iterable|null $enumerators iterable list of enumerators initializing the set
      * @throws InvalidArgumentException
      */
-    public function __construct($enumeration)
+    public function __construct(string $enumeration, iterable $enumerators = null)
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(\sprintf(
-                "%s can handle subclasses of '%s' only",
-                static::class,
+                '%s can handle subclasses of %s only',
+                __METHOD__,
                 Enum::class
             ));
         }
 
-        $this->enumeration = $enumeration;
-        $this->ordinalMax  = \count($enumeration::getConstants());
+        $this->enumeration      = $enumeration;
+        $this->enumerationCount = \count($enumeration::getConstants());
 
         // By default the bitset is initialized as integer bitset
-        // in case the enumeraton has more enumerators then integer bits
+        // in case the enumeration has more enumerators then integer bits
         // we will switch this into a binary bitset
-        if ($this->ordinalMax > \PHP_INT_SIZE * 8) {
+        if ($this->enumerationCount > \PHP_INT_SIZE * 8) {
             // init binary bitset with zeros
-            $this->bitset = \str_repeat("\0", (int)\ceil($this->ordinalMax / 8));
+            $this->bitset = \str_repeat("\0", (int)\ceil($this->enumerationCount / 8));
 
             // switch internal binary bitset functions
-            $this->fnDoRewind            = 'doRewindBin';
+            $this->fnDoGetIterator       = 'doGetIteratorBin';
             $this->fnDoCount             = 'doCountBin';
             $this->fnDoGetOrdinals       = 'doGetOrdinalsBin';
             $this->fnDoGetBit            = 'doGetBitBin';
@@ -93,151 +91,682 @@ class EnumSet implements Iterator, Countable
             $this->fnDoGetBinaryBitsetLe = 'doGetBinaryBitsetLeBin';
             $this->fnDoSetBinaryBitsetLe = 'doSetBinaryBitsetLeBin';
         }
+
+        if ($enumerators !== null) {
+            foreach ($enumerators as $enumerator) {
+                $this->{$this->fnDoSetBit}($enumeration::get($enumerator)->getOrdinal());
+            }
+        }
     }
 
     /**
      * Get the classname of the enumeration
      * @return string
      */
-    public function getEnumeration()
+    public function getEnumeration(): string
     {
         return $this->enumeration;
     }
 
+    /* write access (mutable) */
+
     /**
-     * Attach a new enumerator or overwrite an existing one
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * Adds an enumerator object or value
+     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function attach($enumerator)
+    public function add($enumerator): void
     {
-        $enumeration = $this->enumeration;
-        $this->{$this->fnDoSetBit}($enumeration::get($enumerator)->getOrdinal());
+        $this->{$this->fnDoSetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
     }
 
     /**
-     * Detach the given enumerator
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * Adds all enumerator objects or values of the given iterable
+     * @param iterable $enumerators Iterable list of enumerator objects or values
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
-    public function detach($enumerator)
+    public function addIterable(iterable $enumerators): void
     {
-        $enumeration = $this->enumeration;
-        $this->{$this->fnDoUnsetBit}($enumeration::get($enumerator)->getOrdinal());
-    }
+        $bitset = $this->bitset;
 
-    /**
-     * Test if the given enumerator was attached
-     * @param Enum|null|bool|int|float|string|array $enumerator
-     * @return bool
-     */
-    public function contains($enumerator)
-    {
-        $enumeration = $this->enumeration;
-        return $this->{$this->fnDoGetBit}($enumeration::get($enumerator)->getOrdinal());
-    }
-
-    /* Iterator */
-
-    /**
-     * Get the current enumerator
-     * @return Enum|null Returns the current enumerator or NULL on an invalid iterator position
-     */
-    public function current()
-    {
-        if ($this->valid()) {
-            $enumeration = $this->enumeration;
-            return $enumeration::byOrdinal($this->ordinal);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the ordinal number of the current iterator position
-     * @return int
-     */
-    public function key()
-    {
-        return $this->ordinal;
-    }
-
-    /**
-     * Go to the next valid iterator position.
-     * If no valid iterator position is found the iterator position will be the last possible + 1.
-     * @return void
-     */
-    public function next()
-    {
-        do {
-            if (++$this->ordinal >= $this->ordinalMax) {
-                $this->ordinal = $this->ordinalMax;
-                return;
+        try {
+            foreach ($enumerators as $enumerator) {
+                $this->{$this->fnDoSetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
             }
-        } while (!$this->{$this->fnDoGetBit}($this->ordinal));
-    }
-
-    /**
-     * Go to the first valid iterator position.
-     * If no valid iterator position was found the iterator position will be 0.
-     * @return void
-     * @uses doRewindBin()
-     * @uses doRewindInt()
-     */
-    public function rewind()
-    {
-        $this->{$this->fnDoRewind}();
-    }
-
-    /**
-     * Go to the first valid iterator position.
-     * If no valid iterator position was found the iterator position will be 0.
-     *
-     * This is the binary bitset implementation.
-     *
-     * @return void
-     * @see rewind()
-     * @see doRewindInt()
-     */
-    private function doRewindBin()
-    {
-        if (\ltrim($this->bitset, "\0") !== '') {
-            $this->ordinal = -1;
-            $this->next();
-        } else {
-            $this->ordinal = 0;
+        } catch (\Throwable $e) {
+            // reset all changes until error happened
+            $this->bitset = $bitset;
+            throw $e;
         }
     }
 
     /**
-     * Go to the first valid iterator position.
-     * If no valid iterator position was found the iterator position will be 0.
-     *
-     * This is the binary bitset implementation.
-     *
+     * Removes the given enumerator object or value
+     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
      * @return void
-     * @see rewind()
-     * @see doRewindBin()
+     * @throws InvalidArgumentException On an invalid given enumerator
      */
-    private function doRewindInt()
+    public function remove($enumerator): void
     {
-        if ($this->bitset) {
-            $this->ordinal = -1;
-            $this->next();
-        } else {
-            $this->ordinal = 0;
+        $this->{$this->fnDoUnsetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+    }
+
+    /**
+     * Adds an enumerator object or value
+     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enumerator
+     * @see add()
+     * @see with()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function attach($enumerator): void
+    {
+        $this->add($enumerator);
+    }
+
+    /**
+     * Removes the given enumerator object or value
+     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enumerator
+     * @see remove()
+     * @see without()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function detach($enumerator): void
+    {
+        $this->remove($enumerator);
+    }
+
+    /**
+     * Removes all enumerator objects or values of the given iterable
+     * @param iterable $enumerators Iterable list of enumerator objects or values
+     * @return void
+     * @throws InvalidArgumentException On an invalid given enumerator
+     */
+    public function removeIterable(iterable $enumerators): void
+    {
+        $bitset = $this->bitset;
+
+        try {
+            foreach ($enumerators as $enumerator) {
+                $this->{$this->fnDoUnsetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+            }
+        } catch (\Throwable $e) {
+            // reset all changes until error happened
+            $this->bitset = $bitset;
+            throw $e;
         }
     }
 
     /**
-     * Test if the iterator is in a valid state
+     * Modify this set from both this and other (this | other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the union
+     * @return void
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function setUnion(EnumSet $other): void
+    {
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(\sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
+        }
+
+        $this->bitset = $this->bitset | $other->bitset;
+    }
+
+    /**
+     * Modify this set with enumerators common to both this and other (this & other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
+     * @return void
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function setIntersect(EnumSet $other): void
+    {
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(\sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
+        }
+
+        $this->bitset = $this->bitset & $other->bitset;
+    }
+
+    /**
+     * Modify this set with enumerators in this but not in other (this - other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
+     * @return void
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function setDiff(EnumSet $other): void
+    {
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(\sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
+        }
+
+        $this->bitset = $this->bitset & ~$other->bitset;
+    }
+
+    /**
+     * Modify this set with enumerators in either this and other but not in both (this ^ other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
+     * @return void
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function setSymDiff(EnumSet $other): void
+    {
+        if ($this->enumeration !== $other->enumeration) {
+            throw new InvalidArgumentException(\sprintf(
+                'Other should be of the same enumeration as this %s',
+                $this->enumeration
+            ));
+        }
+
+        $this->bitset = $this->bitset ^ $other->bitset;
+    }
+
+    /**
+     * Set the given binary bitset in little-endian order
+     *
+     * @param string $bitset
+     * @return void
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     * @uses doSetBinaryBitsetLeBin()
+     * @uses doSetBinaryBitsetLeInt()
+     */
+    public function setBinaryBitsetLe(string $bitset): void
+    {
+        $this->{$this->fnDoSetBinaryBitsetLe}($bitset);
+    }
+
+    /**
+     * Set binary bitset in little-endian order
+     *
+     * @param string $bitset
+     * @return void
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     * @see setBinaryBitsetLeBin()
+     * @see doSetBinaryBitsetLeInt()
+     */
+    private function doSetBinaryBitsetLeBin($bitset): void
+    {
+        $size   = \strlen($this->bitset);
+        $sizeIn = \strlen($bitset);
+
+        if ($sizeIn < $size) {
+            // add "\0" if the given bitset is not long enough
+            $bitset .= \str_repeat("\0", $size - $sizeIn);
+        } elseif ($sizeIn > $size) {
+            if (\ltrim(\substr($bitset, $size), "\0") !== '') {
+                throw new InvalidArgumentException('out-of-range bits detected');
+            }
+            $bitset = \substr($bitset, 0, $size);
+        }
+
+        // truncate out-of-range bits of last byte
+        $lastByteMaxOrd = $this->enumerationCount % 8;
+        if ($lastByteMaxOrd !== 0) {
+            $lastByte         = $bitset[-1];
+            $lastByteExpected = \chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
+            if ($lastByte !== $lastByteExpected) {
+                throw new InvalidArgumentException('out-of-range bits detected');
+            }
+
+            $this->bitset = \substr($bitset, 0, -1) . $lastByteExpected;
+        }
+
+        $this->bitset = $bitset;
+    }
+
+    /**
+     * Set binary bitset in little-endian order
+     *
+     * @param string $bitset
+     * @return void
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     * @see setBinaryBitsetLeBin()
+     * @see doSetBinaryBitsetLeBin()
+     */
+    private function doSetBinaryBitsetLeInt($bitset): void
+    {
+        $len = \strlen($bitset);
+        $int = 0;
+        for ($i = 0; $i < $len; ++$i) {
+            $ord = \ord($bitset[$i]);
+
+            if ($ord && $i > \PHP_INT_SIZE - 1) {
+                throw new InvalidArgumentException('out-of-range bits detected');
+            }
+
+            $int |= $ord << (8 * $i);
+        }
+
+        if ($int & (~0 << $this->enumerationCount)) {
+            throw new InvalidArgumentException('out-of-range bits detected');
+        }
+
+        $this->bitset = $int;
+    }
+
+    /**
+     * Set the given binary bitset in big-endian order
+     *
+     * @param string $bitset
+     * @return void
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     */
+    public function setBinaryBitsetBe(string $bitset): void
+    {
+        $this->{$this->fnDoSetBinaryBitsetLe}(\strrev($bitset));
+    }
+
+    /**
+     * Set a bit at the given ordinal number
+     *
+     * @param int $ordinal Ordinal number of bit to set
+     * @param bool $bit    The bit to set
+     * @return void
+     * @throws InvalidArgumentException If the given ordinal number is out-of-range
+     * @uses doSetBitBin()
+     * @uses doSetBitInt()
+     * @uses doUnsetBitBin()
+     * @uses doUnsetBitInt()
+     */
+    public function setBit(int $ordinal, bool $bit): void
+    {
+        if ($ordinal < 0 || $ordinal > $this->enumerationCount) {
+            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->enumerationCount}");
+        }
+
+        if ($bit) {
+            $this->{$this->fnDoSetBit}($ordinal);
+        } else {
+            $this->{$this->fnDoUnsetBit}($ordinal);
+        }
+    }
+
+    /**
+     * Set a bit at the given ordinal number.
+     *
+     * This is the binary bitset implementation.
+     *
+     * @param int $ordinal Ordinal number of bit to set
+     * @return void
+     * @see setBit()
+     * @see doSetBitInt()
+     */
+    private function doSetBitBin($ordinal): void
+    {
+        $byte = (int) ($ordinal / 8);
+        $this->bitset[$byte] = $this->bitset[$byte] | \chr(1 << ($ordinal % 8));
+    }
+
+    /**
+     * Set a bit at the given ordinal number.
+     *
+     * This is the binary bitset implementation.
+     *
+     * @param int $ordinal Ordinal number of bit to set
+     * @return void
+     * @see setBit()
+     * @see doSetBitBin()
+     */
+    private function doSetBitInt($ordinal): void
+    {
+        $this->bitset = $this->bitset | (1 << $ordinal);
+    }
+
+    /**
+     * Unset a bit at the given ordinal number.
+     *
+     * This is the binary bitset implementation.
+     *
+     * @param int $ordinal Ordinal number of bit to unset
+     * @return void
+     * @see setBit()
+     * @see doUnsetBitInt()
+     */
+    private function doUnsetBitBin($ordinal): void
+    {
+        $byte = (int) ($ordinal / 8);
+        $this->bitset[$byte] = $this->bitset[$byte] & \chr(~(1 << ($ordinal % 8)));
+    }
+
+    /**
+     * Unset a bit at the given ordinal number.
+     *
+     * This is the integer bitset implementation.
+     *
+     * @param int $ordinal Ordinal number of bit to unset
+     * @return void
+     * @see setBit()
+     * @see doUnsetBitBin()
+     */
+    private function doUnsetBitInt($ordinal): void
+    {
+        $this->bitset = $this->bitset & ~(1 << $ordinal);
+    }
+
+    /* write access (immutable) */
+
+    /**
+     * Creates a new set with the given enumerator object or value added
+     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @return static
+     * @throws InvalidArgumentException On an invalid given enumerator
+     */
+    public function with($enumerator): self
+    {
+        $clone = clone $this;
+        $clone->{$this->fnDoSetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+        return $clone;
+    }
+
+    /**
+     * Creates a new set with the given enumeration objects or values added
+     * @param iterable $enumerators Iterable list of enumerator objects or values
+     * @return static
+     * @throws InvalidArgumentException On an invalid given enumerator
+     */
+    public function withIterable(iterable $enumerators): self
+    {
+        $clone = clone $this;
+        foreach ($enumerators as $enumerator) {
+            $clone->{$this->fnDoSetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+        }
+        return $clone;
+    }
+
+    /**
+     * Create a new set with the given enumerator object or value removed
+     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @return static
+     * @throws InvalidArgumentException On an invalid given enumerator
+     */
+    public function without($enumerator): self
+    {
+        $clone = clone $this;
+        $clone->{$this->fnDoUnsetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+        return $clone;
+    }
+
+    /**
+     * Creates a new set with the given enumeration objects or values removed
+     * @param iterable $enumerators Iterable list of enumerator objects or values
+     * @return static
+     * @throws InvalidArgumentException On an invalid given enumerator
+     */
+    public function withoutIterable(iterable $enumerators): self
+    {
+        $clone = clone $this;
+        foreach ($enumerators as $enumerator) {
+            $clone->{$this->fnDoUnsetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+        }
+        return $clone;
+    }
+
+    /**
+     * Create a new set with enumerators from both this and other (this | other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the union
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function withUnion(EnumSet $other): self
+    {
+        $clone = clone $this;
+        $clone->setUnion($other);
+        return $clone;
+    }
+
+    /**
+     * Create a new set with enumerators from both this and other (this | other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the union
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withUnion()
+     * @see setUnion()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function union(EnumSet $other): self
+    {
+        return $this->withUnion($other);
+    }
+
+    /**
+     * Create a new set with enumerators common to both this and other (this & other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function withIntersect(EnumSet $other): self
+    {
+        $clone = clone $this;
+        $clone->setIntersect($other);
+        return $clone;
+    }
+
+    /**
+     * Create a new set with enumerators common to both this and other (this & other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withIntersect()
+     * @see setIntersect()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function intersect(EnumSet $other): self
+    {
+        return $this->withIntersect($other);
+    }
+
+    /**
+     * Create a new set with enumerators in this but not in other (this - other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function withDiff(EnumSet $other): self
+    {
+        $clone = clone $this;
+        $clone->setDiff($other);
+        return $clone;
+    }
+
+    /**
+     * Create a new set with enumerators in this but not in other (this - other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withDiff()
+     * @see setDiff()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function diff(EnumSet $other): self
+    {
+        return $this->withDiff($other);
+    }
+
+    /**
+     * Create a new set with enumerators in either this and other but not in both (this ^ other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     */
+    public function withSymDiff(EnumSet $other): self
+    {
+        $clone = clone $this;
+        $clone->setSymDiff($other);
+        return $clone;
+    }
+
+    /**
+     * Create a new set with enumerators in either this and other but not in both (this ^ other)
+     *
+     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
+     * @return static
+     * @throws InvalidArgumentException If $other doesn't match the enumeration
+     * @see withSymDiff()
+     * @see setSymDiff()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function symDiff(EnumSet $other): self
+    {
+        return $this->withSymDiff($other);
+    }
+
+    /**
+     * Create a new set with the given binary bitset in little-endian order
+     *
+     * @param string $bitset
+     * @return static
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     * @uses doSetBinaryBitsetLeBin()
+     * @uses doSetBinaryBitsetLeInt()
+     */
+    public function withBinaryBitsetLe(string $bitset): self
+    {
+        $clone = clone $this;
+        $clone->{$this->fnDoSetBinaryBitsetLe}($bitset);
+        return $clone;
+    }
+
+    /**
+     * Create a new set with the given binary bitset in big-endian order
+     *
+     * @param string $bitset
+     * @return static
+     * @throws InvalidArgumentException On out-of-range bits given as input bitset
+     */
+    public function withBinaryBitsetBe(string $bitset): self
+    {
+        $clone = $this;
+        $clone->{$this->fnDoSetBinaryBitsetLe}(\strrev($bitset));
+        return $clone;
+    }
+
+    /**
+     * Create a new set with the bit at the given ordinal number set
+     *
+     * @param int $ordinal Ordinal number of bit to set
+     * @param bool $bit    The bit to set
+     * @return static
+     * @throws InvalidArgumentException If the given ordinal number is out-of-range
+     * @uses doSetBitBin()
+     * @uses doSetBitInt()
+     * @uses doUnsetBitBin()
+     * @uses doUnsetBitInt()
+     */
+    public function withBit(int $ordinal, bool $bit): self
+    {
+        $clone = clone $this;
+        $clone->setBit($ordinal, $bit);
+        return $clone;
+    }
+
+    /* read access */
+
+    /**
+     * Test if the given enumerator exists
+     * @param Enum|null|bool|int|float|string|array $enumerator
      * @return bool
      */
-    public function valid()
+    public function has($enumerator): bool
     {
-        return $this->ordinal !== $this->ordinalMax && $this->{$this->fnDoGetBit}($this->ordinal);
+        return $this->{$this->fnDoGetBit}(($this->enumeration)::get($enumerator)->getOrdinal());
+    }
+
+    /**
+     * Test if the given enumerator exists
+     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @return bool
+     * @see has()
+     * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
+     */
+    public function contains($enumerator): bool
+    {
+        return $this->has($enumerator);
+    }
+
+    /* IteratorAggregate */
+
+    /**
+     * Get a new iterator
+     * @return Iterator
+     * @uses doGetIteratorInt()
+     * @uses doGetIteratorBin()
+     */
+    public function getIterator(): Iterator
+    {
+        return $this->{$this->fnDoGetIterator}();
+    }
+
+    /**
+     * Get a new Iterator.
+     *
+     * This is the binary bitset implementation.
+     *
+     * @return Iterator
+     * @see getIterator()
+     * @see goGetIteratorInt()
+     */
+    private function doGetIteratorBin()
+    {
+        $bitset   = $this->bitset;
+        $byteLen  = \strlen($bitset);
+        for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
+            if ($bitset[$bytePos] === "\0") {
+                // fast skip null byte
+                continue;
+            }
+
+            $ord = \ord($bitset[$bytePos]);
+            for ($bitPos = 0; $bitPos < 8; ++$bitPos) {
+                if ($ord & (1 << $bitPos)) {
+                    $ordinal = $bytePos * 8 + $bitPos;
+                    yield $ordinal => ($this->enumeration)::byOrdinal($ordinal);
+                }
+            }
+        }
+    }
+
+    /**
+     * Get a new Iterator.
+     *
+     * This is the integer bitset implementation.
+     *
+     * @return Iterator
+     * @see getIterator()
+     * @see doGetIteratorBin()
+     */
+    private function doGetIteratorInt()
+    {
+        $count  = $this->enumerationCount;
+        $bitset = $this->bitset;
+        for ($ordinal = 0; $ordinal < $count; ++$ordinal) {
+            if ($bitset & (1 << $ordinal)) {
+                yield $ordinal => ($this->enumeration)::byOrdinal($ordinal);
+            }
+        }
     }
 
     /* Countable */
@@ -249,7 +778,7 @@ class EnumSet implements Iterator, Countable
      * @uses doCountBin()
      * @uses doCountInt()
      */
-    public function count()
+    public function count(): int
     {
         return $this->{$this->fnDoCount}();
     }
@@ -303,7 +832,7 @@ class EnumSet implements Iterator, Countable
 
         // PHP does not support right shift unsigned
         if ($bitset < 0) {
-            $count = 1;
+            $count  = 1;
             $bitset = $bitset & \PHP_INT_MAX;
         }
 
@@ -337,7 +866,7 @@ class EnumSet implements Iterator, Countable
      * @param EnumSet $other
      * @return bool
      */
-    public function isEqual(EnumSet $other)
+    public function isEqual(EnumSet $other): bool
     {
         return $this->enumeration === $other->enumeration
             && $this->bitset === $other->bitset;
@@ -348,13 +877,10 @@ class EnumSet implements Iterator, Countable
      * @param EnumSet $other
      * @return bool
      */
-    public function isSubset(EnumSet $other)
+    public function isSubset(EnumSet $other): bool
     {
-        if ($this->enumeration !== $other->enumeration) {
-            return false;
-        }
-
-        return ($this->bitset & $other->bitset) === $this->bitset;
+        return $this->enumeration === $other->enumeration
+            && ($this->bitset & $other->bitset) === $this->bitset;
     }
 
     /**
@@ -362,97 +888,10 @@ class EnumSet implements Iterator, Countable
      * @param EnumSet $other
      * @return bool
      */
-    public function isSuperset(EnumSet $other)
+    public function isSuperset(EnumSet $other): bool
     {
-        if ($this->enumeration !== $other->enumeration) {
-            return false;
-        }
-
-        return ($this->bitset | $other->bitset) === $this->bitset;
-    }
-
-    /**
-     * Produce a new set with enumerators from both this and other (this | other)
-     *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the union
-     * @return EnumSet
-     * @throws InvalidArgumentException If $other doesn't match the enumeration
-     */
-    public function union(EnumSet $other)
-    {
-        if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(\sprintf(
-                'Other should be of the same enumeration as this %s',
-                $this->enumeration
-            ));
-        }
-
-        $clone = clone $this;
-        $clone->bitset = $this->bitset | $other->bitset;
-        return $clone;
-    }
-
-    /**
-     * Produce a new set with enumerators common to both this and other (this & other)
-     *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
-     * @return EnumSet
-     * @throws InvalidArgumentException If $other doesn't match the enumeration
-     */
-    public function intersect(EnumSet $other)
-    {
-        if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(\sprintf(
-                'Other should be of the same enumeration as this %s',
-                $this->enumeration
-            ));
-        }
-
-        $clone = clone $this;
-        $clone->bitset = $this->bitset & $other->bitset;
-        return $clone;
-    }
-
-    /**
-     * Produce a new set with enumerators in this but not in other (this - other)
-     *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
-     * @return EnumSet
-     * @throws InvalidArgumentException If $other doesn't match the enumeration
-     */
-    public function diff(EnumSet $other)
-    {
-        if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(\sprintf(
-                'Other should be of the same enumeration as this %s',
-                $this->enumeration
-            ));
-        }
-
-        $clone = clone $this;
-        $clone->bitset = $this->bitset & ~$other->bitset;
-        return $clone;
-    }
-
-    /**
-     * Produce a new set with enumerators in either this and other but not in both (this ^ other)
-     *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
-     * @return EnumSet
-     * @throws InvalidArgumentException If $other doesn't match the enumeration
-     */
-    public function symDiff(EnumSet $other)
-    {
-        if ($this->enumeration !== $other->enumeration) {
-            throw new InvalidArgumentException(\sprintf(
-                'Other should be of the same enumeration as this %s',
-                $this->enumeration
-            ));
-        }
-
-        $clone = clone $this;
-        $clone->bitset = $this->bitset ^ $other->bitset;
-        return $clone;
+        return $this->enumeration === $other->enumeration
+            && ($this->bitset | $other->bitset) === $this->bitset;
     }
 
     /**
@@ -461,7 +900,7 @@ class EnumSet implements Iterator, Countable
      * @uses  doGetOrdinalsBin()
      * @uses  doGetOrdinalsInt()
      */
-    public function getOrdinals()
+    public function getOrdinals(): array
     {
         return $this->{$this->fnDoGetOrdinals}();
     }
@@ -507,12 +946,12 @@ class EnumSet implements Iterator, Countable
      */
     private function doGetOrdinalsInt()
     {
-        $ordinals   = [];
-        $ordinalMax = $this->ordinalMax;
-        $bitset     = $this->bitset;
-        for ($ord = 0; $ord < $ordinalMax; ++$ord) {
-            if ($bitset & (1 << $ord)) {
-                $ordinals[] = $ord;
+        $ordinals = [];
+        $count    = $this->enumerationCount;
+        $bitset   = $this->bitset;
+        for ($ordinal = 0; $ordinal < $count; ++$ordinal) {
+            if ($bitset & (1 << $ordinal)) {
+                $ordinals[] = $ordinal;
             }
         }
         return $ordinals;
@@ -522,7 +961,7 @@ class EnumSet implements Iterator, Countable
      * Get values of the defined enumerators as array
      * @return mixed[]
      */
-    public function getValues()
+    public function getValues(): array
     {
         $enumeration = $this->enumeration;
         $values      = [];
@@ -536,7 +975,7 @@ class EnumSet implements Iterator, Countable
      * Get names of the defined enumerators as array
      * @return string[]
      */
-    public function getNames()
+    public function getNames(): array
     {
         $enumeration = $this->enumeration;
         $names       = [];
@@ -550,7 +989,7 @@ class EnumSet implements Iterator, Countable
      * Get the defined enumerators as array
      * @return Enum[]
      */
-    public function getEnumerators()
+    public function getEnumerators(): array
     {
         $enumeration = $this->enumeration;
         $enumerators = [];
@@ -567,7 +1006,7 @@ class EnumSet implements Iterator, Countable
      * @uses doGetBinaryBitsetLeBin()
      * @uses doGetBinaryBitsetLeInt()
      */
-    public function getBinaryBitsetLe()
+    public function getBinaryBitsetLe(): string
     {
         return $this->{$this->fnDoGetBinaryBitsetLe}();
     }
@@ -598,104 +1037,7 @@ class EnumSet implements Iterator, Countable
     private function doGetBinaryBitsetLeInt()
     {
         $bin = \pack(\PHP_INT_SIZE === 8 ? 'P' : 'V', $this->bitset);
-        return \substr($bin, 0, (int)\ceil($this->ordinalMax / 8));
-    }
-
-    /**
-     * Set binary bitset in little-endian order
-     *
-     * NOTE: It resets the current position of the iterator
-     * 
-     * @param string $bitset
-     * @return void
-     * @throws InvalidArgumentException On a non string is given as Parameter
-     * @throws InvalidArgumentException On out-of-range bits given as input bitset
-     * @uses doSetBinaryBitsetLeBin()
-     * @uses doSetBinaryBitsetLeInt()
-     */
-    public function setBinaryBitsetLe($bitset)
-    {
-        if (!\is_string($bitset)) {
-            throw new InvalidArgumentException('Bitset must be a string');
-        }
-
-        $this->{$this->fnDoSetBinaryBitsetLe}($bitset);
-
-        // reset the iterator position
-        $this->rewind();
-    }
-
-    /**
-     * Set binary bitset in little-endian order
-     *
-     * NOTE: It resets the current position of the iterator
-     *
-     * @param string $bitset
-     * @return void
-     * @throws InvalidArgumentException On out-of-range bits given as input bitset
-     * @see setBinaryBitsetLeBin()
-     * @see doSetBinaryBitsetLeInt()
-     */
-    private function doSetBinaryBitsetLeBin($bitset)
-    {
-        $size   = \strlen($this->bitset);
-        $sizeIn = \strlen($bitset);
-
-        if ($sizeIn < $size) {
-            // add "\0" if the given bitset is not long enough
-            $bitset .= \str_repeat("\0", $size - $sizeIn);
-        } elseif ($sizeIn > $size) {
-            if (\ltrim(\substr($bitset, $size), "\0") !== '') {
-                throw new InvalidArgumentException('out-of-range bits detected');
-            }
-            $bitset = \substr($bitset, 0, $size);
-        }
-
-        // truncate out-of-range bits of last byte
-        $lastByteMaxOrd = $this->ordinalMax % 8;
-        if ($lastByteMaxOrd !== 0) {
-            $lastByte         = $bitset[$size - 1];
-            $lastByteExpected = \chr((1 << $lastByteMaxOrd) - 1) & $lastByte;
-            if ($lastByte !== $lastByteExpected) {
-                throw new InvalidArgumentException('out-of-range bits detected');
-            }
-
-            $this->bitset = \substr($bitset, 0, -1) . $lastByteExpected;
-        }
-
-        $this->bitset = $bitset;
-    }
-
-    /**
-     * Set binary bitset in little-endian order
-     *
-     * NOTE: It resets the current position of the iterator
-     *
-     * @param string $bitset
-     * @return void
-     * @throws InvalidArgumentException On out-of-range bits given as input bitset
-     * @see setBinaryBitsetLeBin()
-     * @see doSetBinaryBitsetLeBin()
-     */
-    private function doSetBinaryBitsetLeInt($bitset)
-    {
-        $len = \strlen($bitset);
-        $int = 0;
-        for ($i = 0; $i < $len; ++$i) {
-            $ord = \ord($bitset[$i]);
-
-            if ($ord && $i > \PHP_INT_SIZE - 1) {
-                throw new InvalidArgumentException('out-of-range bits detected');
-            }
-
-            $int |= $ord << (8 * $i);
-        }
-
-        if ($int & (~0 << $this->ordinalMax)) {
-            throw new InvalidArgumentException('out-of-range bits detected');
-        }
-
-        $this->bitset = $int;
+        return \substr($bin, 0, (int)\ceil($this->enumerationCount / 8));
     }
 
     /**
@@ -703,27 +1045,9 @@ class EnumSet implements Iterator, Countable
      * 
      * @return string
      */
-    public function getBinaryBitsetBe()
+    public function getBinaryBitsetBe(): string
     {
         return \strrev($this->bitset);
-    }
-
-    /**
-     * Set binary bitset in big-endian order
-     *
-     * NOTE: It resets the current position of the iterator
-     * 
-     * @param string $bitset
-     * @return void
-     * @throws InvalidArgumentException On a non string is given as Parameter
-     * @throws InvalidArgumentException On out-of-range bits given as input bitset
-     */
-    public function setBinaryBitsetBe($bitset)
-    {
-        if (!\is_string($bitset)) {
-            throw new InvalidArgumentException('Bitset must be a string');
-        }
-        $this->setBinaryBitsetLe(\strrev($bitset));
     }
 
     /**
@@ -735,10 +1059,10 @@ class EnumSet implements Iterator, Countable
      * @uses doGetBitBin()
      * @uses doGetBitInt()
      */
-    public function getBit($ordinal)
+    public function getBit(int $ordinal): bool
     {
-        if ($ordinal < 0 || $ordinal > $this->ordinalMax) {
-            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->ordinalMax}");
+        if ($ordinal < 0 || $ordinal > $this->enumerationCount) {
+            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->enumerationCount}");
         }
 
         return $this->{$this->fnDoGetBit}($ordinal);
@@ -772,92 +1096,5 @@ class EnumSet implements Iterator, Countable
     private function doGetBitInt($ordinal)
     {
         return (bool)($this->bitset & (1 << $ordinal));
-    }
-
-    /**
-     * Set a bit at the given ordinal number
-     *
-     * @param int $ordinal Ordinal number of bit to set
-     * @param bool $bit    The bit to set
-     * @return void
-     * @throws InvalidArgumentException If the given ordinal number is out-of-range
-     * @uses doSetBitBin()
-     * @uses doSetBitInt()
-     * @uses doUnsetBitBin()
-     * @uses doUnsetBitInt()
-     */
-    public function setBit($ordinal, $bit)
-    {
-        if ($ordinal < 0 || $ordinal > $this->ordinalMax) {
-            throw new InvalidArgumentException("Ordinal number must be between 0 and {$this->ordinalMax}");
-        }
-
-        if ($bit) {
-            $this->{$this->fnDoSetBit}($ordinal);
-        } else {
-            $this->{$this->fnDoUnsetBit}($ordinal);
-        }
-    }
-
-    /**
-     * Set a bit at the given ordinal number.
-     *
-     * This is the binary bitset implementation.
-     * 
-     * @param int $ordinal Ordinal number of bit to set
-     * @return void
-     * @see setBit()
-     * @see doSetBitInt()
-     */
-    private function doSetBitBin($ordinal)
-    {
-        $byte = (int) ($ordinal / 8);
-        $this->bitset[$byte] = $this->bitset[$byte] | \chr(1 << ($ordinal % 8));
-    }
-
-    /**
-     * Set a bit at the given ordinal number.
-     *
-     * This is the binary bitset implementation.
-     *
-     * @param int $ordinal Ordinal number of bit to set
-     * @return void
-     * @see setBit()
-     * @see doSetBitBin()
-     */
-    private function doSetBitInt($ordinal)
-    {
-        $this->bitset = $this->bitset | (1 << $ordinal);
-    }
-
-    /**
-     * Unset a bit at the given ordinal number.
-     *
-     * This is the binary bitset implementation.
-     *
-     * @param int $ordinal Ordinal number of bit to unset
-     * @return void
-     * @see setBit()
-     * @see doUnsetBitInt()
-     */
-    private function doUnsetBitBin($ordinal)
-    {
-        $byte = (int) ($ordinal / 8);
-        $this->bitset[$byte] = $this->bitset[$byte] & \chr(~(1 << ($ordinal % 8)));
-    }
-
-    /**
-     * Unset a bit at the given ordinal number.
-     *
-     * This is the integer bitset implementation.
-     *
-     * @param int $ordinal Ordinal number of bit to unset
-     * @return void
-     * @see setBit()
-     * @see doUnsetBitBin()
-     */
-    private function doUnsetBitInt($ordinal)
-    {
-        $this->bitset = $this->bitset & ~(1 << $ordinal);
     }
 }

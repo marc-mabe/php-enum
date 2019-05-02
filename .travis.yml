@@ -16,29 +16,14 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 5.6
-      env:
-        - CODE_COVERAGE="1"
-    - php: 7.0
-      env:
-        - CODE_COVERAGE="1"
-        - PHPDOC="1"
-    - php: 7.1
-      env:
-        - CODE_COVERAGE="1"
     - php: 7.2
       env:
         - CODE_COVERAGE="1"
+        - PHPDOC="1"
     - php: 7.3
       env:
         - CODE_COVERAGE="1"
     - php: nightly
-
-    # HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
-    - php: hhvm-3.27 # LTS
-      dist: trusty
-    - php: hhvm-3.30 # last with PHP support
-      dist: trusty
   allow_failures:
     - php: nightly
 
@@ -61,6 +46,9 @@ script:
     else
       php -d 'zend.assertions=1' vendor/bin/phpunit --verbose;
     fi
+
+  # run benchmarks to make sure they are working fine
+  - php vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100
 
 after_script:
   - if [ "${CODE_COVERAGE}" == "1" ]; then

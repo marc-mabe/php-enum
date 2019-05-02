@@ -5,7 +5,6 @@
   "php_disable_ini": true,
   "php_config": {
     "zend_extension": ["opcache.so"],
-    "extension": [ "json.so" ],
     "zend.assertions": -1,
     "opcache.enable_cli": 1
   }

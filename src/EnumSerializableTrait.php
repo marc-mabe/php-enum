@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MabeEnum;
 
 use RuntimeException;
@@ -31,7 +33,7 @@ trait EnumSerializableTrait
      * This will be called automatically on `serialize()` if the enumeration implements the `Serializable` interface
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return \serialize($this->getValue());
     }
@@ -40,10 +42,11 @@ trait EnumSerializableTrait
      * Unserializes a given serialized value and push it into the current instance
      * This will be called automatically on `unserialize()` if the enumeration implements the `Serializable` interface
      * @param string $serialized
+     * @return void
      * @throws RuntimeException On an unknown or invalid value
      * @throws LogicException   On changing numeration value by calling this directly
      */
-    public function unserialize($serialized)
+    public function unserialize($serialized): void
     {
         $value     = \unserialize($serialized);
         $constants = self::getConstants();
@@ -68,7 +71,6 @@ trait EnumSerializableTrait
                 self::$instances[$class][$name] = $enumerator;
             }
         };
-        $closure = $closure->bindTo($this, Enum::class);
-        $closure();
+        $closure->bindTo($this, Enum::class)();
     }
 }

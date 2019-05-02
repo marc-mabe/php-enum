@@ -5,7 +5,7 @@
 [![Total Downloads](https://poser.pugx.org/marc-mabe/php-enum/downloads.png)](https://packagist.org/packages/marc-mabe/php-enum)
 [![Latest Stable](https://poser.pugx.org/marc-mabe/php-enum/v/stable.png)](https://packagist.org/packages/marc-mabe/php-enum)
 
-This is a native PHP implementation to add enumeration support to PHP >= 5.3.
+This is a native PHP implementation to add enumeration support to PHP.
 It's an abstract class that needs to be extended to use it.
 
 
@@ -187,7 +187,7 @@ class User
 }
 ```
 
-* Makes sure the resulting enumerator exactly matches an enumeration. (Inherited enumerators as not allowed).
+* Makes sure the resulting enumerator exactly matches an enumeration. (Inherited enumerators are not allowed).
 
 * Allows enumerator values directly
   * `$user->setStatus(UserStatus::ACTIVE)` works
@@ -204,40 +204,61 @@ But of course this solution has downsides, too:
 
 ## EnumSet
 
-An `EnumSet` groups enumerators of the same enumeration type together.
+An `EnumSet` is a specialized Set implementation for use with enumeration types.
+All of the enumerators in an `EnumSet` must come from a single enumeration type that is specified, when the set is
+created.
 
-It implements `Iterator` and `Countable`
-so elements can be iterated and counted like a normal array
-using `foreach` and `count()`.
+Enum sets are represented internally as bit vectors. The bit vektor is eigther an integer type or a binary string type
+depending on how many enumerators are defined is the enumeration type. This representation is extremely compact and
+efficient. Bulk operations will run very quickly. Enumerators of an `EnumSet` are unique and ordered based on it's
+ordinal number by design.
 
-Internally it's based on a bitset. Integer bitset or binary bitset
-depending on how many enumerators are defined for the given enumeration.
+It implements `IteratorAggregate` and `Countable` to be directly iterable with `foreach` and countable with `count()`.
 
-Enumerators attached to an `EnumSet` are unique and ordered based on it's ordinal number by design.
+The `EnumSet` has a mutable and an immutable interface.
+Mutable methods starts with `set` or `remove` where immutable methods starts with `with`.
 
 ```php
 use MabeEnum\EnumSet;
 
-// create a new EnumSet
-$enumSet = new EnumSet('UserStatus');
+// create a new EnumSet and initialize with the given enumerators
+$enumSet = new EnumSet('UserStatus', [UserStatus::ACTIVE()]);
+
+// modify an EnumSet (mutable interface)
+
+// add enumerators (by value or by instance)
+$enumSet->addIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
+// or
+$enumSet->add(UserStatus::INACTIVE);
+$enumSet->add(UserStatus::DELETED());
+
+// remove enumerators (by value or by instance)
+$enumSet->removeIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
+// or
+$enumSet->remove(UserStatus::INACTIVE);
+$enumSet->remove(UserStatus::DELETED());
 
 
-// attach enumerators (by value or by instance)
-$enumSet->attach(UserStatus::INACTIVE);
-$enumSet->attach(UserStatus::ACTIVE());
-$enumSet->attach(UserStatus::DELETED());
+// The immutable interface will create a new EnumSet for each modification 
+
+// add enumerators (by value or by instance)
+$enumSet = $enumSet->withIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
+// or
+$enumSet = $enumSet->with(UserStatus::INACTIVE);
+$enumSet = $enumSet->with(UserStatus::DELETED());
+
+// remove enumerators (by value or by instance)
+$enumSet->withoutIterable([UserStatus::INACTIVE, UserStatus::DELETED()]);
+// or
+$enumSet = $enumSet->without(UserStatus::INACTIVE);
+$enumSet = $enumSet->without(UserStatus::DELETED());
 
 
-// detach enumerators (by value or by instance)
-$enumSet->detach(UserStatus::INACTIVE);
-$enumSet->detach(UserStatus::DELETED());
+// Tests if an enumerator exists (by value or by instance)
+$enumSet->has(UserStatus::INACTIVE); // bool
 
 
-// contains enumerators (by value or by instance)
-$enumSet->contains(UserStatus::INACTIVE); // bool
-
-
-// count number of attached enumerations
+// count the number of enumerators
 $enumSet->count();
 count($enumSet);
 
@@ -261,17 +282,28 @@ $enumSet->isEqual($other);    // Check if the EnumSet is the same as other
 $enumSet->isSubset($other);   // Check if the EnumSet is a subset of other
 $enumSet->isSuperset($other); // Check if the EnumSet is a superset of other
 
-$enumSet->union($other);     // Produce a new set with enumerators from both this and other (this | other)
-$enumSet->intersect($other); // Produce a new set with enumerators common to both this and other (this & other)
-$enumSet->diff($other);      // Produce a new set with enumerators in this but not in other (this - other)
-$enumSet->symDiff($other);   // Produce a new set with enumerators in either this and other but not in both (this ^ other)
+
+// union, intersect, difference and symmetric difference
+
+// ... the mutable interface will modify the set
+$enumSet->setUnion($other);     // Enumerators from both this and other (this | other)
+$enumSet->setIntersect($other); // Enumerators common to both this and other (this & other)
+$enumSet->setDiff($other);      // Enumerators in this but not in other (this - other)
+$enumSet->setSymDiff($other);   // Enumerators in either this and other but not in both (this ^ other)
+
+// ... the immutable interface will produce a new set
+$enumSet = $enumSet->withUnion($other);     // Enumerators from both this and other (this | other)
+$enumSet = $enumSet->withIntersect($other); // Enumerators common to both this and other (this & other)
+$enumSet = $enumSet->withDiff($other);      // Enumerators in this but not in other (this - other)
+$enumSet = $enumSet->withSymDiff($other);   // Enumerators in either this and other but not in both (this ^ other)
 ```
+
 
 ## EnumMap
 
 An `EnumMap` maps enumerators of the same type to data assigned to.
 
-It implements `ArrayAccess`, `Countable` and `SeekableIterator`
+It implements `ArrayAccess`, `Countable` and `IteratorAggregate`
 so elements can be accessed, iterated and counted like a normal array
 using `$enumMap[$key]`, `foreach` and `count()`.
 
@@ -314,14 +346,14 @@ count($enumMap);
 
 // support for null aware exists check
 $enumMap[UserStatus::NULL] = null;
-isset($enumMap[UserStatus::NULL]);    // false
-$enumMap->contains(UserStatus::NULL); // true
+isset($enumMap[UserStatus::NULL]); // false
+$enumMap->has(UserStatus::NULL);   // true
 
 
 // iterating over the map
 foreach ($enumMap as $enum => $value) {
     get_class($enum);  // UserStatus (enumerator object)
-    gettype($value);   // string (the value the enumerators maps to)
+    gettype($value);   // mixed (the value the enumerators maps to)
 }
 
 // get a list of keys (= a list of enumerator objects)
@@ -330,6 +362,7 @@ $enumMap->getKeys();
 // get a list of values (= a list of values the enumerator maps to)
 $enumMap->getValues();
 ```
+
 
 ## Serializing
 
@@ -373,11 +406,17 @@ var_dump($north1->is($north2)); // returns TRUE - this way the two instances are
 var_dump($north2->is($north1)); // returns TRUE - equality works in both directions
 ```
 
+
 # Why not `SplEnum`
 
 * `SplEnum` is not build-in into PHP and requires pecl extension installed.
 * Instances of the same value of an `SplEnum` are not the same instance.
 * No support for `EnumMap` or `EnumSet`.
+
+
+# Changelog
+
+Changes are documented in the (release page)[https://github.com/marc-mabe/php-enum/releases].
 
 
 # Install
