@@ -455,7 +455,7 @@ Critical bug fixes and security relates fixes can also be backported to older re
 | 1.x     | EOL          | \>=5.3          |
 | 2.x     | maintainance | \>=5.3 & HHVM<4 |
 | 3.x     | active       | \>=5.6 & HHVM<4 |
-| 4.x     | development  | \>=7.2          |
+| 4.x     | development  | \>=7.1          |
 
 
 # New BSD License
