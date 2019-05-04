@@ -167,7 +167,7 @@ abstract class Enum
      *
      * @param static|null|bool|int|float|string|array $enumerator An enumerator object or value
      * @return static
-     * @throws InvalidArgumentException On an unknwon or invalid value
+     * @throws InvalidArgumentException On an unknown or invalid value
      * @throws LogicException           On ambiguous constant values
      */
     final public static function get($enumerator)
@@ -184,7 +184,7 @@ abstract class Enum
      *
      * @param null|bool|int|float|string|array $value Enumerator value
      * @return static
-     * @throws InvalidArgumentException On an unknwon or invalid value
+     * @throws InvalidArgumentException On an unknown or invalid value
      * @throws LogicException           On ambiguous constant values
      */
     final public static function byValue($value)
