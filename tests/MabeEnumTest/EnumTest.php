@@ -101,10 +101,22 @@ class EnumTest extends TestCase
         ), EnumInheritance::getConstants());
 
         $enum = EnumInheritance::get(EnumInheritance::ONE);
+        $this->assertInstanceOf(EnumInheritance::class, $enum);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
         $this->assertSame(0, $enum->getOrdinal());
 
         $enum = EnumInheritance::get(EnumInheritance::INHERITANCE);
+        $this->assertInstanceOf(EnumInheritance::class, $enum);
+        $this->assertSame(EnumInheritance::INHERITANCE, $enum->getValue());
+        $this->assertSame(17, $enum->getOrdinal());
+
+        $enum = EnumInheritance::ONE();
+        $this->assertInstanceOf(EnumInheritance::class, $enum);
+        $this->assertSame(EnumInheritance::ONE, $enum->getValue());
+        $this->assertSame(0, $enum->getOrdinal());
+
+        $enum = EnumInheritance::INHERITANCE();
+        $this->assertInstanceOf(EnumInheritance::class, $enum);
         $this->assertSame(EnumInheritance::INHERITANCE, $enum->getValue());
         $this->assertSame(17, $enum->getOrdinal());
     }

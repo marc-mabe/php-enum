@@ -423,6 +423,6 @@ abstract class Enum
      */
     final public static function __callStatic(string $method, array $args)
     {
-        return self::byName($method);
+        return static::byName($method);
     }
 }
