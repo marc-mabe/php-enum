@@ -29,27 +29,34 @@ trait EnumSerializableTrait
     abstract public function getValue();
 
     /**
-     * Serialized the value of the enumeration
-     * This will be called automatically on `serialize()` if the enumeration implements the `Serializable` interface
-     * @return string
+     * Returns an array of data to be serialized.
+     * This magic method will be called by serialize() in PHP >= 7.4
+     *
+     * @return array
      */
-    public function serialize(): string
+    public function __serialize(): array
     {
-        return \serialize($this->getValue());
+        return ['value' => $this->getValue()];
     }
 
     /**
-     * Unserializes a given serialized value and push it into the current instance
-     * This will be called automatically on `unserialize()` if the enumeration implements the `Serializable` interface
-     * @param string $serialized
+     * Receives an array of data to be unserialized on a new instance without constructor.
+     * This magic method will be called in PHP >= 7.4 is the data where serialized with PHP >= 7.4.
+     *
+     * @throws RuntimeException On missing, unknown or invalid value
+     * @throws LogicException   On calling this method on an already initialized enumerator
+     *
+     * @param array $data
      * @return void
-     * @throws RuntimeException On an unknown or invalid value
-     * @throws LogicException   On changing numeration value by calling this directly
      */
-    public function unserialize($serialized): void
+    public function __unserialize(array $data): void
     {
-        $value     = \unserialize($serialized);
-        $constants = static::getConstants();
+        if (!\array_key_exists('value', $data)) {
+            throw new RuntimeException('Missing array key "value"');
+        }
+
+        $value     = $data['value'];
+        $constants = self::getConstants();
         $name      = \array_search($value, $constants, true);
         if ($name === false) {
             $message = \is_scalar($value)
@@ -72,5 +79,31 @@ trait EnumSerializableTrait
             }
         };
         $closure->bindTo($this, Enum::class)();
+    }
+
+    /**
+     * Serialize the value of the enumeration
+     * This will be called automatically on `serialize()` if the enumeration implements the `Serializable` interface
+     *
+     * @return string
+     * @deprecated Since PHP 7.4
+     */
+    public function serialize(): string
+    {
+        return \serialize($this->getValue());
+    }
+
+    /**
+     * Unserializes a given serialized value and push it into the current instance
+     * This will be called automatically on `unserialize()` if the enumeration implements the `Serializable` interface
+     * @param string $serialized
+     * @return void
+     * @throws RuntimeException On an unknown or invalid value
+     * @throws LogicException   On calling this method on an already initialized enumerator
+     * @deprecated Since PHP 7.4
+     */
+    public function unserialize($serialized): void
+    {
+        $this->__unserialize(['value' => \unserialize($serialized)]);
     }
 }
