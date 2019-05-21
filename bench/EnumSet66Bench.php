@@ -9,7 +9,7 @@ use MabeEnumTest\TestAsset\Enum66;
  * Benchmark an EnumSet with 66 defined enumerators that's using an binary bitset internally.
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2017 Marc Bennewitz
+ * @copyright Copyright (c) 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumSet66Bench extends AbstractEnumSetBench

@@ -9,7 +9,7 @@ use MabeEnumTest\TestAsset\Enum32;
  * Benchmark an EnumSet with 32 defined enumerators that's using an integer bitset internally.
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2017 Marc Bennewitz
+ * @copyright Copyright (c) 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumSet32Bench extends AbstractEnumSetBench
