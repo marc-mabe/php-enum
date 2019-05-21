@@ -24,7 +24,7 @@ trait EnumSerializableTrait
 {
     /**
      * The method will be defined by MabeEnum\Enum
-     * @return null|bool|int|float|string
+     * @return null|bool|int|float|string|array
      */
     abstract public function getValue();
 
@@ -49,7 +49,7 @@ trait EnumSerializableTrait
     public function unserialize($serialized): void
     {
         $value     = \unserialize($serialized);
-        $constants = self::getConstants();
+        $constants = static::getConstants();
         $name      = \array_search($value, $constants, true);
         if ($name === false) {
             $message = \is_scalar($value)

@@ -4,6 +4,7 @@ namespace MabeEnumTest;
 
 use LogicException;
 use MabeEnum\Enum;
+use MabeEnumTest\TestAsset\ExtendedSerializableEnum;
 use MabeEnumTest\TestAsset\SerializableEnum;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -63,6 +64,18 @@ class EnumSerializableTraitTest extends TestCase
         $this->expectException(LogicException::class);
         $enum = SerializableEnum::get(SerializableEnum::INT);
         $enum->unserialize(serialize(SerializableEnum::STR));
+    }
+
+    public function testInheritence()
+    {
+        $enum = ExtendedSerializableEnum::EXTENDED();
+
+        $serialized = serialize($enum);
+        $this->assertInternalType('string', $serialized);
+
+        $unserialized = unserialize($serialized);
+        $this->assertInstanceOf(ExtendedSerializableEnum::class, $unserialized);
+        $this->assertSame($enum->getValue(), $unserialized->getValue());
     }
 
     /**
