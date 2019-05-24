@@ -904,6 +904,22 @@ class EnumSetTest extends TestCase
         $set1->setSymDiff($set2);
     }
 
+    /**
+     * @dataProvider getIntegerEnumerations
+     */
+    public function testIsEmpty($enum)
+    {
+        $set1 = new EnumSet($enum, []);
+        $set2 = new EnumSet($enum, $enum::getValues());
+
+        $this->assertTrue($set1->isEmpty());
+        $this->assertFalse($set2->isEmpty());
+
+        $set2->removeIterable($enum::getValues());
+
+        $this->assertTrue($set2->isEmpty());
+    }
+
     /* deprecated */
 
     /** @deprecated */
