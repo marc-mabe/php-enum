@@ -37,6 +37,13 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private $bitset = 0;
 
+    /**
+     * Integer or binary (little endian) empty bitset
+     *
+     * @var int|string
+     */
+    private $emptyBitset = 0;
+
     /**#@+
      * Defines private method names to be called depended of how the bitset type was set too.
      * ... Integer or binary bitset.
@@ -79,7 +86,7 @@ class EnumSet implements IteratorAggregate, Countable
         // we will switch this into a binary bitset
         if ($this->enumerationCount > \PHP_INT_SIZE * 8) {
             // init binary bitset with zeros
-            $this->bitset = \str_repeat("\0", (int)\ceil($this->enumerationCount / 8));
+            $this->bitset = $this->emptyBitset = \str_repeat("\0", (int)\ceil($this->enumerationCount / 8));
 
             // switch internal binary bitset functions
             $this->fnDoGetIterator       = 'doGetIteratorBin';
@@ -1096,5 +1103,15 @@ class EnumSet implements IteratorAggregate, Countable
     private function doGetBitInt($ordinal)
     {
         return (bool)($this->bitset & (1 << $ordinal));
+    }
+
+    /**
+     * Return true if the set is empty, false otherwise.
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->bitset === $this->emptyBitset;
     }
 }

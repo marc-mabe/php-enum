@@ -262,6 +262,8 @@ $enumSet->has(UserStatus::INACTIVE); // bool
 $enumSet->count();
 count($enumSet);
 
+// Tests if it has enumerators
+$enumSet->isEmpty();
 
 // convert to array
 $enumSet->getValues();      // List of enumerator values
