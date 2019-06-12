@@ -411,14 +411,14 @@ var_dump($north2->is($north1)); // returns TRUE - equality works in both directi
 
 # Why not `SplEnum`
 
-* `SplEnum` is not build-in into PHP and requires pecl extension installed.
+* `SplEnum` is not built-in into PHP and requires pecl extension installed.
 * Instances of the same value of an `SplEnum` are not the same instance.
 * No support for `EnumMap` or `EnumSet`.
 
 
 # Changelog
 
-Changes are documented in the (release page)[https://github.com/marc-mabe/php-enum/releases].
+Changes are documented in the [release page](https://github.com/marc-mabe/php-enum/releases).
 
 
 # Install
