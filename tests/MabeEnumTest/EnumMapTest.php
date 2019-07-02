@@ -4,6 +4,7 @@ namespace MabeEnumTest;
 
 use InvalidArgumentException;
 use MabeEnum\EnumMap;
+use MabeEnumTest\TestAsset\Enum32;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
 use PHPUnit\Framework\TestCase;
@@ -470,6 +471,21 @@ class EnumMapTest extends TestCase
         $enumMapCopy = unserialize(serialize($enumMap));
         $this->assertTrue($enumMapCopy->offsetExists(EnumBasic::ONE));
         $this->assertFalse($enumMapCopy->offsetExists(EnumBasic::TWO));
+    }
+
+    public function testIsEmpty()
+    {
+        $map1 = new EnumMap(Enum32::class, []);
+        $map2 = new EnumMap(Enum32::class, array_combine(Enum32::getValues(), Enum32::getNames()));
+
+        $this->assertTrue($map1->isEmpty());
+        $this->assertFalse($map2->isEmpty());
+
+        $map1->add(Enum32::ONE(), 'first');
+        $map2->removeIterable(Enum32::getEnumerators());
+
+        $this->assertFalse($map1->isEmpty());
+        $this->assertTrue($map2->isEmpty());
     }
 
     /* deprecated */

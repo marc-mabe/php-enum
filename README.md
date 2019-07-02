@@ -262,7 +262,7 @@ $enumSet->has(UserStatus::INACTIVE); // bool
 $enumSet->count();
 count($enumSet);
 
-// Tests if it has enumerators
+// test for elements
 $enumSet->isEmpty();
 
 // convert to array
@@ -345,6 +345,8 @@ isset($enumMap[UserStatus::DELETED()]); // false
 $enumMap->count();
 count($enumMap);
 
+// test for elements
+$enumSet->isEmpty();
 
 // support for null aware exists check
 $enumMap[UserStatus::NULL] = null;

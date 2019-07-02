@@ -347,7 +347,7 @@ class EnumSetTest extends TestCase
     public function testGetBinaryBitsetLe()
     {
         $set = new EnumSet(Enum65::class);
-        
+
         $enum1 = Enum65::ONE;
         $enum2 = Enum65::TWO;
         $enum3 = Enum65::SIXTYFIVE;
@@ -368,20 +368,20 @@ class EnumSetTest extends TestCase
         $set = $set->with($enum4);
         $this->assertSame("\x03\x00\x00\x00\x00\x00\x00\x80\x01", $set->getBinaryBitsetLe());
         $this->assertTrue($set->has($enum4));
-        
+
         $this->assertSame(4, $set->count());
 
         $set = $set->without($enum2);
         $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x80\x01", $set->getBinaryBitsetLe());
         $this->assertFalse($set->has($enum2));
-        
+
         $this->assertSame(3, $set->count());
     }
 
     public function testGetBinaryBitsetBe()
     {
         $set = new EnumSet(Enum65::class);
-        
+
         $enum1 = Enum65::ONE;
         $enum2 = Enum65::TWO;
         $enum3 = Enum65::SIXTYFIVE;
@@ -402,13 +402,13 @@ class EnumSetTest extends TestCase
         $set = $set->with($enum4);
         $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x03", $set->getBinaryBitsetBe());
         $this->assertTrue($set->has($enum4));
-        
+
         $this->assertSame(4, $set->count());
 
         $set = $set->without($enum2);
         $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x01", $set->getBinaryBitsetBe());
         $this->assertFalse($set->has($enum2));
-        
+
         $this->assertSame(3, $set->count());
     }
 
@@ -720,6 +720,24 @@ class EnumSetTest extends TestCase
         }
     }
 
+    /**
+     * @dataProvider getIntegerEnumerations
+     */
+    public function testIsEmpty($enum)
+    {
+        $set1 = new EnumSet($enum, []);
+        $set2 = new EnumSet($enum, $enum::getValues());
+
+        $this->assertTrue($set1->isEmpty());
+        $this->assertFalse($set2->isEmpty());
+
+        $set1->addIterable($enum::getValues());
+        $set2->removeIterable($enum::getValues());
+
+        $this->assertFalse($set1->isEmpty());
+        $this->assertTrue($set2->isEmpty());
+    }
+
     public function testGetOrdinalsInt()
     {
         $set = new EnumSet(EnumBasic::class);
@@ -902,22 +920,6 @@ class EnumSetTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $set1->setSymDiff($set2);
-    }
-
-    /**
-     * @dataProvider getIntegerEnumerations
-     */
-    public function testIsEmpty($enum)
-    {
-        $set1 = new EnumSet($enum, []);
-        $set2 = new EnumSet($enum, $enum::getValues());
-
-        $this->assertTrue($set1->isEmpty());
-        $this->assertFalse($set2->isEmpty());
-
-        $set2->removeIterable($enum::getValues());
-
-        $this->assertTrue($set2->isEmpty());
     }
 
     /* deprecated */

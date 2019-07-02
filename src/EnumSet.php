@@ -48,7 +48,7 @@ class EnumSet implements IteratorAggregate, Countable
      * Defines private method names to be called depended of how the bitset type was set too.
      * ... Integer or binary bitset.
      * ... *Int or *Bin method
-     * 
+     *
      * @var string
      */
     private $fnDoGetIterator       = 'doGetIteratorInt';
@@ -902,6 +902,16 @@ class EnumSet implements IteratorAggregate, Countable
     }
 
     /**
+     * Tests if the set is empty
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->bitset === $this->emptyBitset;
+    }
+
+    /**
      * Get ordinal numbers of the defined enumerators as array
      * @return int[]
      * @uses  doGetOrdinalsBin()
@@ -1008,7 +1018,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get binary bitset in little-endian order
-     * 
+     *
      * @return string
      * @uses doGetBinaryBitsetLeBin()
      * @uses doGetBinaryBitsetLeInt()
@@ -1049,7 +1059,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get binary bitset in big-endian order
-     * 
+     *
      * @return string
      */
     public function getBinaryBitsetBe(): string
@@ -1094,7 +1104,7 @@ class EnumSet implements IteratorAggregate, Countable
      * Get a bit at the given ordinal number.
      *
      * This is the integer bitset implementation.
-     * 
+     *
      * @param int $ordinal Ordinal number of bit to get
      * @return bool
      * @see getBit()
@@ -1103,15 +1113,5 @@ class EnumSet implements IteratorAggregate, Countable
     private function doGetBitInt($ordinal)
     {
         return (bool)($this->bitset & (1 << $ordinal));
-    }
-
-    /**
-     * Return true if the set is empty, false otherwise.
-     *
-     * @return bool
-     */
-    public function isEmpty(): bool
-    {
-        return $this->bitset === $this->emptyBitset;
     }
 }

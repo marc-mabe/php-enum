@@ -349,4 +349,14 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
     {
         return \count($this->map);
     }
+
+    /**
+     * Tests if the map is empty
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return empty($this->map);
+    }
 }
