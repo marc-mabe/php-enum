@@ -454,12 +454,12 @@ Bug fixes will be backported to the latest maintained minor release.
 
 Critical bug fixes and security relates fixes can also be backported to older releases.
 
-| Release | Status       | PHP-Version     |
-|---------|--------------|-----------------|
-| 1.x     | EOL          | \>=5.3          |
-| 2.x     | maintainance | \>=5.3 & HHVM<4 |
-| 3.x     | active       | \>=5.6 & HHVM<4 |
-| 4.x     | development  | \>=7.1          |
+| Release | Status      | PHP-Version     |
+|---------|-------------|-----------------|
+| 1.x     | EOL         | \>=5.3          |
+| 2.x     | EOL         | \>=5.3 & HHVM<4 |
+| 3.x     | maintenance | \>=5.6 & HHVM<4 |
+| 4.x     | active      | \>=7.1          |
 
 
 # New BSD License
