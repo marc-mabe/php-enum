@@ -346,7 +346,7 @@ $enumMap->count();
 count($enumMap);
 
 // test for elements
-$enumSet->isEmpty();
+$enumMap->isEmpty();
 
 // support for null aware exists check
 $enumMap[UserStatus::NULL] = null;
