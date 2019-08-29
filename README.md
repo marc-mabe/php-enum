@@ -143,7 +143,7 @@ $user->setStatus(ExtendedUserStatus::EXTENDED());
 
 Now the setter receives a status it doesn't know about but allows it.
 
-#### Solution 1: Finilize the enumeration
+#### Solution 1: Finalize the enumeration
 
 ```php
 final class UserStatus extends Enum
