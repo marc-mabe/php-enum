@@ -26,6 +26,9 @@ matrix:
     - php: 7.3
       env:
         - CODE_COVERAGE="1"
+    - php: 7.4
+      env:
+        - CODE_COVERAGE="1"
     - php: nightly
   allow_failures:
     - php: nightly
