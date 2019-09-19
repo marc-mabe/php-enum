@@ -119,7 +119,7 @@ abstract class Enum
      */
     final public function getName()
     {
-        return self::$names[static::class][$this->ordinal ?: $this->getOrdinal()];
+        return self::$names[static::class][$this->ordinal ?? $this->getOrdinal()];
     }
 
     /**
