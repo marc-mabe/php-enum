@@ -8,6 +8,7 @@ use MabeEnumTest\TestAsset\ExtendedSerializableEnum;
 use MabeEnumTest\TestAsset\SerializableEnum;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionProperty;
 use RuntimeException;
 
 /**
@@ -89,11 +90,9 @@ class EnumSerializableTraitTest extends TestCase
             $reflClass = $reflClass->getParentClass();
         }
 
-        $reflPropInstances = $reflClass->getProperty('instances');
-        $reflPropInstances->setAccessible(true);
-        $reflPropInstances->setValue(null, array());
-        $reflPropConstants = $reflClass->getProperty('constants');
-        $reflPropConstants->setAccessible(true);
-        $reflPropConstants->setValue(null, array());
+        foreach ($reflClass->getProperties(ReflectionProperty::IS_STATIC) as $reflProp) {
+            $reflProp->setAccessible(true);;
+            $reflProp->setValue(null, []);
+        }
     }
 }
