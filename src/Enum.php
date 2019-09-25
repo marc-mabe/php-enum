@@ -189,11 +189,10 @@ abstract class Enum
      */
     final public static function byValue($value)
     {
-        if (!isset(self::$constants[static::class])) {
-            self::detectConstants(static::class);
-        }
+        $constants = self::$constants[static::class]
+            ?? self::detectConstants(static::class);
 
-        $name = \array_search($value, self::$constants[static::class], true);
+        $name = \array_search($value, $constants, true);
         if ($name === false) {
             throw new InvalidArgumentException(sprintf(
                 'Unknown value %s for enumeration %s',
@@ -204,11 +203,8 @@ abstract class Enum
             ));
         }
 
-        if (!isset(self::$instances[static::class][$name])) {
-            self::$instances[static::class][$name] = new static(self::$constants[static::class][$name]);
-        }
-
-        return self::$instances[static::class][$name];
+        return self::$instances[static::class][$name]
+            ?? self::$instances[static::class][$name] = new static($constants[$name]);
     }
 
     /**
@@ -243,9 +239,7 @@ abstract class Enum
      */
     final public static function byOrdinal(int $ordinal)
     {
-        if (!isset(self::$names[static::class])) {
-            self::detectConstants(static::class);
-        }
+        $constants = self::$constants[static::class] ?? self::detectConstants(static::class);
 
         if (!isset(self::$names[static::class][$ordinal])) {
             throw new InvalidArgumentException(\sprintf(
@@ -256,11 +250,8 @@ abstract class Enum
         }
 
         $name = self::$names[static::class][$ordinal];
-        if (isset(self::$instances[static::class][$name])) {
-            return self::$instances[static::class][$name];
-        }
-
-        return self::$instances[static::class][$name] = new static(self::$constants[static::class][$name], $ordinal);
+        return self::$instances[static::class][$name]
+            ?? self::$instances[static::class][$name] = new static($constants[$name], $ordinal);
     }
 
     /**
