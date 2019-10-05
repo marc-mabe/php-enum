@@ -339,6 +339,14 @@ class EnumTest extends TestCase
         EnumAmbiguous::get('unknown');
     }
 
+    public function testByNameAmbiguousEnumeratorValues()
+    {
+        $this->expectException(AssertionError::class);
+        $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumAmbiguous::class);
+
+        EnumAmbiguous::byName('AMBIGUOUS_INT1');
+    }
+
     public function testExtendedEnabledAssertAmbiguousEnumeratorValues()
     {
         $this->expectException(AssertionError::class);

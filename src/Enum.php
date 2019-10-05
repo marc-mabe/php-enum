@@ -226,6 +226,11 @@ abstract class Enum
             throw new InvalidArgumentException("{$const} not defined");
         }
 
+        assert(
+            self::noAmbiguousValues(static::getConstants()),
+            'Ambiguous enumerator values detected for ' . static::class
+        );
+
         return self::$instances[static::class][$name] = new static(\constant($const));
     }
 
