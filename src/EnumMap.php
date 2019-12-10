@@ -12,7 +12,11 @@ use IteratorAggregate;
 use UnexpectedValueException;
 
 /**
- * A map of enumerators and data values (EnumMap<K extends Enum, V>).
+ * A map of enumerators and data values (EnumMap<T of Enum, mixed>).
+ *
+ * @template T of Enum
+ * @implements ArrayAccess<T, mixed>
+ * @implements IteratorAggregate<T, mixed>
  *
  * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
@@ -22,20 +26,20 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 {
     /**
      * The classname of the enumeration type
-     * @var string
+     * @var class-string<T>
      */
     private $enumeration;
 
     /**
      * Internal map of ordinal number and data value
-     * @var array
+     * @var array<int, mixed>
      */
     private $map = [];
 
     /**
      * Constructor
-     * @param string $enumeration The classname of the enumeration type
-     * @param null|iterable $map Initialize map
+     * @param class-string<T> $enumeration The classname of the enumeration type
+     * @param null|iterable<T|null|bool|int|float|string|array<int|string, mixed>, mixed> $map Initialize map
      * @throws InvalidArgumentException
      */
     public function __construct(string $enumeration, iterable $map = null)
@@ -74,8 +78,8 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Adds the given enumerator (object or value) mapping to the specified data value.
-     * @param Enum|null|bool|int|float|string|array $enumerator
-     * @param mixed                                 $value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
+     * @param mixed                                                 $value
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see offsetSet()
      */
@@ -87,7 +91,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Adds the given iterable, mapping enumerators (objects or values) to data values.
-     * @param iterable $map
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>, mixed> $map
      * @throws InvalidArgumentException On an invalid given enumerator
      */
     public function addIterable(iterable $map): void
@@ -102,7 +106,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Removes the given enumerator (object or value) mapping.
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see offsetUnset()
      */
@@ -114,7 +118,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Removes the given iterable enumerator (object or value) mappings.
-     * @param iterable $enumerators
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators
      * @throws InvalidArgumentException On an invalid given enumerator
      */
     public function removeIterable(iterable $enumerators): void
@@ -132,8 +136,8 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Creates a new map with the given enumerator (object or value) mapping to the specified data value added.
-     * @param Enum|null|bool|int|float|string|array $enumerator
-     * @param mixed                                 $value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
+     * @param mixed                                                 $value
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -146,7 +150,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Creates a new map with the given iterable mapping enumerators (objects or values) to data values added.
-     * @param iterable $map
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>, mixed> $map
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -159,7 +163,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Create a new map with the given enumerator mapping removed.
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -172,7 +176,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Creates a new map with the given iterable enumerator (object or value) mappings removed.
-     * @param iterable $enumerators
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -187,7 +191,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Get the classname of the enumeration type.
-     * @return string
+     * @return class-string<T>
      */
     public function getEnumeration(): string
     {
@@ -196,7 +200,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Get the mapped data value of the given enumerator (object or value).
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return mixed
      * @throws InvalidArgumentException On an invalid given enumerator
      * @throws UnexpectedValueException If the given enumerator does not exist in this map
@@ -218,11 +222,14 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Get a list of enumerator keys.
-     * @return Enum[]
+     * @return T[]
      */
     public function getKeys(): array
     {
-        return \array_map([$this->enumeration, 'byOrdinal'], \array_keys($this->map));
+        /** @var callable $byOrdinalFn */
+        $byOrdinalFn = [$this->enumeration, 'byOrdinal'];
+
+        return \array_map($byOrdinalFn, \array_keys($this->map));
     }
 
     /**
@@ -238,10 +245,11 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
      * Search for the given data value.
      * @param mixed $value
      * @param bool $strict Use strict type comparison
-     * @return Enum|null The enumerator object of the first matching data value or NULL
+     * @return T|null The enumerator object of the first matching data value or NULL
      */
     public function search($value, bool $strict = false)
     {
+        /** @var false|int $ord */
         $ord = \array_search($value, $this->map, $strict);
         if ($ord !== false) {
             return ($this->enumeration)::byOrdinal($ord);
@@ -252,7 +260,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Test if the given enumerator key (object or value) exists.
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return bool
      * @see offsetExists()
      */
@@ -269,7 +277,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Test if the given enumerator key (object or value) exists.
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return bool
      * @see offsetExists()
      * @see has()
@@ -284,7 +292,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Test if the given enumerator key (object or value) exists and is not NULL
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return bool
      * @see contains()
      */
@@ -300,7 +308,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Get the mapped data value of the given enumerator (object or value).
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return mixed The mapped date value of the given enumerator or NULL
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see get()
@@ -316,8 +324,8 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Adds the given enumerator (object or value) mapping to the specified data value.
-     * @param Enum|null|bool|int|float|string|array $enumerator
-     * @param mixed                                 $value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
+     * @param mixed                                                 $value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see add()
@@ -329,7 +337,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Removes the given enumerator (object or value) mapping.
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see remove()
@@ -344,7 +352,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Get a new Iterator.
      *
-     * @return Iterator Iterator<K extends Enum, V>
+     * @return Iterator<T, mixed> Iterator<K extends Enum, V>
      */
     public function getIterator(): Iterator
     {

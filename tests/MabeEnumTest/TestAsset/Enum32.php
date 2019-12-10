@@ -10,6 +10,42 @@ use MabeEnum\Enum;
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ *
+ * @method static static ONE()
+ * @method static static TWO()
+ * @method static static THREE()
+ * @method static static FOUR()
+ * @method static static FIVE()
+ * @method static static SIX()
+ * @method static static SEVEN()
+ * @method static static EIGHT()
+ * @method static static NINE()
+ *
+ * @method static static TEN()
+ * @method static static ELEVEN()
+ * @method static static TWELVE()
+ * @method static static THIRTEEN()
+ * @method static static FOURTEEN()
+ * @method static static FIVETEEN()
+ * @method static static SIXTEEN()
+ * @method static static SEVENTEEN()
+ * @method static static EIGHTEEN()
+ * @method static static NINETEEN()
+ *
+ * @method static static TWENTY()
+ * @method static static TWENTYONE()
+ * @method static static TWENTYTWO()
+ * @method static static TWENTYTHREE()
+ * @method static static TWENTYFOUR()
+ * @method static static TWENTYFIVE()
+ * @method static static TWENTYSIX()
+ * @method static static TWENTYSEVEN()
+ * @method static static TWENTYEIGHT()
+ * @method static static TWENTYNINE()
+ *
+ * @method static static THIRTY()
+ * @method static static THERTYONE()
+ * @method static static THERTYTWO()
  */
 class Enum32 extends Enum
 {

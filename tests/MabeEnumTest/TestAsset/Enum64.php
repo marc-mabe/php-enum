@@ -10,6 +10,42 @@ use MabeEnum\Enum;
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @copyright Copyright (c) 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
+ *
+ * @method static static THIRTYTHREE()
+ * @method static static THIRTYFOUR()
+ * @method static static THIRTYFIVE()
+ * @method static static THIRTYSIX()
+ * @method static static THIRTYSEVEN()
+ * @method static static THIRTYEIGHT()
+ * @method static static THIRTYNINE()
+ *
+ * @method static static FORTY()
+ * @method static static FORTYONE()
+ * @method static static FORTYTWO()
+ * @method static static FORTYTTHREE()
+ * @method static static FORTYTFOUR()
+ * @method static static FORTYTFIVE()
+ * @method static static FORTYTSIX()
+ * @method static static FORTYTSEVEN()
+ * @method static static FORTYTEIGHT()
+ * @method static static FORTYTNINE()
+ *
+ * @method static static FIFTY()
+ * @method static static FIFTYONE()
+ * @method static static FIFTYTWO()
+ * @method static static FIFTYTHREE()
+ * @method static static FIFTYFOUR()
+ * @method static static FIFTYFIVE()
+ * @method static static FIFTYSIX()
+ * @method static static FIFTYSEVEN()
+ * @method static static FIFTYEIGHT()
+ * @method static static FIFTYNINE()
+ *
+ * @method static static SIXTY()
+ * @method static static SIXTYONE()
+ * @method static static SIXTYTWO()
+ * @method static static SIXTYTHREE()
+ * @method static static SIXTYFOUR()
  */
 class Enum64 extends Enum32
 {

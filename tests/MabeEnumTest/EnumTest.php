@@ -26,12 +26,12 @@ use ReflectionProperty;
  */
 class EnumTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->resetStaticEnumProps();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         assert_options(ASSERT_ACTIVE, 1);
     }
@@ -39,7 +39,7 @@ class EnumTest extends TestCase
     /**
      * Un-initialize all known enumerations
      */
-    private function resetStaticEnumProps()
+    private function resetStaticEnumProps(): void
     {
         $enumRefl = new ReflectionClass(Enum::class);
         $enumPropsRefl = $enumRefl->getProperties(ReflectionProperty::IS_STATIC);
@@ -53,7 +53,7 @@ class EnumTest extends TestCase
      * Test that Enumeration getters works fine after Enum::byName()
      * as Enum::byName() does not initialize the enumeration directly
      */
-    public function testByNameEnumGettersWorks()
+    public function testByNameEnumGettersWorks(): void
     {
         $this->resetStaticEnumProps();
         $this->assertSame(EnumBasic::ONE, EnumBasic::byName('ONE')->getValue());
@@ -65,19 +65,19 @@ class EnumTest extends TestCase
         $this->assertSame(0, EnumBasic::byName('ONE')->getOrdinal());
     }
 
-    public function testGetNameReturnsConstantNameOfCurrentValue()
+    public function testGetNameReturnsConstantNameOfCurrentValue(): void
     {
         $enum = EnumBasic::get(EnumBasic::ONE);
         $this->assertSame('ONE', $enum->getName());
     }
 
-    public function testToStringMagicMethodReturnsName()
+    public function testToStringMagicMethodReturnsName(): void
     {
         $enum = EnumBasic::get(EnumBasic::ONE);
         $this->assertSame('ONE', $enum->__toString());
     }
 
-    public function testEnumInheritance()
+    public function testEnumInheritance(): void
     {
         $this->assertSame(array(
             'ONE'           => 1,
@@ -121,35 +121,35 @@ class EnumTest extends TestCase
         $this->assertSame(17, $enum->getOrdinal());
     }
 
-    public function testGetWithStrictValue()
+    public function testGetWithStrictValue(): void
     {
         $enum = EnumBasic::get(EnumBasic::ONE);
         $this->assertSame(1, $enum->getValue());
         $this->assertSame(0, $enum->getOrdinal());
     }
 
-    public function testGetWithNonStrictValueThrowsInvalidArgumentException()
+    public function testGetWithNonStrictValueThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown value '2' for enumeration MabeEnumTest\\TestAsset\\EnumBasic");
         EnumBasic::get((string)EnumBasic::TWO);
     }
 
-    public function testGetWithInvalidValueThrowsInvalidArgumentException()
+    public function testGetWithInvalidValueThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown value 'unknown' for enumeration MabeEnumTest\\TestAsset\\EnumBasic");
         EnumBasic::get('unknown');
     }
 
-    public function testGetWithInvalidArrayValueThrowsInvalidArgumentException()
+    public function testGetWithInvalidArrayValueThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown value of type array for enumeration MabeEnumTest\\TestAsset\\EnumBasic");
         EnumBasic::get(array());
     }
 
-    public function testGetWithInvalidTypeOfValueThrowsInvalidArgumentException()
+    public function testGetWithInvalidTypeOfValueThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -158,14 +158,14 @@ class EnumTest extends TestCase
         EnumBasic::get($this);
     }
 
-    public function testGetByInstance()
+    public function testGetByInstance(): void
     {
         $enum1 = EnumBasic::get(EnumBasic::ONE);
         $enum2 = EnumBasic::get($enum1);
         $this->assertSame($enum1, $enum2);
     }
 
-    public function testGetByExtendedInstanceOfKnownValue()
+    public function testGetByExtendedInstanceOfKnownValue(): void
     {
         $enum = EnumInheritance::get(EnumInheritance::ONE);
 
@@ -173,7 +173,7 @@ class EnumTest extends TestCase
         EnumBasic::get($enum);
     }
 
-    public function testGetEnumeratorsConstansAlreadyDetected()
+    public function testGetEnumeratorsConstansAlreadyDetected(): void
     {
         $constants   = EnumInheritance::getConstants();
         $enumerators = EnumInheritance::getEnumerators();
@@ -190,7 +190,7 @@ class EnumTest extends TestCase
         }
     }
 
-    public function testGetEnumeratorsConstansNotDetected()
+    public function testGetEnumeratorsConstansNotDetected(): void
     {
         $enumerators = EnumInheritance::getEnumerators();
         $constants   = EnumInheritance::getConstants();
@@ -207,7 +207,7 @@ class EnumTest extends TestCase
         }
     }
 
-    public function testGetValues()
+    public function testGetValues(): void
     {
         $expectedValues = array_values(EnumInheritance::getConstants());
         $values         = EnumInheritance::getValues();
@@ -220,7 +220,7 @@ class EnumTest extends TestCase
         }
     }
 
-    public function testGetNamesConstantsAlreadyDetected()
+    public function testGetNamesConstantsAlreadyDetected(): void
     {
         $expectedNames = array_keys(EnumInheritance::getConstants());
         $names         = EnumInheritance::getNames();
@@ -233,7 +233,7 @@ class EnumTest extends TestCase
         }
     }
 
-    public function testGetNamesConstantsNotDetected()
+    public function testGetNamesConstantsNotDetected(): void
     {
         $names         = EnumInheritance::getNames();
         $expectedNames = array_keys(EnumInheritance::getConstants());
@@ -246,7 +246,7 @@ class EnumTest extends TestCase
         }
     }
     
-    public function testGetOrdinals()
+    public function testGetOrdinals(): void
     {
         $constants = EnumInheritance::getConstants();
         $ordinals  = EnumInheritance::getOrdinals();
@@ -259,7 +259,7 @@ class EnumTest extends TestCase
         }
     }
 
-    public function testGetAllValues()
+    public function testGetAllValues(): void
     {
         $constants = EnumBasic::getConstants();
         foreach ($constants as $name => $value) {
@@ -269,7 +269,7 @@ class EnumTest extends TestCase
         }
     }
 
-    public function testIsBasic()
+    public function testIsBasic(): void
     {
         $enum = EnumBasic::ONE();
 
@@ -283,47 +283,47 @@ class EnumTest extends TestCase
         $this->assertFalse($enum->is(EnumInheritance::ONE())); // different enumeration type
     }
 
-    public function testCallingGetOrdinalTwoTimesWillResultTheSameValue()
+    public function testCallingGetOrdinalTwoTimesWillResultTheSameValue(): void
     {
         $enum = EnumBasic::get(EnumBasic::TWO);
         $this->assertSame(1, $enum->getOrdinal());
         $this->assertSame(1, $enum->getOrdinal());
     }
 
-    public function testInstantiateUsingOrdinalNumber()
+    public function testInstantiateUsingOrdinalNumber(): void
     {
         $enum = EnumInheritance::byOrdinal(17);
         $this->assertSame(17, $enum->getOrdinal());
         $this->assertSame('INHERITANCE', $enum->getName());
     }
 
-    public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException()
+    public function testInstantiateUsingInvalidOrdinalNumberThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         EnumInheritance::byOrdinal(18);
     }
 
-    public function testInstantiateByName()
+    public function testInstantiateByName(): void
     {
         $enum = EnumInheritance::byName('ONE');
         $this->assertInstanceOf(EnumInheritance::class, $enum);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
 
-    public function testInstantiateByUnknownNameThrowsInvalidArgumentException()
+    public function testInstantiateByUnknownNameThrowsInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         EnumInheritance::byName('UNKNOWN');
     }
 
-    public function testInstantiateUsingMagicMethod()
+    public function testInstantiateUsingMagicMethod(): void
     {
         $enum = EnumInheritance::ONE();
         $this->assertInstanceOf(EnumInheritance::class, $enum);
         $this->assertSame(EnumInheritance::ONE, $enum->getValue());
     }
 
-    public function testEnabledAssertAmbiguousEnumeratorValues()
+    public function testEnabledAssertAmbiguousEnumeratorValues(): void
     {
         $this->expectException(AssertionError::class);
         $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumAmbiguous::class);
@@ -331,7 +331,7 @@ class EnumTest extends TestCase
         EnumAmbiguous::get('unknown');
     }
 
-    public function testDisabledAssertAmbiguousEnumeratorValues()
+    public function testDisabledAssertAmbiguousEnumeratorValues(): void
     {
         assert_options(ASSERT_ACTIVE, 0);
         $this->expectException(InvalidArgumentException::class);
@@ -339,7 +339,7 @@ class EnumTest extends TestCase
         EnumAmbiguous::get('unknown');
     }
 
-    public function testByNameAmbiguousEnumeratorValues()
+    public function testByNameAmbiguousEnumeratorValues(): void
     {
         $this->expectException(AssertionError::class);
         $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumAmbiguous::class);
@@ -347,7 +347,7 @@ class EnumTest extends TestCase
         EnumAmbiguous::byName('AMBIGUOUS_INT1');
     }
 
-    public function testExtendedEnabledAssertAmbiguousEnumeratorValues()
+    public function testExtendedEnabledAssertAmbiguousEnumeratorValues(): void
     {
         $this->expectException(AssertionError::class);
         $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumExtendedAmbiguous::class);
@@ -355,7 +355,7 @@ class EnumTest extends TestCase
         EnumExtendedAmbiguous::get('unknown');
     }
 
-    public function testExtendedDisabledAssertAmbiguousEnumeratorValues()
+    public function testExtendedDisabledAssertAmbiguousEnumeratorValues(): void
     {
         assert_options(ASSERT_ACTIVE, 0);
         $this->expectException(InvalidArgumentException::class);
@@ -363,14 +363,14 @@ class EnumTest extends TestCase
         EnumExtendedAmbiguous::get('unknown');
     }
 
-    public function testSingleton()
+    public function testSingleton(): void
     {
         $enum1 = EnumBasic::get(EnumBasic::ONE);
         $enum2 = EnumBasic::ONE();
         $this->assertSame($enum1, $enum2);
     }
 
-    public function testCloneNotCallableAndThrowsLogicException()
+    public function testCloneNotCallableAndThrowsLogicException(): void
     {
         $enum = EnumBasic::ONE();
 
@@ -384,7 +384,7 @@ class EnumTest extends TestCase
         $reflectionMethod->invoke($enum);
     }
 
-    public function testNotSerializable()
+    public function testNotSerializable(): void
     {
         $enum = EnumBasic::ONE();
 
@@ -392,13 +392,13 @@ class EnumTest extends TestCase
         serialize($enum);
     }
 
-    public function testNotUnserializable()
+    public function testNotUnserializable(): void
     {
         $this->expectException(LogicException::class);
         unserialize('O:' . strlen(EnumBasic::class) . ':"' . EnumBasic::class . '":0:{}');
     }
 
-    public function testHas()
+    public function testHas(): void
     {
         $this->assertFalse(EnumBasic::has('invalid'));
         $this->assertFalse(EnumBasic::has(EnumInheritance::ONE()));
@@ -406,7 +406,7 @@ class EnumTest extends TestCase
         $this->assertTrue(EnumBasic::has(EnumBasic::ONE));
     }
 
-    public function testHasName()
+    public function testHasName(): void
     {
         $this->assertFalse(EnumBasic::hasName(''));
         $this->assertFalse(EnumBasic::hasName('str'));
@@ -414,7 +414,7 @@ class EnumTest extends TestCase
         $this->assertTrue(EnumBasic::hasName('STR'));
     }
 
-    public function testHasValue()
+    public function testHasValue(): void
     {
         $enum = EnumBasic::ONE();
 
@@ -424,7 +424,7 @@ class EnumTest extends TestCase
         $this->assertTrue(EnumBasic::hasValue(EnumBasic::ONE));
     }
 
-    public function testConstVisibility()
+    public function testConstVisibility(): void
     {
         $constants = ConstVisibilityEnum::getConstants();
         $this->assertSame(array(
@@ -433,7 +433,7 @@ class EnumTest extends TestCase
         ), $constants);
     }
     
-    public function testConstVisibilityExtended()
+    public function testConstVisibilityExtended(): void
     {
         $constants = ConstVisibilityEnumExtended::getConstants();
         $this->assertSame(array(
@@ -444,7 +444,7 @@ class EnumTest extends TestCase
         ), $constants);
     }
 
-    public function testIsSerializableIssue()
+    public function testIsSerializableIssue(): void
     {
         $enum1 = SerializableEnum::INT();
         $enum2 = unserialize(serialize($enum1));

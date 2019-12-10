@@ -10,8 +10,11 @@ use Iterator;
 use IteratorAggregate;
 
 /**
- * A set of enumerators of the given enumeration (EnumSet<T extends Enum>)
+ * A set of enumerators of the given enumeration (EnumSet<T of Enum>)
  * based on an integer or binary bitset depending of given enumeration size.
+ *
+ * @template T of Enum
+ * @implements IteratorAggregate<int, T>
  *
  * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
@@ -21,7 +24,7 @@ class EnumSet implements IteratorAggregate, Countable
 {
     /**
      * The classname of the Enumeration
-     * @var string
+     * @var class-string<T>
      */
     private $enumeration;
 
@@ -51,21 +54,36 @@ class EnumSet implements IteratorAggregate, Countable
      *
      * @var string
      */
+    /** @var string */
     private $fnDoGetIterator       = 'doGetIteratorInt';
+
+    /** @var string */
     private $fnDoCount             = 'doCountInt';
+
+    /** @var string */
     private $fnDoGetOrdinals       = 'doGetOrdinalsInt';
+
+    /** @var string */
     private $fnDoGetBit            = 'doGetBitInt';
+
+    /** @var string */
     private $fnDoSetBit            = 'doSetBitInt';
+
+    /** @var string */
     private $fnDoUnsetBit          = 'doUnsetBitInt';
+
+    /** @var string */
     private $fnDoGetBinaryBitsetLe = 'doGetBinaryBitsetLeInt';
+
+    /** @var string */
     private $fnDoSetBinaryBitsetLe = 'doSetBinaryBitsetLeInt';
     /**#@-*/
 
     /**
      * Constructor
      *
-     * @param string $enumeration The classname of the enumeration
-     * @param iterable|null $enumerators iterable list of enumerators initializing the set
+     * @param class-string<T> $enumeration The classname of the enumeration
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>>|null $enumerators iterable list of enumerators initializing the set
      * @throws InvalidArgumentException
      */
     public function __construct(string $enumeration, iterable $enumerators = null)
@@ -123,7 +141,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get the classname of the enumeration
-     * @return string
+     * @return class-string<T>
      */
     public function getEnumeration(): string
     {
@@ -134,7 +152,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Adds an enumerator object or value
-     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -145,7 +163,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Adds all enumerator objects or values of the given iterable
-     * @param iterable $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -166,7 +184,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Removes the given enumerator object or value
-     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -177,7 +195,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Adds an enumerator object or value
-     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see add()
@@ -191,7 +209,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Removes the given enumerator object or value
-     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see remove()
@@ -205,7 +223,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Removes all enumerator objects or values of the given iterable
-     * @param iterable $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -227,7 +245,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Modify this set from both this and other (this | other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the union
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the union
      * @return void
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -246,7 +264,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Modify this set with enumerators common to both this and other (this & other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the intersect
      * @return void
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -265,7 +283,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Modify this set with enumerators in this but not in other (this - other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the diff
      * @return void
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -284,7 +302,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Modify this set with enumerators in either this and other but not in both (this ^ other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the symmetric difference
      * @return void
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -325,7 +343,10 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doSetBinaryBitsetLeBin($bitset): void
     {
-        $size   = \strlen($this->bitset);
+        /** @var string $thisBitset */
+        $thisBitset = $this->bitset;
+
+        $size   = \strlen($thisBitset);
         $sizeIn = \strlen($bitset);
 
         if ($sizeIn < $size) {
@@ -432,8 +453,13 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doSetBitBin($ordinal): void
     {
+        /** @var string $thisBitset */
+        $thisBitset = $this->bitset;
+
         $byte = (int) ($ordinal / 8);
-        $this->bitset[$byte] = $this->bitset[$byte] | \chr(1 << ($ordinal % 8));
+        $thisBitset[$byte] = $thisBitset[$byte] | \chr(1 << ($ordinal % 8));
+
+        $this->bitset = $thisBitset;
     }
 
     /**
@@ -448,7 +474,11 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doSetBitInt($ordinal): void
     {
-        $this->bitset = $this->bitset | (1 << $ordinal);
+        /** @var int $thisBitset */
+        $thisBitset = $this->bitset;
+        $thisBitset = $thisBitset | (1 << $ordinal);
+
+        $this->bitset = $thisBitset;
     }
 
     /**
@@ -463,8 +493,13 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doUnsetBitBin($ordinal): void
     {
+        /** @var string $thisBitset */
+        $thisBitset = $this->bitset;
+
         $byte = (int) ($ordinal / 8);
-        $this->bitset[$byte] = $this->bitset[$byte] & \chr(~(1 << ($ordinal % 8)));
+        $thisBitset[$byte] = $thisBitset[$byte] & \chr(~(1 << ($ordinal % 8)));
+
+        $this->bitset = $thisBitset;
     }
 
     /**
@@ -486,7 +521,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Creates a new set with the given enumerator object or value added
-     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -499,7 +534,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Creates a new set with the given enumeration objects or values added
-     * @param iterable $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -514,7 +549,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Create a new set with the given enumerator object or value removed
-     * @param Enum|null|bool|int|float|string|array $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -527,7 +562,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Creates a new set with the given enumeration objects or values removed
-     * @param iterable $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -543,7 +578,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators from both this and other (this | other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the union
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the union
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -557,7 +592,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators from both this and other (this | other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the union
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the union
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      * @see withUnion()
@@ -572,7 +607,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators common to both this and other (this & other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the intersect
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -586,7 +621,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators common to both this and other (this & other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the intersect
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the intersect
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      * @see withIntersect()
@@ -601,7 +636,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators in this but not in other (this - other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the diff
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -615,7 +650,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators in this but not in other (this - other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the diff
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the diff
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      * @see withDiff()
@@ -630,7 +665,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators in either this and other but not in both (this ^ other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the symmetric difference
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      */
@@ -644,7 +679,7 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Create a new set with enumerators in either this and other but not in both (this ^ other)
      *
-     * @param EnumSet $other EnumSet of the same enumeration to produce the symmetric difference
+     * @param EnumSet<T> $other EnumSet of the same enumeration to produce the symmetric difference
      * @return static
      * @throws InvalidArgumentException If $other doesn't match the enumeration
      * @see withSymDiff()
@@ -709,7 +744,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Test if the given enumerator exists
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return bool
      */
     public function has($enumerator): bool
@@ -719,7 +754,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Test if the given enumerator exists
-     * @param Enum|null|bool|int|float|string|array $enumerator
+     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
      * @return bool
      * @see has()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
@@ -733,7 +768,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get a new iterator
-     * @return Iterator
+     * @return Iterator<T>
      * @uses doGetIteratorInt()
      * @uses doGetIteratorBin()
      */
@@ -747,12 +782,13 @@ class EnumSet implements IteratorAggregate, Countable
      *
      * This is the binary bitset implementation.
      *
-     * @return Iterator
+     * @return Iterator<T>
      * @see getIterator()
      * @see goGetIteratorInt()
      */
     private function doGetIteratorBin()
     {
+        /** @var string $bitset */
         $bitset   = $this->bitset;
         $byteLen  = \strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
@@ -776,14 +812,15 @@ class EnumSet implements IteratorAggregate, Countable
      *
      * This is the integer bitset implementation.
      *
-     * @return Iterator
+     * @return Iterator<T>
      * @see getIterator()
      * @see doGetIteratorBin()
      */
     private function doGetIteratorInt()
     {
-        $count  = $this->enumerationCount;
+        /** @var int $bitset */
         $bitset = $this->bitset;
+        $count  = $this->enumerationCount;
         for ($ordinal = 0; $ordinal < $count; ++$ordinal) {
             if ($bitset & (1 << $ordinal)) {
                 yield $ordinal => ($this->enumeration)::byOrdinal($ordinal);
@@ -816,8 +853,9 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doCountBin()
     {
-        $count   = 0;
+        /** @var string $bitset */
         $bitset  = $this->bitset;
+        $count   = 0;
         $byteLen = \strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
             if ($bitset[$bytePos] === "\0") {
@@ -849,8 +887,9 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doCountInt()
     {
-        $count  = 0;
+        /** @var int $bitset */
         $bitset = $this->bitset;
+        $count  = 0;
 
         // PHP does not support right shift unsigned
         if ($bitset < 0) {
@@ -885,7 +924,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Check if this EnumSet is the same as other
-     * @param EnumSet $other
+     * @param EnumSet<T> $other
      * @return bool
      */
     public function isEqual(EnumSet $other): bool
@@ -896,7 +935,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Check if this EnumSet is a subset of other
-     * @param EnumSet $other
+     * @param EnumSet<T> $other
      * @return bool
      */
     public function isSubset(EnumSet $other): bool
@@ -907,7 +946,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Check if this EnumSet is a superset of other
-     * @param EnumSet $other
+     * @param EnumSet<T> $other
      * @return bool
      */
     public function isSuperset(EnumSet $other): bool
@@ -948,8 +987,9 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doGetOrdinalsBin()
     {
-        $ordinals = [];
+        /** @var string $bitset */
         $bitset   = $this->bitset;
+        $ordinals = [];
         $byteLen  = \strlen($bitset);
         for ($bytePos = 0; $bytePos < $byteLen; ++$bytePos) {
             if ($bitset[$bytePos] === "\0") {
@@ -978,9 +1018,10 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doGetOrdinalsInt()
     {
+        /** @var int $bitset */
+        $bitset   = $this->bitset;
         $ordinals = [];
         $count    = $this->enumerationCount;
-        $bitset   = $this->bitset;
         for ($ordinal = 0; $ordinal < $count; ++$ordinal) {
             if ($bitset & (1 << $ordinal)) {
                 $ordinals[] = $ordinal;
@@ -991,7 +1032,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get values of the defined enumerators as array
-     * @return mixed[]
+     * @return (null|bool|int|float|string|array<int|string, mixed>)[]
      */
     public function getValues(): array
     {
@@ -1019,7 +1060,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get the defined enumerators as array
-     * @return Enum[]
+     * @return T[]
      */
     public function getEnumerators(): array
     {
@@ -1054,7 +1095,10 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doGetBinaryBitsetLeBin()
     {
-        return $this->bitset;
+        /** @var string $bitset */
+        $bitset = $this->bitset;
+
+        return $bitset;
     }
 
     /**
@@ -1112,7 +1156,10 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doGetBitBin($ordinal)
     {
-        return (\ord($this->bitset[(int) ($ordinal / 8)]) & 1 << ($ordinal % 8)) !== 0;
+        /** @var string $bitset */
+        $bitset = $this->bitset;
+
+        return (\ord($bitset[(int) ($ordinal / 8)]) & 1 << ($ordinal % 8)) !== 0;
     }
 
     /**
@@ -1127,6 +1174,9 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doGetBitInt($ordinal)
     {
-        return (bool)($this->bitset & (1 << $ordinal));
+        /** @var int $bitset */
+        $bitset = $this->bitset;
+
+        return (bool)($bitset & (1 << $ordinal));
     }
 }
