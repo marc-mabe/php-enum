@@ -62,9 +62,11 @@ class EnumSerializableTraitTest extends TestCase
 
     public function testUnserializeThrowsLogicExceptionOnChangingValue()
     {
+        $enumInt = SerializableEnum::get(SerializableEnum::INT);
+        $enumStrSer = SerializableEnum::STR()->__serialize();
+
         $this->expectException(LogicException::class);
-        $enum = SerializableEnum::get(SerializableEnum::INT);
-        $enum->unserialize(serialize(SerializableEnum::STR));
+        $enumInt->__unserialize($enumStrSer);
     }
 
     public function testInheritence()
@@ -77,6 +79,14 @@ class EnumSerializableTraitTest extends TestCase
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(ExtendedSerializableEnum::class, $unserialized);
         $this->assertSame($enum->getValue(), $unserialized->getValue());
+    }
+
+    public function testUnserializeFromPhp73()
+    {
+        $serialized = 'C:39:"MabeEnumTest\TestAsset\SerializableEnum":2:{N;}';
+        $unserialized = unserialize($serialized);
+        $this->assertInstanceOf(SerializableEnum::class, $unserialized);
+        $this->assertNull($unserialized->getValue());
     }
 
     /**
