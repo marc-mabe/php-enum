@@ -378,7 +378,41 @@ class EnumSetTest extends TestCase
         $this->assertSame(3, $set->count());
     }
 
-    public function testGetBinaryBitsetBe()
+    public function testGetBinaryBitsetBeInt()
+    {
+        $set = new EnumSet(Enum32::class);
+
+        $enum1 = Enum32::ONE;
+        $enum2 = Enum32::TWO;
+        $enum3 = Enum32::THERTYTWO;
+        $enum4 = Enum32::THERTYONE;
+
+        $set->add($enum1);
+        $this->assertSame("\x00\x00\x00\x01", $set->getBinaryBitsetBe());
+        $this->assertTrue($set->has($enum1));
+
+        $set->add($enum2);
+        $this->assertSame("\x00\x00\x00\x03", $set->getBinaryBitsetBe());
+        $this->assertTrue($set->has($enum2));
+
+        $set->add($enum3);
+        $this->assertSame("\x80\x00\x00\x03", $set->getBinaryBitsetBe());
+        $this->assertTrue($set->has($enum3));
+
+        $set->add($enum4);
+        $this->assertSame("\xC0\x00\x00\x03", $set->getBinaryBitsetBe());
+        $this->assertTrue($set->has($enum4));
+
+        $this->assertSame(4, $set->count());
+
+        $set->remove($enum2);
+        $this->assertSame("\xC0\x00\x00\x01", $set->getBinaryBitsetBe());
+        $this->assertFalse($set->has($enum2));
+
+        $this->assertSame(3, $set->count());
+    }
+
+    public function testGetBinaryBitsetBeBin()
     {
         $set = new EnumSet(Enum65::class);
 
@@ -387,25 +421,25 @@ class EnumSetTest extends TestCase
         $enum3 = Enum65::SIXTYFIVE;
         $enum4 = Enum65::SIXTYFOUR;
 
-        $set = $set->with($enum1);
+        $set->add($enum1);
         $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x01", $set->getBinaryBitsetBe());
         $this->assertTrue($set->has($enum1));
 
-        $set = $set->with($enum2);
+        $set->add($enum2);
         $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00\x03", $set->getBinaryBitsetBe());
         $this->assertTrue($set->has($enum2));
 
-        $set = $set->with($enum3);
+        $set->add($enum3);
         $this->assertSame("\x01\x00\x00\x00\x00\x00\x00\x00\x03", $set->getBinaryBitsetBe());
         $this->assertTrue($set->has($enum3));
 
-        $set = $set->with($enum4);
+        $set->add($enum4);
         $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x03", $set->getBinaryBitsetBe());
         $this->assertTrue($set->has($enum4));
 
         $this->assertSame(4, $set->count());
 
-        $set = $set->without($enum2);
+        $set->remove($enum2);
         $this->assertSame("\x01\x80\x00\x00\x00\x00\x00\x00\x01", $set->getBinaryBitsetBe());
         $this->assertFalse($set->has($enum2));
 

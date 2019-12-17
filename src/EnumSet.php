@@ -1064,7 +1064,7 @@ class EnumSet implements IteratorAggregate, Countable
      */
     public function getBinaryBitsetBe(): string
     {
-        return \strrev($this->bitset);
+        return \strrev($this->getBinaryBitsetLe());
     }
 
     /**
