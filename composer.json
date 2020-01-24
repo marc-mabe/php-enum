@@ -22,7 +22,7 @@
     },
     "require-dev": {
         "phpbench/phpbench": "^0.16.1",
-        "phpstan/phpstan": "^0.12.4",
+        "phpstan/phpstan": "^0.12.7",
         "phpunit/phpunit": "^7.0",
         "vimeo/psalm": "^3.10"
     },

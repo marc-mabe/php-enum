@@ -55,6 +55,7 @@ trait EnumSerializableTrait
             throw new RuntimeException('Missing array key "value"');
         }
 
+        /** @var mixed $value */
         $value     = $data['value'];
         $constants = self::getConstants();
         $name      = \array_search($value, $constants, true);
