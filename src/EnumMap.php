@@ -54,6 +54,22 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
         }
     }
 
+    /**
+     * Add virtual private property "__pairs" with a list of key-value-pairs
+     * to the result of var_dump.
+     *
+     * This helps debugging as internally the map is using the ordinal number.
+     *
+     * @return array<string, mixed>
+     */
+    public function __debugInfo(): array {
+        $dbg = (array)$this;
+        $dbg["\0" . self::class . "\0__pairs"] = array_map(function ($k, $v) {
+            return [$k, $v];
+        }, $this->getKeys(), $this->getValues());
+        return $dbg;
+    }
+
     /* write access (mutable) */
 
     /**

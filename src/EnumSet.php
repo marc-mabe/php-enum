@@ -107,6 +107,21 @@ class EnumSet implements IteratorAggregate, Countable
     }
 
     /**
+     * Add virtual private property "__enumerators" with a list of enumerator values set
+     * to the result of var_dump.
+     *
+     * This helps debugging as internally the enumerators of this EnumSet gets stored
+     * as either integer or binary bit-array.
+     *
+     * @return array<string, mixed>
+     */
+    public function __debugInfo() {
+        $dbg = (array)$this;
+        $dbg["\0" . self::class . "\0__enumerators"] = $this->getValues();
+        return $dbg;
+    }
+
+    /**
      * Get the classname of the enumeration
      * @return string
      */

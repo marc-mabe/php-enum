@@ -7,6 +7,7 @@ use MabeEnum\EnumMap;
 use MabeEnumTest\TestAsset\Enum32;
 use MabeEnumTest\TestAsset\EnumBasic;
 use MabeEnumTest\TestAsset\EnumInheritance;
+use MabeEnumTest\TestAsset\EnumMapExt;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 
@@ -486,6 +487,34 @@ class EnumMapTest extends TestCase
 
         $this->assertFalse($map1->isEmpty());
         $this->assertTrue($map2->isEmpty());
+    }
+
+    public function testDebugInfo()
+    {
+        $map = new EnumMapExt(EnumBasic::class);
+        foreach (EnumBasic::getEnumerators() as $i => $enumerator) {
+            $map->add($enumerator, $i);
+        }
+
+        $dbg = $map->__debugInfo();
+
+        $privateEnumMapPrefix = "\0" . EnumMap::class . "\0";
+        $privateEnumMapExtPrefix = "\0" . EnumMapExt::class . "\0";
+        $protectedEnumMapExtPrefix = "\0*\0";
+        $publicEnumMapExtPrefix = '';
+
+        // assert real properties still exists
+        $this->assertArrayHasKey("{$privateEnumMapPrefix}enumeration", $dbg);
+        $this->assertArrayHasKey("{$privateEnumMapPrefix}map", $dbg);
+        $this->assertArrayHasKey("{$privateEnumMapExtPrefix}priv", $dbg);
+        $this->assertArrayHasKey("{$protectedEnumMapExtPrefix}prot", $dbg);
+        $this->assertArrayHasKey("{$publicEnumMapExtPrefix}pub", $dbg);
+
+        // assert virtual private property __pairs
+        $this->assertArrayHasKey("{$privateEnumMapPrefix}__pairs", $dbg);
+        $this->assertSame(array_map(function ($k, $v) {
+            return [$k, $v];
+        }, $map->getKeys(), $map->getValues()), $dbg["{$privateEnumMapPrefix}__pairs"]);
     }
 
     /* deprecated */
