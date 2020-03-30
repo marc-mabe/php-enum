@@ -208,15 +208,15 @@ An `EnumSet` is a specialized Set implementation for use with enumeration types.
 All of the enumerators in an `EnumSet` must come from a single enumeration type that is specified, when the set is
 created.
 
-Enum sets are represented internally as bit vectors. The bit vektor is eigther an integer type or a binary string type
-depending on how many enumerators are defined is the enumeration type. This representation is extremely compact and
-efficient. Bulk operations will run very quickly. Enumerators of an `EnumSet` are unique and ordered based on it's
+Enum sets are represented internally as bit vectors. The bit vector is either an integer type or a binary string type
+depending on how many enumerators are defined in the enumeration type. This representation is extremely compact and
+efficient. Bulk operations will run very quickly. Enumerators of an `EnumSet` are unique and ordered based on its
 ordinal number by design.
 
 It implements `IteratorAggregate` and `Countable` to be directly iterable with `foreach` and countable with `count()`.
 
 The `EnumSet` has a mutable and an immutable interface.
-Mutable methods starts with `set` or `remove` where immutable methods starts with `with`.
+Mutable methods start with `set` or `remove` while immutable methods start with `with`.
 
 ```php
 use MabeEnum\EnumSet;
