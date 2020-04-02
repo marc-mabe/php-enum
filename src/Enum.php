@@ -14,6 +14,8 @@ use LogicException;
  * @copyright 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
+ *
+ * @psalm-immutable
  */
 abstract class Enum
 {
@@ -87,6 +89,8 @@ abstract class Enum
     /**
      * @throws LogicException Enums are not serializable
      *                        because instances are implemented as singletons
+     *
+     * @psalm-return never-return
      */
     final public function __sleep()
     {
@@ -96,6 +100,8 @@ abstract class Enum
     /**
      * @throws LogicException Enums are not serializable
      *                        because instances are implemented as singletons
+     *
+     * @psalm-return never-return
      */
     final public function __wakeup()
     {
@@ -116,6 +122,8 @@ abstract class Enum
      * Get the name of the enumerator
      *
      * @return string
+     *
+     * @psalm-return non-empty-string
      */
     final public function getName()
     {
@@ -170,6 +178,8 @@ abstract class Enum
      * @return static
      * @throws InvalidArgumentException On an unknown or invalid value
      * @throws LogicException           On ambiguous constant values
+     *
+     * @psalm-pure
      */
     final public static function get($enumerator)
     {
@@ -187,6 +197,8 @@ abstract class Enum
      * @return static
      * @throws InvalidArgumentException On an unknown or invalid value
      * @throws LogicException           On ambiguous constant values
+     *
+     * @psalm-pure
      */
     final public static function byValue($value)
     {
@@ -214,6 +226,8 @@ abstract class Enum
      * @return static
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous values
+     *
+     * @psalm-pure
      */
     final public static function byName(string $name)
     {
@@ -241,6 +255,8 @@ abstract class Enum
      * @return static
      * @throws InvalidArgumentException On an invalid ordinal number
      * @throws LogicException           On ambiguous values
+     *
+     * @psalm-pure
      */
     final public static function byOrdinal(int $ordinal)
     {
@@ -263,6 +279,9 @@ abstract class Enum
      * Get a list of enumerator instances ordered by ordinal number
      *
      * @return static[]
+     *
+     * @psalm-return list<static>
+     * @psalm-pure
      */
     final public static function getEnumerators()
     {
@@ -276,6 +295,9 @@ abstract class Enum
      * Get a list of enumerator values ordered by ordinal number
      *
      * @return mixed[]
+     *
+     * @psalm-return list<null|bool|int|float|string|array>
+     * @psalm-pure
      */
     final public static function getValues()
     {
@@ -286,6 +308,9 @@ abstract class Enum
      * Get a list of enumerator names ordered by ordinal number
      *
      * @return string[]
+     *
+     * @psalm-return list<non-empty-string>
+     * @psalm-pure
      */
     final public static function getNames()
     {
@@ -294,11 +319,14 @@ abstract class Enum
         }
         return self::$names[static::class];
     }
-    
+
     /**
      * Get a list of enumerator ordinal numbers
      *
      * @return int[]
+     *
+     * @psalm-return list<int>
+     * @psalm-pure
      */
     final public static function getOrdinals()
     {
@@ -309,8 +337,11 @@ abstract class Enum
     /**
      * Get all available constants of the called class
      *
-     * @return array
+     * @return mixed[]
      * @throws LogicException On ambiguous constant values
+     *
+     * @psalm-return array<non-empty-string, null|bool|int|float|string|array>
+     * @psalm-pure
      */
     final public static function getConstants()
     {
@@ -361,9 +392,11 @@ abstract class Enum
 
     /**
      * Test if the given enumerator is part of this enumeration
-     * 
+     *
      * @param static|null|bool|int|float|string|array $enumerator
      * @return bool
+     *
+     * @psalm-pure
      */
     final public static function has($enumerator)
     {
@@ -376,6 +409,8 @@ abstract class Enum
      *
      * @param null|bool|int|float|string|array $value
      * @return bool
+     *
+     * @psalm-pure
      */
     final public static function hasValue($value)
     {
@@ -387,6 +422,8 @@ abstract class Enum
      *
      * @param string $name
      * @return bool
+     *
+     * @psalm-pure
      */
     final public static function hasName(string $name)
     {
@@ -404,6 +441,8 @@ abstract class Enum
      * @return static
      * @throws InvalidArgumentException On an invalid or unknown name
      * @throws LogicException           On ambiguous constant values
+     *
+     * @psalm-pure
      */
     final public static function __callStatic(string $method, array $args)
     {
