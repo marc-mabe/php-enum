@@ -57,7 +57,7 @@ final class EnumIsImmutable
     }
 
     /**
-     * @return null|bool|int|float|string|array
+     * @return null|bool|int|float|string|array<int|string, mixed>
      *
      * @psalm-pure
      */
@@ -125,6 +125,8 @@ final class EnumIsImmutable
     }
 
     /**
+     * @return array<int, string>
+     *
      * @psalm-pure
      *
      * @psalm-return list<non-empty-string>

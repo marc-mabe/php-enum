@@ -22,7 +22,7 @@
     },
     "require-dev": {
         "phpbench/phpbench": "^0.16.1",
-        "phpstan/phpstan": "^0.12.7",
+        "phpstan/phpstan": "^0.12.18",
         "phpunit/phpunit": "^7.0",
         "vimeo/psalm": "^3.10"
     },
@@ -34,6 +34,7 @@
     "autoload-dev": {
         "psr-4": {
             "MabeEnumTest\\":  "tests/MabeEnumTest/",
+            "MabeEnumStaticAnalysis\\": "tests/MabeEnumStaticAnalysis/",
             "MabeEnumBench\\": "bench/"
         }
     },

@@ -329,7 +329,7 @@ abstract class Enum
     /**
      * Get a list of enumerator names ordered by ordinal number
      *
-     * @return string[]
+     * @return array<int, string>
      *
      * @psalm-return list<non-empty-string>
      * @psalm-pure
