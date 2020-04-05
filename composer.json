@@ -21,8 +21,9 @@
         "ext-reflection": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0",
-        "phpbench/phpbench": "^0.16.1"
+        "phpunit/phpunit": "^7.0",
+        "phpbench/phpbench": "^0.16.1",
+        "vimeo/psalm": "^3.10"
     },
     "autoload": {
         "psr-4": {
