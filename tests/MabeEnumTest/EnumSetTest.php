@@ -12,6 +12,7 @@ use MabeEnumTest\TestAsset\Enum32;
 use MabeEnumTest\TestAsset\Enum64;
 use MabeEnumTest\TestAsset\Enum65;
 use MabeEnumTest\TestAsset\Enum66;
+use MabeEnumTest\TestAsset\EnumSetExt;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -954,6 +955,28 @@ class EnumSetTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $set1->setSymDiff($set2);
+    }
+
+    public function testDebugInfo()
+    {
+        $set = new EnumSetExt(EnumBasic::class, EnumBasic::getEnumerators());
+        $dbg = $set->__debugInfo();
+
+        $privateEnumSetPrefix = "\0" . EnumSet::class . "\0";
+        $privateEnumSetExtPrefix = "\0" . EnumSetExt::class . "\0";
+        $protectedEnumSetExtPrefix = "\0*\0";
+        $publicEnumSetExtPrefix = '';
+
+        // assert real properties still exists
+        $this->assertArrayHasKey("{$privateEnumSetPrefix}enumeration", $dbg);
+        $this->assertArrayHasKey("{$privateEnumSetPrefix}bitset", $dbg);
+        $this->assertArrayHasKey("{$privateEnumSetExtPrefix}priv", $dbg);
+        $this->assertArrayHasKey("{$protectedEnumSetExtPrefix}prot", $dbg);
+        $this->assertArrayHasKey("{$publicEnumSetExtPrefix}pub", $dbg);
+
+        // assert virtual private property __enumerators
+        $this->assertArrayHasKey("{$privateEnumSetPrefix}__enumerators", $dbg);
+        $this->assertSame(EnumBasic::getValues(), $dbg["{$privateEnumSetPrefix}__enumerators"]);
     }
 
     /* deprecated */
