@@ -24,36 +24,31 @@ final class EnumIsImmutable
     }
 
     /**
-     * @psalm-pure
-     *
      * @psalm-return never-return
+     * @psalm-pure
      */
     public static function sleepIsPure(): void
     {
-        DummyEnum::a()
-            ->__sleep();
+        DummyEnum::a()->__sleep();
     }
 
     /**
-     * @psalm-pure
-     *
      * @psalm-return never-return
+     * @psalm-pure
      */
     public static function wakeUpIsPure(): void
     {
-        DummyEnum::a()
-            ->__wakeup();
+        DummyEnum::a()->__wakeup();
     }
 
     /**
-     * @psalm-pure
-     *
+     * @phpstan-return string
      * @psalm-return non-empty-string
+     * @psalm-pure
      */
     public static function nameRetrievalIsPure(): string
     {
-        return DummyEnum::a()
-            ->getName();
+        return DummyEnum::a()->getName();
     }
 
     /**
@@ -63,8 +58,7 @@ final class EnumIsImmutable
      */
     public static function valueRetrievalIsPure()
     {
-        return DummyEnum::a()
-            ->getValue();
+        return DummyEnum::a()->getValue();
     }
 
     /** @psalm-pure */
@@ -105,9 +99,9 @@ final class EnumIsImmutable
     }
 
     /**
-     * @psalm-pure
-     *
+     * @phpstan-return array<int, DummyEnum>
      * @psalm-return list<DummyEnum>
+     * @psalm-pure
      */
     public static function getEnumeratorsIsPure(): array
     {
@@ -115,9 +109,9 @@ final class EnumIsImmutable
     }
 
     /**
-     * @psalm-pure
-     *
+     * @phpstan-return array<int, null|bool|int|float|string|array>
      * @psalm-return list<null|bool|int|float|string|array>
+     * @psalm-pure
      */
     public static function getValuesIsPure(): array
     {
@@ -125,11 +119,9 @@ final class EnumIsImmutable
     }
 
     /**
-     * @return array<int, string>
-     *
-     * @psalm-pure
-     *
+     * @phpstan-return array<int, string>
      * @psalm-return list<non-empty-string>
+     * @psalm-pure
      */
     public static function getNamesIsPure(): array
     {
@@ -137,9 +129,8 @@ final class EnumIsImmutable
     }
 
     /**
-     * @psalm-pure
-     *
      * @psalm-return list<int>
+     * @psalm-pure
      */
     public static function getOrdinalsIsPure(): array
     {

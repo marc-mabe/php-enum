@@ -965,7 +965,7 @@ class EnumSetTest extends TestCase
         $set1->setSymDiff($set2);
     }
 
-    public function testDebugInfo()
+    public function testDebugInfo(): void
     {
         $set = new EnumSetExt(EnumBasic::class, EnumBasic::getEnumerators());
         $dbg = $set->__debugInfo();

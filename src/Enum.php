@@ -22,7 +22,7 @@ abstract class Enum
     /**
      * The selected enumerator value
      *
-     * @var null|bool|int|float|string|array<int|string, mixed>
+     * @var null|bool|int|float|string|array<mixed>
      */
     private $value;
 
@@ -36,7 +36,7 @@ abstract class Enum
     /**
      * A map of enumerator names and values by enumeration class
      *
-     * @var array<class-string<Enum>, array<string, null|bool|int|float|string|array<int|string, mixed>>>
+     * @var array<class-string<Enum>, array<string, null|bool|int|float|string|array<mixed>>>
      */
     private static $constants = [];
 
@@ -57,8 +57,8 @@ abstract class Enum
     /**
      * Constructor
      *
-     * @param null|bool|int|float|string|array<int|string, mixed> $value   The value of the enumerator
-     * @param int|null                                            $ordinal The ordinal number of the enumerator
+     * @param null|bool|int|float|string|array<mixed> $value   The value of the enumerator
+     * @param int|null                                $ordinal The ordinal number of the enumerator
      */
     final private function __construct($value, $ordinal = null)
     {
@@ -111,7 +111,7 @@ abstract class Enum
     /**
      * Get the value of the enumerator
      *
-     * @return null|bool|int|float|string|array<int|string, mixed>
+     * @return null|bool|int|float|string|array<mixed>
      */
     final public function getValue()
     {
@@ -123,6 +123,7 @@ abstract class Enum
      *
      * @return string
      *
+     * @phpstan-return string
      * @psalm-return non-empty-string
      */
     final public function getName()
@@ -157,7 +158,7 @@ abstract class Enum
     /**
      * Compare this enumerator against another and check if it's the same.
      *
-     * @param static|null|bool|int|float|string|array<int|string, mixed> $enumerator An enumerator object or value
+     * @param static|null|bool|int|float|string|array<mixed> $enumerator An enumerator object or value
      * @return bool
      */
     final public function is($enumerator)
@@ -174,7 +175,7 @@ abstract class Enum
     /**
      * Get an enumerator instance of the given enumerator value or instance
      *
-     * @param static|null|bool|int|float|string|array<int|string, mixed> $enumerator An enumerator object or value
+     * @param static|null|bool|int|float|string|array<mixed> $enumerator An enumerator object or value
      * @return static
      * @throws InvalidArgumentException On an unknown or invalid value
      * @throws LogicException           On ambiguous constant values
@@ -201,7 +202,7 @@ abstract class Enum
     /**
      * Get an enumerator instance by the given value
      *
-     * @param null|bool|int|float|string|array<int|string, mixed> $value Enumerator value
+     * @param null|bool|int|float|string|array<mixed> $value Enumerator value
      * @return static
      * @throws InvalidArgumentException On an unknown or invalid value
      * @throws LogicException           On ambiguous constant values
@@ -299,6 +300,7 @@ abstract class Enum
      *
      * @return static[]
      *
+     * @phpstan-return array<int, static>
      * @psalm-return list<static>
      * @psalm-pure
      */
@@ -316,8 +318,9 @@ abstract class Enum
     /**
      * Get a list of enumerator values ordered by ordinal number
      *
-     * @return (null|bool|int|float|string|array<int|string, mixed>)[]
+     * @return (null|bool|int|float|string|array)[]
      *
+     * @phpstan-return array<int, null|bool|int|float|string|array>
      * @psalm-return list<null|bool|int|float|string|array>
      * @psalm-pure
      */
@@ -329,8 +332,9 @@ abstract class Enum
     /**
      * Get a list of enumerator names ordered by ordinal number
      *
-     * @return array<int, string>
+     * @return string[]
      *
+     * @phpstan-return array<int, string>
      * @psalm-return list<non-empty-string>
      * @psalm-pure
      */
@@ -347,6 +351,7 @@ abstract class Enum
      *
      * @return int[]
      *
+     * @phpstan-return array<int, int>
      * @psalm-return list<int>
      * @psalm-pure
      */
@@ -359,9 +364,10 @@ abstract class Enum
     /**
      * Get all available constants of the called class
      *
-     * @return array<string, null|bool|int|float|string|array<int|string, mixed>>
+     * @return (null|bool|int|float|string|array)[]
      * @throws LogicException On ambiguous constant values
      *
+     * @phpstan-return array<string, null|bool|int|float|string|array>
      * @psalm-return array<non-empty-string, null|bool|int|float|string|array>
      * @psalm-pure
      */
@@ -397,7 +403,7 @@ abstract class Enum
 
     /**
      * Test that the given constants does not contain ambiguous values
-     * @param array<string, null|bool|int|float|string|array<int|string, mixed>> $constants
+     * @param array<string, null|bool|int|float|string|array<mixed>> $constants
      * @return bool
      */
     private static function noAmbiguousValues($constants)
@@ -415,7 +421,7 @@ abstract class Enum
     /**
      * Test if the given enumerator is part of this enumeration
      *
-     * @param static|null|bool|int|float|string|array<int|string, mixed> $enumerator
+     * @param static|null|bool|int|float|string|array<mixed> $enumerator
      * @return bool
      *
      * @psalm-pure
@@ -432,7 +438,7 @@ abstract class Enum
     /**
      * Test if the given enumerator value is part of this enumeration
      *
-     * @param null|bool|int|float|string|array<int|string, mixed> $value
+     * @param null|bool|int|float|string|array<mixed> $value
      * @return bool
      *
      * @psalm-pure

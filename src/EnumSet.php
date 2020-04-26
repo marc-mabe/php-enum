@@ -83,7 +83,7 @@ class EnumSet implements IteratorAggregate, Countable
      * Constructor
      *
      * @param class-string<T> $enumeration The classname of the enumeration
-     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>>|null $enumerators iterable list of enumerators initializing the set
+     * @param iterable<T|null|bool|int|float|string|array<mixed>>|null $enumerators iterable list of enumerators initializing the set
      * @throws InvalidArgumentException
      */
     public function __construct(string $enumeration, iterable $enumerators = null)
@@ -152,7 +152,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Adds an enumerator object or value
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -163,7 +163,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Adds all enumerator objects or values of the given iterable
-     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<mixed>> $enumerators Iterable list of enumerator objects or values
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -184,7 +184,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Removes the given enumerator object or value
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -195,7 +195,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Adds an enumerator object or value
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see add()
@@ -209,7 +209,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Removes the given enumerator object or value
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator Enumerator object or value
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see remove()
@@ -223,7 +223,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Removes all enumerator objects or values of the given iterable
-     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<mixed>> $enumerators Iterable list of enumerator objects or values
      * @return void
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -521,7 +521,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Creates a new set with the given enumerator object or value added
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator Enumerator object or value
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -534,7 +534,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Creates a new set with the given enumeration objects or values added
-     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<mixed>> $enumerators Iterable list of enumerator objects or values
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -549,7 +549,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Create a new set with the given enumerator object or value removed
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator Enumerator object or value
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator Enumerator object or value
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -562,7 +562,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Creates a new set with the given enumeration objects or values removed
-     * @param iterable<T|null|bool|int|float|string|array<int|string, mixed>> $enumerators Iterable list of enumerator objects or values
+     * @param iterable<T|null|bool|int|float|string|array<mixed>> $enumerators Iterable list of enumerator objects or values
      * @return static
      * @throws InvalidArgumentException On an invalid given enumerator
      */
@@ -744,7 +744,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Test if the given enumerator exists
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator
      * @return bool
      */
     public function has($enumerator): bool
@@ -754,7 +754,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Test if the given enumerator exists
-     * @param T|null|bool|int|float|string|array<int|string, mixed> $enumerator
+     * @param T|null|bool|int|float|string|array<mixed> $enumerator
      * @return bool
      * @see has()
      * @deprecated Will trigger deprecation warning in last 4.x and removed in 5.x
@@ -768,7 +768,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get a new iterator
-     * @return Iterator<T>
+     * @return Iterator<int, T>
      * @uses doGetIteratorInt()
      * @uses doGetIteratorBin()
      */
@@ -782,7 +782,7 @@ class EnumSet implements IteratorAggregate, Countable
      *
      * This is the binary bitset implementation.
      *
-     * @return Iterator<T>
+     * @return Iterator<int, T>
      * @see getIterator()
      * @see goGetIteratorInt()
      */
@@ -812,7 +812,7 @@ class EnumSet implements IteratorAggregate, Countable
      *
      * This is the integer bitset implementation.
      *
-     * @return Iterator<T>
+     * @return Iterator<int, T>
      * @see getIterator()
      * @see doGetIteratorBin()
      */
@@ -967,7 +967,7 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get ordinal numbers of the defined enumerators as array
-     * @return int[]
+     * @return array<int, int>
      * @uses  doGetOrdinalsBin()
      * @uses  doGetOrdinalsInt()
      */
@@ -981,7 +981,7 @@ class EnumSet implements IteratorAggregate, Countable
      *
      * This is the binary bitset implementation.
      *
-     * @return int[]
+     * @return array<int, int>
      * @see getOrdinals()
      * @see goGetOrdinalsInt()
      */
@@ -1012,7 +1012,7 @@ class EnumSet implements IteratorAggregate, Countable
      *
      * This is the integer bitset implementation.
      *
-     * @return int[]
+     * @return array<int, int>
      * @see getOrdinals()
      * @see doGetOrdinalsBin()
      */
@@ -1032,7 +1032,10 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get values of the defined enumerators as array
-     * @return (null|bool|int|float|string|array<int|string, mixed>)[]
+     * @return (null|bool|int|float|string|array)[]
+     *
+     * @phpstan-return array<int, null|bool|int|float|string|array<mixed>>
+     * @psalm-return list<null|bool|int|float|string|array>
      */
     public function getValues(): array
     {
@@ -1047,6 +1050,9 @@ class EnumSet implements IteratorAggregate, Countable
     /**
      * Get names of the defined enumerators as array
      * @return string[]
+     *
+     * @phpstan-return array<int, string>
+     * @psalm-return list<string>
      */
     public function getNames(): array
     {
@@ -1060,7 +1066,10 @@ class EnumSet implements IteratorAggregate, Countable
 
     /**
      * Get the defined enumerators as array
-     * @return T[]
+     * @return Enum[]
+     *
+     * @phpstan-return array<int, T>
+     * @psalm-return list<T>
      */
     public function getEnumerators(): array
     {

@@ -492,7 +492,7 @@ class EnumMapTest extends TestCase
         $this->assertTrue($map2->isEmpty());
     }
 
-    public function testDebugInfo()
+    public function testDebugInfo(): void
     {
         $map = new EnumMapExt(EnumBasic::class);
         foreach (EnumBasic::getEnumerators() as $i => $enumerator) {
