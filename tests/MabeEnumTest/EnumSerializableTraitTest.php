@@ -20,7 +20,7 @@ use RuntimeException;
  */
 class EnumSerializableTraitTest extends TestCase
 {
-    public function testSerializeSerializableEnum()
+    public function testSerializeSerializableEnum(): void
     {
         $serialized = serialize(SerializableEnum::get(SerializableEnum::NIL));
         $this->assertInternalType('string', $serialized);
@@ -29,7 +29,7 @@ class EnumSerializableTraitTest extends TestCase
         $this->assertInstanceOf(SerializableEnum::class, $unserialized);
     }
 
-    public function testUnserializeFirstWillHoldTheSameInstance()
+    public function testUnserializeFirstWillHoldTheSameInstance(): void
     {
         $serialized = serialize(SerializableEnum::get(SerializableEnum::STR));
         $this->assertInternalType('string', $serialized);
@@ -48,19 +48,19 @@ class EnumSerializableTraitTest extends TestCase
         $this->assertSame($enum, $unserialized);
     }
 
-    public function testUnserializeThrowsRuntimeExceptionOnUnknownValue()
+    public function testUnserializeThrowsRuntimeExceptionOnUnknownValue(): void
     {
         $this->expectException(RuntimeException::class);
         unserialize('C:' . strlen(SerializableEnum::class) . ':"' . SerializableEnum::class . '":11:{s:4:"test";}');
     }
 
-    public function testUnserializeThrowsRuntimeExceptionOnInvalidValue()
+    public function testUnserializeThrowsRuntimeExceptionOnInvalidValue(): void
     {
         $this->expectException(RuntimeException::class);
         unserialize('C:' . strlen(SerializableEnum::class) . ':"' . SerializableEnum::class . '":19:{O:8:"stdClass":0:{}}');
     }
 
-    public function testUnserializeThrowsLogicExceptionOnChangingValue()
+    public function testUnserializeThrowsLogicExceptionOnChangingValue(): void
     {
         $enumInt = SerializableEnum::get(SerializableEnum::INT);
         $enumStrSer = SerializableEnum::STR()->__serialize();
@@ -69,7 +69,7 @@ class EnumSerializableTraitTest extends TestCase
         $enumInt->__unserialize($enumStrSer);
     }
 
-    public function testInheritence()
+    public function testInheritence(): void
     {
         $enum = ExtendedSerializableEnum::EXTENDED();
 
@@ -81,7 +81,7 @@ class EnumSerializableTraitTest extends TestCase
         $this->assertSame($enum->getValue(), $unserialized->getValue());
     }
 
-    public function testUnserializeFromPhp73()
+    public function testUnserializeFromPhp73(): void
     {
         $serialized = 'C:39:"MabeEnumTest\TestAsset\SerializableEnum":2:{N;}';
         $unserialized = unserialize($serialized);
@@ -91,12 +91,13 @@ class EnumSerializableTraitTest extends TestCase
 
     /**
      * Clears all instantiated enumerations and detected constants of the given enumerator
-     * @param string $enumeration
+     * @param class-string<Enum> $enumeration
      */
-    private function clearEnumeration($enumeration)
+    private function clearEnumeration($enumeration): void
     {
         $reflClass = new ReflectionClass($enumeration);
         while ($reflClass->getName() !== Enum::class) {
+            /** @var ReflectionClass<Enum> $reflClass */
             $reflClass = $reflClass->getParentClass();
         }
 

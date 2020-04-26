@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace MabeEnumStaticAnalysis;
 
 use MabeEnum\Enum;
+use phpDocumentor\Reflection\Types\Static_;
 
-/** @psalm-immutable enums are immutable */
+/**
+ * @psalm-immutable enums are immutable
+ */
 final class DummyEnum extends Enum
 {
     public const A = 'A_VALUE';

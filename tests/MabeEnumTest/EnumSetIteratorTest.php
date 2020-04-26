@@ -3,6 +3,7 @@
 namespace MabeEnumTest;
 
 use InvalidArgumentException;
+use MabeEnum\Enum;
 use MabeEnum\EnumSet;
 use MabeEnumTest\TestAsset\EmptyEnum;
 use MabeEnumTest\TestAsset\Enum31;
@@ -24,14 +25,14 @@ use PHPUnit\Framework\TestCase;
  */
 class EnumSetIteratorTest extends TestCase
 {
-    public function testIterateEmpty()
+    public function testIterateEmpty(): void
     {
         $set = new EnumSet(EnumBasic::class);
 
         $this->assertSame([], iterator_to_array($set->getIterator()));
     }
 
-    public function testIterateOrdered()
+    public function testIterateOrdered(): void
     {
         $set = new EnumSet(EnumBasic::class);
         $set->add(EnumBasic::FOUR);
@@ -45,7 +46,7 @@ class EnumSetIteratorTest extends TestCase
         ], iterator_to_array($set));
     }
 
-    public function testMultipleIterators()
+    public function testMultipleIterators(): void
     {
         $set = new EnumSet(EnumBasic::class);
         $set->add(EnumBasic::ONE);
@@ -59,7 +60,7 @@ class EnumSetIteratorTest extends TestCase
         $this->assertSame(1, $it2->key());
     }
 
-    public function testStartAtFirstValidPosition()
+    public function testStartAtFirstValidPosition(): void
     {
         $set = new EnumSet(EnumBasic::class);
         $set->add(EnumBasic::SEVEN);
@@ -69,7 +70,7 @@ class EnumSetIteratorTest extends TestCase
         $this->assertSame(EnumBasic::SEVEN()->getOrdinal(), $it->key());
     }
 
-    public function testCurrentOnEmpty()
+    public function testCurrentOnEmpty(): void
     {
         $set = new EnumSet(EnumBasic::class);
 
@@ -80,10 +81,10 @@ class EnumSetIteratorTest extends TestCase
     }
 
     /**
-     * @param string $enumeration
+     * @param class-string<Enum> $enumeration
      * @dataProvider getIntegerEnumerations
      */
-    public function testNextCurrentOutOfRange(string $enumeration)
+    public function testNextCurrentOutOfRange(string $enumeration): void
     {
         $set   = new EnumSet($enumeration);
         $count = count($enumeration::getConstants());
@@ -104,9 +105,9 @@ class EnumSetIteratorTest extends TestCase
 
     /**
      * Data provider for all available integer enumerators
-     * @return array
+     * @return array<int, array<int, class-string<Enum>>>
      */
-    public function getIntegerEnumerations()
+    public function getIntegerEnumerations(): array
     {
         return [
             [Enum31::class],

@@ -13,5 +13,5 @@ use MabeEnum\Enum;
  */
 class EnumExtendedAmbiguous extends EnumBasic
 {
-    const AMBIGOUS_ONE   = 1;
+    const AMBIGOUS_ONE = 1;
 }

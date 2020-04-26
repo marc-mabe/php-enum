@@ -24,7 +24,7 @@ trait EnumSerializableTrait
 {
     /**
      * The method will be defined by MabeEnum\Enum
-     * @return null|bool|int|float|string|array
+     * @return null|bool|int|float|string|array<mixed>
      */
     abstract public function getValue();
 
@@ -32,7 +32,7 @@ trait EnumSerializableTrait
      * Returns an array of data to be serialized.
      * This magic method will be called by serialize() in PHP >= 7.4
      *
-     * @return array
+     * @return array<string, null|bool|int|float|string|array<mixed>>
      */
     public function __serialize(): array
     {
@@ -46,7 +46,7 @@ trait EnumSerializableTrait
      * @throws RuntimeException On missing, unknown or invalid value
      * @throws LogicException   On calling this method on an already initialized enumerator
      *
-     * @param array $data
+     * @param array<string, null|bool|int|float|string|array<mixed>> $data
      * @return void
      */
     public function __unserialize(array $data): void
@@ -55,6 +55,7 @@ trait EnumSerializableTrait
             throw new RuntimeException('Missing array key "value"');
         }
 
+        /** @var mixed $value */
         $value     = $data['value'];
         $constants = self::getConstants();
         $name      = \array_search($value, $constants, true);

@@ -11,22 +11,22 @@ use MabeEnum\Enum;
  * @copyright Copyright (c) 2019 Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  *
- * @method EnumBasic ONE()
- * @method EnumBasic TWO()
- * @method EnumBasic THREE()
- * @method EnumBasic FOUR()
- * @method EnumBasic FIVE()
- * @method EnumBasic SIX()
- * @method EnumBasic SEVEN()
- * @method EnumBasic EIGHT()
- * @method EnumBasic NINE()
- * @method EnumBasic ZERO()
- * @method EnumBasic FLOAT()
- * @method EnumBasic STR()
- * @method EnumBasic STR_EMPTY()
- * @method EnumBasic NIL()
- * @method EnumBasic BOOLEAN_TRUE()
- * @method EnumBasic BOOLEAN_FALSE()
+ * @method static static ONE()
+ * @method static static TWO()
+ * @method static static THREE()
+ * @method static static FOUR()
+ * @method static static FIVE()
+ * @method static static SIX()
+ * @method static static SEVEN()
+ * @method static static EIGHT()
+ * @method static static NINE()
+ * @method static static ZERO()
+ * @method static static FLOAT()
+ * @method static static STR()
+ * @method static static STR_EMPTY()
+ * @method static static NIL()
+ * @method static static BOOLEAN_TRUE()
+ * @method static static BOOLEAN_FALSE()
  */
 class EnumBasic extends Enum
 {

@@ -21,9 +21,10 @@
         "ext-reflection": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0",
-        "phpbench/phpbench": "^0.16.1",
-        "vimeo/psalm": "^3.10"
+        "phpbench/phpbench": "^0.16.10",
+        "phpstan/phpstan": "^0.12.19",
+        "phpunit/phpunit": "^7.5.20",
+        "vimeo/psalm": "^3.11.2"
     },
     "autoload": {
         "psr-4": {
@@ -33,6 +34,7 @@
     "autoload-dev": {
         "psr-4": {
             "MabeEnumTest\\":  "tests/MabeEnumTest/",
+            "MabeEnumStaticAnalysis\\": "tests/MabeEnumStaticAnalysis/",
             "MabeEnumBench\\": "bench/"
         }
     },

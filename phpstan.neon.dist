@@ -1,0 +1,19 @@
+parameters:
+    ignoreErrors:
+        # EnumSet internally handles a bitset to be either an integer or a string
+        - message: '#Binary operation "[\|\&\^]" between int\|string and int\|string results in an error#'
+          path: %currentWorkingDirectory%/src/EnumSet.php
+
+        # EnumSerializableTrait
+        - message: '#Access to private property \$[a-z]+ of parent class MabeEnum\\Enum#'
+          path: %currentWorkingDirectory%/src/EnumSerializableTrait.php
+        - message: '#Access to an undefined static property MabeEnumTest\\TestAsset\\SerializableEnum::\$instances#'
+          path: %currentWorkingDirectory%/src/EnumSerializableTrait.php
+
+        # Tests
+        - message: '#Parameter \#\d \$[a-z]* of static method MabeEnum\\Enum::[^ ]* expects [^ ]*, .+ given#'
+          path: %currentWorkingDirectory%/tests/
+        - message: '#Parameter \#\d \$[a-z]* of method MabeEnum\\EnumSet<[^ ]*>::[^ ]* expects [^ ]*, .+ given#'
+          path: %currentWorkingDirectory%/tests/
+        - message: '#Parameter \#\d \$[a-z]* of class MabeEnum\\Enum(Set|Map) constructor expects class-string<T of MabeEnum\\Enum>, string given#'
+          path: %currentWorkingDirectory%/tests/
