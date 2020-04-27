@@ -8,7 +8,7 @@ use MabeEnum\Enum;
  * Enumeration with dublicated values
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2019 Marc Bennewitz
+ * @copyright 2020, Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  */
 class EnumAmbiguous extends Enum

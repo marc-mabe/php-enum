@@ -15,7 +15,7 @@ use LogicException;
  * Please note that this feature breaks singleton behaviour of your enumerations
  * if an enumeration will be unserialized after it was instantiated already.
  *
- * @copyright 2019 Marc Bennewitz
+ * @copyright 2020, Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  * @link https://github.com/marc-mabe/php-enum/issues/52 for further information about this feature

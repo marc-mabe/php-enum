@@ -11,7 +11,7 @@ use LogicException;
 /**
  * Abstract base enumeration class.
  *
- * @copyright 2019 Marc Bennewitz
+ * @copyright 2020, Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  *

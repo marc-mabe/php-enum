@@ -8,7 +8,7 @@ use MabeEnum\Enum;
  * Enumeration with numbers from 1-31 (Safe to use on 32 and 64 bit systems as positive integer)
  *
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
- * @copyright Copyright (c) 2019 Marc Bennewitz
+ * @copyright 2020, Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  *
  * @method static static ONE()

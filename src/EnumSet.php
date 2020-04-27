@@ -16,7 +16,7 @@ use IteratorAggregate;
  * @template T of Enum
  * @implements IteratorAggregate<int, T>
  *
- * @copyright 2019 Marc Bennewitz
+ * @copyright 2020, Marc Bennewitz
  * @license http://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt New BSD License
  * @link http://github.com/marc-mabe/php-enum for the canonical source repository
  */

@@ -1,4 +1,4 @@
-Copyright (c) 2015, Marc Bennewitz
+Copyright (c) 2020, Marc Bennewitz
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
