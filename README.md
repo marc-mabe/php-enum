@@ -166,7 +166,7 @@ class User
 
 * Resulting behaviour matches native enumeration implementation of most other languages (like Java)
 
-But as this library emulates enumerations it has a view downsides:
+But as this library emulates enumerations it has a few downsides:
 
 * Enumerator values can not be used directly
   * `$user->setStatus(UserStatus::ACTIVE)` fails
