@@ -216,7 +216,7 @@ ordinal number by design.
 It implements `IteratorAggregate` and `Countable` to be directly iterable with `foreach` and countable with `count()`.
 
 The `EnumSet` has a mutable and an immutable interface.
-Mutable methods start with `set` or `remove` while immutable methods start with `with`.
+Mutable methods start with `set`, `add` or `remove` while immutable methods start with `with`.
 
 ```php
 use MabeEnum\EnumSet;
@@ -254,7 +254,7 @@ $enumSet = $enumSet->without(UserStatus::INACTIVE);
 $enumSet = $enumSet->without(UserStatus::DELETED());
 
 
-// Tests if an enumerator exists (by value or by instance)
+// Test if an enumerator exists (by value or by instance)
 $enumSet->has(UserStatus::INACTIVE); // bool
 
 
