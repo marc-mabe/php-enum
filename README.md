@@ -25,10 +25,6 @@ It's an abstract class that needs to be extended to use it.
 
 # Usage
 
-## PHPDoc
-
-You can find auto-generated PHP documentation in the [wiki](https://github.com/marc-mabe/php-enum/wiki).
-
 ## Basics
 
 ```php
@@ -409,6 +405,19 @@ var_dump($north1 === $north2);  // returns FALSE as described above
 var_dump($north1->is($north2)); // returns TRUE - this way the two instances are treated equal
 var_dump($north2->is($north1)); // returns TRUE - equality works in both directions
 ```
+
+
+# Generics and Static Code Analyzer
+
+With version 4.3 we have added support for generics and added better type support.
+
+* `EnumSet<T of Enum>`
+* `EnumMap<T of Enum>`
+
+Generic types will be detected by [PHPStan](https://phpstan.org/) and [Psaml](https://psalm.dev/).
+
+Additionally, we have developed an [extension for PHPStan](https://github.com/marc-mabe/php-enum-phpstan/)
+to make enumerator accessor methods known.
 
 
 # Why not `SplEnum`
