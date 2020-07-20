@@ -414,7 +414,7 @@ With version 4.3 we have added support for generics and added better type suppor
 * `EnumSet<T of Enum>`
 * `EnumMap<T of Enum>`
 
-Generic types will be detected by [PHPStan](https://phpstan.org/) and [Psaml](https://psalm.dev/).
+Generic types will be detected by [PHPStan](https://phpstan.org/) and [Psalm](https://psalm.dev/).
 
 Additionally, we have developed an [extension for PHPStan](https://github.com/marc-mabe/php-enum-phpstan/)
 to make enumerator accessor methods known.
