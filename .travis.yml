@@ -19,16 +19,23 @@ matrix:
     - php: 7.1
       env:
         - CODE_COVERAGE="1"
+        - BENCHMARK="0"
     - php: 7.2
       env:
         - CODE_COVERAGE="1"
+        - BENCHMARK="0"
     - php: 7.3
       env:
         - CODE_COVERAGE="1"
+        - BENCHMARK="1"
     - php: 7.4
       env:
         - CODE_COVERAGE="1"
+        - BENCHMARK="1"
     - php: nightly
+      env:
+        - CODE_COVERAGE="0"
+        - BENCHMARK="0"
   allow_failures:
     - php: nightly
 
@@ -38,6 +45,9 @@ install:
     fi
   - if [ "${CODE_COVERAGE}" == "1" ]; then
       wget -q -N -t 3 --retry-connrefused 'https://scrutinizer-ci.com/ocular.phar' || return 0;
+    fi
+  - if [ "${BENCHMARK}" == "0" ]; then
+      composer remove --dev phpbench/phpbench --no-update;
     fi
   - composer install -n
 
@@ -55,7 +65,9 @@ script:
   - php vendor/bin/psalm
 
   # run benchmarks to make sure they are working fine
-  - php vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100
+  - if [ "${BENCHMARK}" == "1" ]; then
+      php vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100;
+    fi
 
 after_script:
   - if [ "${CODE_COVERAGE}" == "1" ]; then

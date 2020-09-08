@@ -476,9 +476,8 @@ class EnumSet implements IteratorAggregate, Countable
     {
         /** @var int $thisBitset */
         $thisBitset = $this->bitset;
-        $thisBitset = $thisBitset | (1 << $ordinal);
 
-        $this->bitset = $thisBitset;
+        $this->bitset = $thisBitset | (1 << $ordinal);
     }
 
     /**
@@ -514,7 +513,10 @@ class EnumSet implements IteratorAggregate, Countable
      */
     private function doUnsetBitInt($ordinal): void
     {
-        $this->bitset = $this->bitset & ~(1 << $ordinal);
+        /** @var int $thisBitset */
+        $thisBitset = $this->bitset;
+
+        $this->bitset = $thisBitset & ~(1 << $ordinal);
     }
 
     /* write access (immutable) */
