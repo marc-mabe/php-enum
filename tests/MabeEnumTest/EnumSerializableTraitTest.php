@@ -23,7 +23,7 @@ class EnumSerializableTraitTest extends TestCase
     public function testSerializeSerializableEnum(): void
     {
         $serialized = serialize(SerializableEnum::get(SerializableEnum::NIL));
-        $this->assertInternalType('string', $serialized);
+        $this->assertIsString($serialized);
 
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(SerializableEnum::class, $unserialized);
@@ -32,7 +32,7 @@ class EnumSerializableTraitTest extends TestCase
     public function testUnserializeFirstWillHoldTheSameInstance(): void
     {
         $serialized = serialize(SerializableEnum::get(SerializableEnum::STR));
-        $this->assertInternalType('string', $serialized);
+        $this->assertIsString($serialized);
 
         // clear all instantiated instances so we can virtual test unserializing first
         $this->clearEnumeration(SerializableEnum::class);
@@ -74,7 +74,7 @@ class EnumSerializableTraitTest extends TestCase
         $enum = ExtendedSerializableEnum::EXTENDED();
 
         $serialized = serialize($enum);
-        $this->assertInternalType('string', $serialized);
+        $this->assertIsString($serialized);
 
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(ExtendedSerializableEnum::class, $unserialized);

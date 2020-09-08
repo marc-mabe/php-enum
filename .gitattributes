@@ -6,4 +6,5 @@
 .travis.yml export-ignore
 phpbench.json export-ignore
 phpunit.xml.dist export-ignore
+phpstan.neon.dist export-ignore
 psalm.xml export-ignore

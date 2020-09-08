@@ -11,3 +11,6 @@ vendor
 
 #phpbench
 _storage
+
+#phpunit
+.phpunit.result.cache

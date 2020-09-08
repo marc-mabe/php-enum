@@ -23,7 +23,7 @@
     "require-dev": {
         "phpbench/phpbench": "^0.16.10",
         "phpstan/phpstan": "^0.12.42",
-        "phpunit/phpunit": "^7.5.20",
+        "phpunit/phpunit": "^7.5.20 | ^8.5.8 | ^9.3.8",
         "vimeo/psalm": "^3.15.0"
     },
     "autoload": {
