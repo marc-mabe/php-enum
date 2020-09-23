@@ -377,7 +377,6 @@ class EnumTest extends TestCase
         $reflectionClass  = new ReflectionClass($enum);
         $reflectionMethod = $reflectionClass->getMethod('__clone');
         $this->assertTrue($reflectionMethod->isPrivate(), 'The method __clone must be private');
-        $this->assertTrue($reflectionMethod->isFinal(), 'The method __clone must be final');
 
         $reflectionMethod->setAccessible(true);
         $this->expectException(LogicException::class);
