@@ -36,6 +36,7 @@ matrix:
       env:
         - CODE_COVERAGE="0"
         - BENCHMARK="0"
+        - IGNORE_PLATFORM_REQS="1"
   allow_failures:
     - php: nightly
 
@@ -49,7 +50,11 @@ install:
   - if [ "${BENCHMARK}" == "0" ]; then
       composer remove --dev phpbench/phpbench --no-update;
     fi
-  - composer install -n
+  - if [ "${IGNORE_PLATFORM_REQS}" == "1" ]; then
+      composer install -n --ignore-platform-reqs;
+    else
+      composer install -n;
+    fi
 
 script:
   - if [ "$CODE_COVERAGE" == "1" ]; then
