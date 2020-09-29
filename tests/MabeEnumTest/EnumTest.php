@@ -245,7 +245,7 @@ class EnumTest extends TestCase
             $this->assertSame($expectedNames[$i], $names[$i]);
         }
     }
-    
+
     public function testGetOrdinals(): void
     {
         $constants = EnumInheritance::getConstants();
@@ -376,7 +376,7 @@ class EnumTest extends TestCase
 
         $reflectionClass  = new ReflectionClass($enum);
         $reflectionMethod = $reflectionClass->getMethod('__clone');
-        $this->assertTrue($reflectionMethod->isPrivate(), 'The method __clone must be private');
+        $this->assertTrue($reflectionMethod->isProtected(), 'The method __clone must be protected');
         $this->assertTrue($reflectionMethod->isFinal(), 'The method __clone must be final');
 
         $reflectionMethod->setAccessible(true);
@@ -432,7 +432,7 @@ class EnumTest extends TestCase
             'PUB'  => ConstVisibilityEnum::PUB,
         ), $constants);
     }
-    
+
     public function testConstVisibilityExtended(): void
     {
         $constants = ConstVisibilityEnumExtended::getConstants();
