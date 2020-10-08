@@ -6,8 +6,5 @@ if ($zendassertions != -1) {
         . "Current ini setting: zend.assertions = {$zendassertions}]" . PHP_EOL;
     exit(1);
 }
-assert_options(ASSERT_ACTIVE, 0);
-assert_options(ASSERT_WARNING, 0);
-assert_options(ASSERT_BAIL, 0);
 
 require_once __DIR__ . '/../vendor/autoload.php';
