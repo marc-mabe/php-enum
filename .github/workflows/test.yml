@@ -1,0 +1,105 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - '[0-9]+.x'
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - PHP_VERSION: 7.1
+            CODE_COVERAGE: false
+            RUN_PHPSTAN: false
+            RUN_PSALM: false
+            RUN_BENCHMARK: false
+          - PHP_VERSION: 7.2
+            CODE_COVERAGE: true
+            RUN_PHPSTAN: false
+            RUN_PSALM: false
+            RUN_BENCHMARK: false
+          - PHP_VERSION: 7.3
+            CODE_COVERAGE: true
+            RUN_PHPSTAN: false
+            RUN_PSALM: false
+            RUN_BENCHMARK: false
+          - PHP_VERSION: 7.4
+            CODE_COVERAGE: true
+            RUN_PHPSTAN: true
+            RUN_PSALM: true
+            RUN_BENCHMARK: true
+          - PHP_VERSION: 8.0-rc
+            CODE_COVERAGE: true
+            RUN_PHPSTAN: true
+            RUN_PSALM: true
+            RUN_BENCHMARK: true
+            COMPOSER_EXTRA_ARGS: --ignore-platform-reqs
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Docker Image
+        id: cache-docker-image
+        uses: actions/cache@v2
+        with:
+          path: /tmp/docker-image.tar
+          key: cache-docker-image-test:${{ matrix.PHP_VERSION }}
+
+      - name: Load Docker Image
+        if: steps.cache-docker-image.outputs.cache-hit == 'true'
+        run: docker load --input /tmp/docker-image.tar
+
+      - name: Build Docker Image
+        if: steps.cache-docker-image.outputs.cache-hit != 'true'
+        run: docker build -f .github/workflows/test.Dockerfile -t 'test:${{ matrix.PHP_VERSION }}' --build-arg 'PHP_VERSION=${{ matrix.PHP_VERSION }}' .
+
+      - name: Cache Composer Cache Files
+        uses: actions/cache@v2
+        with:
+          path: /tmp/composer-cache-files
+          key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}
+          restore-keys: |
+            cache-composer-cache-files-
+
+      - name: Install Composer Dependencies
+        run: |
+          if [ "${{ matrix.RUN_PHPSTAN }}" != "true" ]; then composer remove --dev phpstan/phpstan --no-update --no-interaction; fi
+          if [ "${{ matrix.RUN_PSALM }}" != "true" ]; then composer remove --dev vimeo/psalm --no-update --no-interaction; fi
+          if [ "${{ matrix.RUN_BENCHMARK }}" != "true" ]; then composer remove --dev phpbench/phpbench --no-update --no-interaction; fi
+          docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v '/tmp/composer-cache-files:/.composer' 'test:${{ matrix.PHP_VERSION }}' composer install --no-interaction --no-progress --prefer-dist ${{ matrix.COMPOSER_EXTRA_ARGS }}
+
+      - name: Run Unit Test
+        run: |
+          if [ "${{ matrix.CODE_COVERAGE }}" == "true" ]; then
+            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' -d 'pcov.enabled=1' ./vendor/bin/phpunit --coverage-clover=.clover.xml
+          else
+            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' ./vendor/bin/phpunit
+          fi
+
+      - name: Upload Codecov Report
+        uses: codecov/codecov-action@v1
+        if: ${{ matrix.CODE_COVERAGE }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: .clover.xml
+
+      - name: Run PHPStan
+        if: ${{ matrix.RUN_PHPSTAN }}
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php ./vendor/bin/phpstan analyse --level max src/ tests/
+
+      - name: Run psalm
+        if: ${{ matrix.RUN_PSALM }}
+        run: mkdir -p "$HOME/.cache/psalm" && docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v "$HOME/.cache/psalm:/.cache/psalm" 'test:${{ matrix.PHP_VERSION }}' php ./vendor/bin/psalm
+
+      - name: Run benchmark
+        if: ${{ matrix.RUN_BENCHMARK }}
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=-1' ./vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100 --progress=travis
+
+      - name: Export Docker Image
+        if: steps.cache-docker-image.outputs.cache-hit != 'true'
+        run: docker save --output /tmp/docker-image.tar 'test:${{ matrix.PHP_VERSION }}'
