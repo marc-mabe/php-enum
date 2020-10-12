@@ -31,11 +31,6 @@ class EnumTest extends TestCase
         $this->resetStaticEnumProps();
     }
 
-    public function tearDown(): void
-    {
-        assert_options(ASSERT_ACTIVE, 1);
-    }
-
     /**
      * Un-initialize all known enumerations
      */
@@ -331,14 +326,6 @@ class EnumTest extends TestCase
         EnumAmbiguous::get('unknown');
     }
 
-    public function testDisabledAssertAmbiguousEnumeratorValues(): void
-    {
-        assert_options(ASSERT_ACTIVE, 0);
-        $this->expectException(InvalidArgumentException::class);
-
-        EnumAmbiguous::get('unknown');
-    }
-
     public function testByNameAmbiguousEnumeratorValues(): void
     {
         $this->expectException(AssertionError::class);
@@ -351,14 +338,6 @@ class EnumTest extends TestCase
     {
         $this->expectException(AssertionError::class);
         $this->expectExceptionMessage('Ambiguous enumerator values detected for ' . EnumExtendedAmbiguous::class);
-
-        EnumExtendedAmbiguous::get('unknown');
-    }
-
-    public function testExtendedDisabledAssertAmbiguousEnumeratorValues(): void
-    {
-        assert_options(ASSERT_ACTIVE, 0);
-        $this->expectException(InvalidArgumentException::class);
 
         EnumExtendedAmbiguous::get('unknown');
     }
