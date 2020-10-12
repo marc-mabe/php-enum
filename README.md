@@ -1,9 +1,11 @@
 # php-enum
-[![Build Status](https://secure.travis-ci.org/marc-mabe/php-enum.png?branch=master)](http://travis-ci.org/marc-mabe/php-enum)
-[![Quality Score](https://scrutinizer-ci.com/g/marc-mabe/php-enum/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/marc-mabe/php-enum/)
-[![Code Coverage](https://scrutinizer-ci.com/g/marc-mabe/php-enum/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/marc-mabe/php-enum/)
-[![Total Downloads](https://poser.pugx.org/marc-mabe/php-enum/downloads.png)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Build Status](https://github.com/marc-mabe/php-enum/workflows/Test/badge.svg?branch=master)](https://github.com/marc-mabe/php-enum/actions?query=workflow%3ATest%20branch%3Amaster)
+[![Code Coverage](https://codecov.io/github/marc-mabe/php-enum/coverage.svg?branch=master)](https://codecov.io/gh/marc-mabe/php-enum/branch/master/)
+[![License](https://poser.pugx.org/marc-mabe/php-enum/license)](https://github.com/marc-mabe/php-enum/blob/master/LICENSE.txt)
 [![Latest Stable](https://poser.pugx.org/marc-mabe/php-enum/v/stable.png)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Total Downloads](https://poser.pugx.org/marc-mabe/php-enum/downloads.png)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Monthly Downloads](https://poser.pugx.org/marc-mabe/php-enum/d/monthly)](https://packagist.org/packages/marc-mabe/php-enum)
+[![Dependents](https://poser.pugx.org/marc-mabe/php-enum/dependents)](https://packagist.org/packages/marc-mabe/php-enum/dependents?order_by=downloads)
 
 This is a native PHP implementation to add enumeration support to PHP.
 It's an abstract class that needs to be extended to use it.
