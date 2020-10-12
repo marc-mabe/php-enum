@@ -477,10 +477,13 @@ class EnumMapTest extends TestCase
 
     public function testIsEmpty(): void
     {
-        /** @var array<int, string> $items2 */
-        $items2 = array_combine(Enum32::getValues(), Enum32::getNames());
+        $makeItems2 = function () {
+            foreach (Enum32::getEnumerators() as $enumerator) {
+                yield $enumerator => $enumerator->getName();
+            }
+        };
         $map1 = new EnumMap(Enum32::class, []);
-        $map2 = new EnumMap(Enum32::class, $items2);
+        $map2 = new EnumMap(Enum32::class, $makeItems2());
 
         $this->assertTrue($map1->isEmpty());
         $this->assertFalse($map2->isEmpty());

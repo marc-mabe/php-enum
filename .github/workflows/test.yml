@@ -90,7 +90,7 @@ jobs:
 
       - name: Run PHPStan
         if: ${{ matrix.RUN_PHPSTAN }}
-        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php ./vendor/bin/phpstan analyse --level max src/ tests/
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'memory_limit=2G' ./vendor/bin/phpstan analyse --level max src/ tests/
 
       - name: Run psalm
         if: ${{ matrix.RUN_PSALM }}
