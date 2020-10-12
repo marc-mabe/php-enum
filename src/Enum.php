@@ -392,6 +392,8 @@ abstract class Enum
             $constants = $scopeConstants + $constants;
         } while (($reflection = $reflection->getParentClass()) && $reflection->name !== __CLASS__);
 
+        /** @var array<string, null|bool|int|float|string|array<mixed>> $constants */
+
         assert(
             self::noAmbiguousValues($constants),
             'Ambiguous enumerator values detected for ' . static::class
