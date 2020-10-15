@@ -1,16 +1,11 @@
-#eclipse
-.project
-
-#phpstorm
-.idea
+# hidden files
+.*
+!.gitignore
+!.github
 
 #composer
 composer.lock
-composer.phar
 vendor
 
 #phpbench
 _storage
-
-#phpunit
-.phpunit.result.cache
