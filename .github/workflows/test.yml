@@ -33,7 +33,7 @@ jobs:
             RUN_PHPSTAN: true
             RUN_PSALM: true
             RUN_BENCHMARK: true
-          - PHP_VERSION: 8.0-rc
+          - PHP_VERSION: 8.0
             CODE_COVERAGE: true
             RUN_PHPSTAN: true
             RUN_PSALM: true
