@@ -1,9 +1,10 @@
 {
-  "bootstrap": "bench/bootstrap.php",
-  "path": "bench/",
-  "retry_threshold": 2,
-  "php_disable_ini": true,
-  "php_config": {
+  "runner.bootstrap": "bench/bootstrap.php",
+  "runner.path": "bench/",
+  "runner.retry_threshold": 2,
+  "runner.php_disable_ini": true,
+  "runner.file_pattern": "*Bench.php",
+  "runner.php_config": {
     "zend_extension": ["opcache.so"],
     "zend.assertions": -1,
     "opcache.enable_cli": 1
