@@ -22,7 +22,7 @@ jobs:
             CODE_COVERAGE: true
             RUN_PHPSTAN: false
             RUN_PSALM: false
-            RUN_BENCHMARK: false
+            RUN_BENCHMARK: true
           - PHP_VERSION: 7.3
             CODE_COVERAGE: true
             RUN_PHPSTAN: false
@@ -32,12 +32,17 @@ jobs:
             CODE_COVERAGE: true
             RUN_PHPSTAN: true
             RUN_PSALM: true
-            RUN_BENCHMARK: true
+            RUN_BENCHMARK: false
           - PHP_VERSION: 8.0
             CODE_COVERAGE: true
             RUN_PHPSTAN: true
             RUN_PSALM: true
-            RUN_BENCHMARK: true
+            RUN_BENCHMARK: false
+          - PHP_VERSION: 8.1.0RC1
+            CODE_COVERAGE: true
+            RUN_PHPSTAN: true
+            RUN_PSALM: true
+            RUN_BENCHMARK: false
             COMPOSER_EXTRA_ARGS: --ignore-platform-reqs
 
     steps:
@@ -98,7 +103,7 @@ jobs:
 
       - name: Run benchmark
         if: ${{ matrix.RUN_BENCHMARK }}
-        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=-1' ./vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100 --progress=travis
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=-1' ./vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100 --progress=none
 
       - name: Export Docker Image
         if: steps.cache-docker-image.outputs.cache-hit != 'true'

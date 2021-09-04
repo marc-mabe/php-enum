@@ -319,6 +319,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
      * @throws InvalidArgumentException On an invalid given enumerator
      * @see get()
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($enumerator)
     {
         try {
