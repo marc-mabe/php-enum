@@ -56,7 +56,7 @@ abstract class Enum
      * @param null|bool|int|float|string|array $value   The value of the enumerator
      * @param int|null                         $ordinal The ordinal number of the enumerator
      */
-    private function __construct($value, $ordinal = null)
+    final private function __construct($value, $ordinal = null)
     {
         $this->value   = $value;
         $this->ordinal = $ordinal;
