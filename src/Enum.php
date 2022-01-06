@@ -261,7 +261,9 @@ abstract class Enum
             'Ambiguous enumerator values detected for ' . static::class
         );
 
-        return self::$instances[static::class][$name] = new static(\constant($const));
+        /** @var array<int|string, mixed>|bool|float|int|string|null $value */
+        $value = \constant($const);
+        return self::$instances[static::class][$name] = new static($value);
     }
 
     /**
@@ -320,7 +322,7 @@ abstract class Enum
      *
      * @return (null|bool|int|float|string|array)[]
      *
-     * @phpstan-return array<int, null|bool|int|float|string|array>
+     * @phpstan-return array<int, null|bool|int|float|string|array<int|string, mixed>>
      * @psalm-return list<null|bool|int|float|string|array>
      * @psalm-pure
      */
@@ -367,7 +369,7 @@ abstract class Enum
      * @return (null|bool|int|float|string|array)[]
      * @throws LogicException On ambiguous constant values
      *
-     * @phpstan-return array<string, null|bool|int|float|string|array>
+     * @phpstan-return array<string, null|bool|int|float|string|array<int|string, mixed>>
      * @psalm-return array<non-empty-string, null|bool|int|float|string|array>
      * @psalm-pure
      */

@@ -470,6 +470,7 @@ class EnumMapTest extends TestCase
         $enumMap = new EnumMap(EnumBasic::class);
         $enumMap[EnumBasic::ONE()] = 'one';
 
+        /** @var EnumMap<EnumBasic> $enumMapCopy */
         $enumMapCopy = unserialize(serialize($enumMap));
         $this->assertTrue($enumMapCopy->offsetExists(EnumBasic::ONE));
         $this->assertFalse($enumMapCopy->offsetExists(EnumBasic::TWO));
