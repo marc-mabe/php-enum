@@ -19,5 +19,7 @@ class ConstVisibilityEnum extends Enum
     const IPUB = 'indirect public';
     public const PUB = 'public';
     protected const PRO = 'protected';
+
+    /** @phpstan-ignore-next-line */
     private const PRI = 'private';
 }

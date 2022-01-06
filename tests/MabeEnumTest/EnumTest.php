@@ -426,6 +426,8 @@ class EnumTest extends TestCase
     public function testIsSerializableIssue(): void
     {
         $enum1 = SerializableEnum::INT();
+
+        /** @var SerializableEnum $enum2 */
         $enum2 = unserialize(serialize($enum1));
 
         $this->assertFalse($enum1 === $enum2, 'Wrong test implementation');

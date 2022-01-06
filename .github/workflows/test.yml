@@ -38,12 +38,11 @@ jobs:
             RUN_PHPSTAN: true
             RUN_PSALM: true
             RUN_BENCHMARK: false
-          - PHP_VERSION: 8.1.0RC1
+          - PHP_VERSION: 8.1
             CODE_COVERAGE: true
             RUN_PHPSTAN: true
             RUN_PSALM: true
-            RUN_BENCHMARK: false
-            COMPOSER_EXTRA_ARGS: --ignore-platform-reqs
+            RUN_BENCHMARK: true
 
     steps:
       - uses: actions/checkout@v2

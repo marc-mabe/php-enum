@@ -13,7 +13,10 @@ use MabeEnum\EnumMap;
  */
 class EnumMapExt extends EnumMap
 {
-    /** @var string */
+    /**
+     * @var string
+     * @phpstan-ignore-next-line
+     */
     private $priv = 'private';
 
     /** @var string */

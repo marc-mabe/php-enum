@@ -46,7 +46,7 @@ trait EnumSerializableTrait
      * @throws RuntimeException On missing, unknown or invalid value
      * @throws LogicException   On calling this method on an already initialized enumerator
      *
-     * @param array<string, null|bool|int|float|string|array<mixed>> $data
+     * @param array<string, mixed> $data
      * @return void
      */
     public function __unserialize(array $data): void

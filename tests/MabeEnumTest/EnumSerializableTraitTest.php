@@ -38,6 +38,7 @@ class EnumSerializableTraitTest extends TestCase
         $this->clearEnumeration(SerializableEnum::class);
 
         // First unserialize
+        /** @var Enum $unserialized */
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(SerializableEnum::class, $unserialized);
 
@@ -76,7 +77,9 @@ class EnumSerializableTraitTest extends TestCase
         $serialized = serialize($enum);
         $this->assertIsString($serialized);
 
+        /** @var Enum $unserialized */
         $unserialized = unserialize($serialized);
+
         $this->assertInstanceOf(ExtendedSerializableEnum::class, $unserialized);
         $this->assertSame($enum->getValue(), $unserialized->getValue());
     }
@@ -84,7 +87,10 @@ class EnumSerializableTraitTest extends TestCase
     public function testUnserializeFromPhp73(): void
     {
         $serialized = 'C:39:"MabeEnumTest\TestAsset\SerializableEnum":2:{N;}';
+
+        /** @var Enum $unserialized */
         $unserialized = unserialize($serialized);
+
         $this->assertInstanceOf(SerializableEnum::class, $unserialized);
         $this->assertNull($unserialized->getValue());
     }

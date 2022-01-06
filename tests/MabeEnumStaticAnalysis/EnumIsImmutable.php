@@ -109,7 +109,7 @@ final class EnumIsImmutable
     }
 
     /**
-     * @phpstan-return array<int, null|bool|int|float|string|array>
+     * @phpstan-return array<int, null|bool|int|float|string|array<int|string, mixed>>
      * @psalm-return list<null|bool|int|float|string|array>
      * @psalm-pure
      */
