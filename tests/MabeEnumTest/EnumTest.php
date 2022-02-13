@@ -26,16 +26,6 @@ use ReflectionProperty;
  */
 class EnumTest extends TestCase
 {
-    public function setUp()
-    {
-        $this->resetStaticEnumProps();
-    }
-
-    public function tearDown()
-    {
-        assert_options(ASSERT_ACTIVE, 1);
-    }
-
     /**
      * Un-initialize all known enumerations
      */
@@ -233,7 +223,7 @@ class EnumTest extends TestCase
             $this->assertSame($expectedNames[$i], $names[$i]);
         }
     }
-    
+
     public function testGetOrdinals()
     {
         $constants = EnumInheritance::getConstants();
@@ -325,10 +315,15 @@ class EnumTest extends TestCase
 
     public function testDisabledAssertAmbiguousEnumeratorValues()
     {
-        assert_options(ASSERT_ACTIVE, 0);
         $this->expectException(InvalidArgumentException::class);
 
-        EnumAmbiguous::get('unknown');
+        try {
+            assert_options(ASSERT_ACTIVE, 0);
+            EnumAmbiguous::get('unknown');
+        } catch (\Exception $e) {
+            assert_options(ASSERT_ACTIVE, 1);
+            throw $e;
+        }
     }
 
     public function testExtendedEnabledAssertAmbiguousEnumeratorValues()
@@ -345,10 +340,15 @@ class EnumTest extends TestCase
 
     public function testExtendedDisabledAssertAmbiguousEnumeratorValues()
     {
-        assert_options(ASSERT_ACTIVE, 0);
         $this->expectException(InvalidArgumentException::class);
 
-        EnumExtendedAmbiguous::get('unknown');
+        try {
+            assert_options(ASSERT_ACTIVE, 0);
+            EnumExtendedAmbiguous::get('unknown');
+        } catch (\Exception $e) {
+            assert_options(ASSERT_ACTIVE, 1);
+            throw $e;
+        }
     }
 
     public function testSingleton()
@@ -364,12 +364,10 @@ class EnumTest extends TestCase
 
         $reflectionClass  = new ReflectionClass($enum);
         $reflectionMethod = $reflectionClass->getMethod('__clone');
-        $this->assertTrue($reflectionMethod->isPrivate(), 'The method __clone must be private');
         $this->assertTrue($reflectionMethod->isFinal(), 'The method __clone must be final');
 
-        $reflectionMethod->setAccessible(true);
         $this->expectException(LogicException::class);
-        $reflectionMethod->invoke($enum);
+        clone $enum;
     }
 
     public function testNotSerializable()
@@ -430,7 +428,7 @@ class EnumTest extends TestCase
             'PUB'  => ConstVisibilityEnum::PUB,
         ), $constants);
     }
-    
+
     public function testConstVisibilityExtended()
     {
         if (PHP_VERSION_ID < 70100) {

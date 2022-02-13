@@ -77,7 +77,7 @@ abstract class Enum
      * @throws LogicException Enums are not cloneable
      *                        because instances are implemented as singletons
      */
-    final private function __clone()
+    final public function __clone()
     {
         throw new LogicException('Enums are not cloneable');
     }
@@ -299,7 +299,7 @@ abstract class Enum
         }
         return self::$names[static::class];
     }
-    
+
     /**
      * Get a list of enumerator ordinal numbers
      *
@@ -324,7 +324,7 @@ abstract class Enum
 
     /**
      * Test if the given enumerator is part of this enumeration
-     * 
+     *
      * @param static|null|bool|int|float|string|array $enumerator
      * @return bool
      */

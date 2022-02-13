@@ -21,7 +21,7 @@
         "ext-reflection": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7 || ^6.0",
+        "phpunit/phpunit": "^5.7 || ^6.0 || ^9.0",
         "phpbench/phpbench": "@dev",
 
         "lstrojny/functional-php": "HHVM: variadic params with type constraints are not supported in non-Hack",

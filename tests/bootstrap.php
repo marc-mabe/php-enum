@@ -15,7 +15,6 @@ if (\PHP_VERSION_ID >= 70000 && $zendassertions == -1) {
 assert_options(ASSERT_ACTIVE, 1);
 assert_options(ASSERT_WARNING, 0);
 assert_options(ASSERT_BAIL, 0);
-assert_options(ASSERT_QUIET_EVAL, 0);
 if (!class_exists('AssertionError')) {
     // AssertionError has been added in PHP-7.0
     class AssertionError extends Exception {};

@@ -1,0 +1,46 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - '[0-9]+.x'
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - PHP_VERSION: 5.6
+          - PHP_VERSION: 7.0
+          - PHP_VERSION: 7.1
+          - PHP_VERSION: 7.2
+          - PHP_VERSION: 7.3
+          - PHP_VERSION: 7.4
+          - PHP_VERSION: 8.0
+          - PHP_VERSION: 8.1
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Docker Image
+        if: steps.cache-docker-image.outputs.cache-hit != 'true'
+        run: docker build -f .github/workflows/test.Dockerfile -t 'test:${{ matrix.PHP_VERSION }}' --build-arg 'PHP_VERSION=${{ matrix.PHP_VERSION }}' .
+
+      - name: Cache Composer Cache Files
+        uses: actions/cache@v2
+        with:
+          path: /tmp/composer-cache-files
+          key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}
+          restore-keys: |
+            cache-composer-cache-files-
+
+      - name: Install Composer Dependencies
+        run: |
+          docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v '/tmp/composer-cache-files:/.composer' 'test:${{ matrix.PHP_VERSION }}' composer install --no-interaction --no-progress --prefer-dist ${{ matrix.COMPOSER_EXTRA_ARGS }}
+
+      - name: Run Unit Test
+        run: |
+          docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' ./vendor/bin/phpunit
