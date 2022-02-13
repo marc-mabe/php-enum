@@ -6,12 +6,10 @@ cache:
     - $HOME/.composer/cache
     - $HOME/.local
     - $HOME/ocular.phar
-    - $HOME/phpDocumentor.phar
 
 env:
   global:
     - CODE_COVERAGE="0"
-    - PHPDOC="0"
 
 matrix:
   fast_finish: true
@@ -22,7 +20,6 @@ matrix:
     - php: 7.0
       env:
         - CODE_COVERAGE="1"
-        - PHPDOC="1"
     - php: 7.1
       env:
         - CODE_COVERAGE="1"
@@ -30,6 +27,15 @@ matrix:
       env:
         - CODE_COVERAGE="1"
     - php: 7.3
+      env:
+        - CODE_COVERAGE="1"
+    - php: 7.4
+      env:
+        - CODE_COVERAGE="1"
+    - php: 8.0
+      env:
+        - CODE_COVERAGE="1"
+    - php: 8.1
       env:
         - CODE_COVERAGE="1"
     - php: nightly
@@ -49,10 +55,6 @@ install:
   - if [ "${CODE_COVERAGE}" == "1" ]; then
       wget -q -N -t 3 --retry-connrefused 'https://scrutinizer-ci.com/ocular.phar' || return 0;
     fi
-  - if [ "${PHPDOC}" == "1" ]; then
-      wget -q -N -t 3 --retry-connrefused 'https://github.com/phpDocumentor/phpDocumentor2/releases/download/v2.9.0/phpDocumentor.phar' || return 0;
-      composer require --no-update --dev "evert/phpdoc-md:~0.2.0" || return 0;
-    fi
   - composer install -n
 
 script:
@@ -65,16 +67,6 @@ script:
 after_script:
   - if [ "${CODE_COVERAGE}" == "1" ]; then
       php ocular.phar code-coverage:upload --format=php-clover coverage.clover;
-    fi
-  - if [ "${PHPDOC}" == "1" ]; then
-      git clone "https://${CI_USER_TOKEN}@github.com/marc-mabe/php-enum.wiki.git" &&
-      php phpDocumentor.phar -d src -t docs/ --template="xml" &&
-      php vendor/bin/phpdocmd --lt '%c' --index 'Home.md' docs/structure.xml php-enum.wiki/ &&
-      cp php-enum.wiki/Home.md php-enum.wiki/_Sidebar.md &&
-      cd php-enum.wiki/ &&
-      git add . &&
-      git commit -m "auto generated PHP doc" &&
-      git push origin master:master;
     fi
 
 notifications:
