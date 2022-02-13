@@ -26,16 +26,6 @@ use ReflectionProperty;
  */
 class EnumTest extends TestCase
 {
-    public function setUp()
-    {
-        $this->resetStaticEnumProps();
-    }
-
-    public function tearDown()
-    {
-        assert_options(ASSERT_ACTIVE, 1);
-    }
-
     /**
      * Un-initialize all known enumerations
      */
@@ -325,10 +315,15 @@ class EnumTest extends TestCase
 
     public function testDisabledAssertAmbiguousEnumeratorValues()
     {
-        assert_options(ASSERT_ACTIVE, 0);
         $this->expectException(InvalidArgumentException::class);
 
-        EnumAmbiguous::get('unknown');
+        try {
+            assert_options(ASSERT_ACTIVE, 0);
+            EnumAmbiguous::get('unknown');
+        } catch (\Exception $e) {
+            assert_options(ASSERT_ACTIVE, 1);
+            throw $e;
+        }
     }
 
     public function testExtendedEnabledAssertAmbiguousEnumeratorValues()
@@ -345,10 +340,15 @@ class EnumTest extends TestCase
 
     public function testExtendedDisabledAssertAmbiguousEnumeratorValues()
     {
-        assert_options(ASSERT_ACTIVE, 0);
         $this->expectException(InvalidArgumentException::class);
 
-        EnumExtendedAmbiguous::get('unknown');
+        try {
+            assert_options(ASSERT_ACTIVE, 0);
+            EnumExtendedAmbiguous::get('unknown');
+        } catch (\Exception $e) {
+            assert_options(ASSERT_ACTIVE, 1);
+            throw $e;
+        }
     }
 
     public function testSingleton()
