@@ -36,7 +36,10 @@
             "MabeEnumTest\\":  "tests/MabeEnumTest/",
             "MabeEnumStaticAnalysis\\": "tests/MabeEnumStaticAnalysis/",
             "MabeEnumBench\\": "bench/"
-        }
+        },
+        "classmap": [
+            "stubs/Stringable.php"
+        ]
     },
     "extra": {
         "branch-alias": {
