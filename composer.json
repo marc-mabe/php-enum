@@ -29,17 +29,17 @@
     "autoload": {
         "psr-4": {
             "MabeEnum\\": "src/"
-        }
+        },
+        "classmap": [
+            "stubs/Stringable.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
             "MabeEnumTest\\":  "tests/MabeEnumTest/",
             "MabeEnumStaticAnalysis\\": "tests/MabeEnumStaticAnalysis/",
             "MabeEnumBench\\": "bench/"
-        },
-        "classmap": [
-            "stubs/Stringable.php"
-        ]
+        }
     },
     "extra": {
         "branch-alias": {
