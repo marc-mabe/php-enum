@@ -17,7 +17,7 @@ use LogicException;
  *
  * @psalm-immutable
  */
-abstract class Enum
+abstract class Enum implements \Stringable
 {
     /**
      * The selected enumerator value

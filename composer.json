@@ -29,7 +29,10 @@
     "autoload": {
         "psr-4": {
             "MabeEnum\\": "src/"
-        }
+        },
+        "classmap": [
+            "stubs/Stringable.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
