@@ -386,7 +386,7 @@ abstract class Enum implements \Stringable
             $scopeConstants = [];
             // Enumerators must be defined as public class constants
             foreach ($reflection->getReflectionConstants() as $reflConstant) {
-                if ($reflConstant->isPublic()) {
+                if (!isset($constants[$reflConstant->getName()]) && $reflConstant->isPublic()) {
                     $scopeConstants[ $reflConstant->getName() ] = $reflConstant->getValue();
                 }
             }
