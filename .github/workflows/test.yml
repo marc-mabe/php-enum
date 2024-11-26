@@ -95,7 +95,12 @@ jobs:
       - name: Run Unit Test
         run: |
           if [ "${{ matrix.CODE_COVERAGE }}" == "true" ]; then
-            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' -d 'pcov.enabled=1' ./vendor/bin/phpunit --coverage-clover=.clover.xml
+            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' \
+              apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+              && mkdir -p /usr/src/php/ext/pcov && curl -fsSL https://pecl.php.net/get/pcov | tar xvz -C /usr/src/php/ext/pcov --strip 1 \
+              && docker-php-ext-install pcov \
+              && docker-php-ext-enable pcov \
+              && php -d 'zend.assertions=1' -d 'pcov.enabled=1' ./vendor/bin/phpunit --coverage-clover=.clover.xml
           else
             docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' ./vendor/bin/phpunit
           fi
