@@ -49,7 +49,7 @@ jobs:
             RUN_PSALM: false
             RUN_BENCHMARK: false
           - PHP_VERSION: "8.3"
-            CODE_COVERAGE: false
+            CODE_COVERAGE: true
             RUN_PHPSTAN: true
             RUN_PSALM: false
             RUN_BENCHMARK: false
