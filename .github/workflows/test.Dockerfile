@@ -1,6 +1,7 @@
 ARG PHP_VERSION=latest
 ARG CODE_COVERAGE=false
 FROM php:${PHP_VERSION}-cli-alpine
+ARG CODE_COVERAGE
 
 WORKDIR /workdir
 
@@ -12,7 +13,7 @@ ENV COMPOSER_CACHE_DIR=/.composer
 
 # install PHP extension pcov
 RUN if [[ "${CODE_COVERAGE}" == "true" ]] ; \
-    then apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    then apk add --no-cache --virtual .build-deps $PHPIZE_DEPS linux-headers \
       && pecl install xdebug \
       && docker-php-ext-enable xdebug \
       && apk del --no-cache .build-deps ; \
