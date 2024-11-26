@@ -13,9 +13,7 @@ ENV COMPOSER_CACHE_DIR=/.composer
 # install PHP extension pcov
 RUN if [[ "${CODE_COVERAGE}" == "true" ]] ; \
     then apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-      && mkdir -p /usr/src/php/ext/pcov && curl -fsSL https://pecl.php.net/get/pcov | tar xvz -C /usr/src/php/ext/pcov --strip 1 \
-      && docker-php-ext-install pcov \
-      && docker-php-ext-enable pcov \
-      && rm -Rf /usr/src/php/ext/pcov \
+      && pecl install xdebug \
+      && docker-php-ext-enable xdebug \
       && apk del --no-cache .build-deps
 
