@@ -40,7 +40,7 @@ class EnumTest extends TestCase
         $enumPropsRefl = $enumRefl->getProperties(ReflectionProperty::IS_STATIC);
         foreach ($enumPropsRefl as $enumPropRefl) {
             $enumPropRefl->setAccessible(true);
-            $enumPropRefl->setValue([]);
+            $enumPropRefl->setValue(null, []);
         }
     }
 
