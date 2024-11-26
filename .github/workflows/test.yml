@@ -67,7 +67,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/docker-image.tar
-          key: cache-docker-image-test:${{ matrix.PHP_VERSION }}
+          key: cache-docker-image-test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE == 'true' && '-pcov' || '' }}
 
       - name: Load Docker Image
         if: steps.cache-docker-image.outputs.cache-hit == 'true'
@@ -75,13 +75,13 @@ jobs:
 
       - name: Build Docker Image
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
-        run: docker build -f .github/workflows/test.Dockerfile -t 'test:${{ matrix.PHP_VERSION }}' --build-arg 'PHP_VERSION=${{ matrix.PHP_VERSION }}' .
+        run: docker build -f .github/workflows/test.Dockerfile -t 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE == 'true' && '-pcov' || '' }}' --build-arg 'PHP_VERSION=${{ matrix.PHP_VERSION }}' --build-arg 'CODE_COVERAGE=${{ matrix.CODE_COVERAGE }}' .
 
       - name: Cache Composer Cache Files
         uses: actions/cache@v2
         with:
           path: /tmp/composer-cache-files
-          key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}
+          key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE == 'true' && '-pcov' || '' }}
           restore-keys: |
             cache-composer-cache-files-
 
@@ -95,12 +95,7 @@ jobs:
       - name: Run Unit Test
         run: |
           if [ "${{ matrix.CODE_COVERAGE }}" == "true" ]; then
-            docker run --rm -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' \
-              apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-              && mkdir -p /usr/src/php/ext/pcov && curl -fsSL https://pecl.php.net/get/pcov | tar xvz -C /usr/src/php/ext/pcov --strip 1 \
-              && docker-php-ext-install pcov \
-              && docker-php-ext-enable pcov \
-              && php -d 'zend.assertions=1' -d 'pcov.enabled=1' ./vendor/bin/phpunit --coverage-clover=.clover.xml
+            docker run --rm -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}-pcov' php -d 'zend.assertions=1' -d 'pcov.enabled=1' ./vendor/bin/phpunit --coverage-clover=.clover.xml
           else
             docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' ./vendor/bin/phpunit
           fi
@@ -114,16 +109,16 @@ jobs:
 
       - name: Run PHPStan
         if: ${{ matrix.RUN_PHPSTAN }}
-        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'memory_limit=2G' ./vendor/bin/phpstan analyse --level max src/ tests/
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE == 'true' && '-pcov' || '' }}' php -d 'memory_limit=2G' ./vendor/bin/phpstan analyse --level max src/ tests/
 
       - name: Run psalm
         if: ${{ matrix.RUN_PSALM }}
-        run: mkdir -p "$HOME/.cache/psalm" && docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v "$HOME/.cache/psalm:/.cache/psalm" 'test:${{ matrix.PHP_VERSION }}' php ./vendor/bin/psalm
+        run: mkdir -p "$HOME/.cache/psalm" && docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v "$HOME/.cache/psalm:/.cache/psalm" 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE == 'true' && '-pcov' || '' }}' php ./vendor/bin/psalm
 
       - name: Run benchmark
         if: ${{ matrix.RUN_BENCHMARK }}
-        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=-1' ./vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100 --progress=none
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE == 'true' && '-pcov' || '' }}' php -d 'zend.assertions=-1' ./vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100 --progress=none
 
       - name: Export Docker Image
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
-        run: docker save --output /tmp/docker-image.tar 'test:${{ matrix.PHP_VERSION }}'
+        run: docker save --output /tmp/docker-image.tar 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE == 'true' && '-pcov' || '' }}'
