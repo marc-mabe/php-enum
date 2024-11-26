@@ -7,8 +7,6 @@ parameters:
         # EnumSerializableTrait
         - message: '#Access to private property \$[a-z]+ of parent class MabeEnum\\Enum#'
           path: %currentWorkingDirectory%/src/EnumSerializableTrait.php
-        - message: '#Access to an undefined static property MabeEnumTest\\TestAsset\\SerializableEnum::\$instances#'
-          path: %currentWorkingDirectory%/src/EnumSerializableTrait.php
 
         # Tests
         - message: '#Parameter \#\d \$[a-z]* of static method MabeEnum\\Enum::[^ ]* expects [^ ]*, .+ given#'
