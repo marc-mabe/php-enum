@@ -42,12 +42,12 @@ jobs:
             CODE_COVERAGE: false
             RUN_PHPSTAN: true
             RUN_PSALM: false
-            RUN_BENCHMARK: true
+            RUN_BENCHMARK: false
           - PHP_VERSION: "8.2"
             CODE_COVERAGE: false
             RUN_PHPSTAN: true
             RUN_PSALM: false
-            RUN_BENCHMARK: false
+            RUN_BENCHMARK: true
           - PHP_VERSION: "8.3"
             CODE_COVERAGE: true
             RUN_PHPSTAN: true
@@ -81,7 +81,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/composer-cache-files
-          key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}
+          key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}
           restore-keys: |
             cache-composer-cache-files-
 
