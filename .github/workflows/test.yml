@@ -19,27 +19,27 @@ jobs:
             RUN_PSALM: false
             RUN_BENCHMARK: false
           - PHP_VERSION: "7.2"
-            CODE_COVERAGE: true
+            CODE_COVERAGE: false
             RUN_PHPSTAN: false
             RUN_PSALM: false
             RUN_BENCHMARK: true
           - PHP_VERSION: "7.3"
-            CODE_COVERAGE: true
+            CODE_COVERAGE: false
             RUN_PHPSTAN: false
             RUN_PSALM: false
             RUN_BENCHMARK: false
           - PHP_VERSION: "7.4"
-            CODE_COVERAGE: true
+            CODE_COVERAGE: false
             RUN_PHPSTAN: true
             RUN_PSALM: false
             RUN_BENCHMARK: false
           - PHP_VERSION: "8.0"
-            CODE_COVERAGE: true
+            CODE_COVERAGE: false
             RUN_PHPSTAN: true
             RUN_PSALM: false
             RUN_BENCHMARK: false
           - PHP_VERSION: "8.1"
-            CODE_COVERAGE: true
+            CODE_COVERAGE: false
             RUN_PHPSTAN: true
             RUN_PSALM: false
             RUN_BENCHMARK: true
