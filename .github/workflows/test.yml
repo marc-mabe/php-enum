@@ -40,18 +40,18 @@ jobs:
             RUN_BENCHMARK: false
           - PHP_VERSION: "8.1"
             CODE_COVERAGE: false
-            RUN_PHPSTAN: true
+            RUN_PHPSTAN: false
             RUN_PSALM: false
             RUN_BENCHMARK: false
           - PHP_VERSION: "8.2"
             CODE_COVERAGE: false
-            RUN_PHPSTAN: true
+            RUN_PHPSTAN: false
             RUN_PSALM: false
             RUN_BENCHMARK: true
           - PHP_VERSION: "8.3"
             CODE_COVERAGE: true
-            RUN_PHPSTAN: true
-            RUN_PSALM: false
+            RUN_PHPSTAN: false
+            RUN_PSALM: true
             RUN_BENCHMARK: false
           - PHP_VERSION: "8.4"
             CODE_COVERAGE: false
