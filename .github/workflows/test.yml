@@ -64,7 +64,7 @@ jobs:
 
       - name: Cache Docker Image
         id: cache-docker-image
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/docker-image.tar
           key: cache-docker-image-test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}
@@ -78,7 +78,7 @@ jobs:
         run: docker build -f .github/workflows/test.Dockerfile -t 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}' --build-arg 'PHP_VERSION=${{ matrix.PHP_VERSION }}' --build-arg 'CODE_COVERAGE=${{ matrix.CODE_COVERAGE }}' .
 
       - name: Cache Composer Cache Files
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/composer-cache-files
           key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}
