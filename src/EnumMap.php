@@ -42,7 +42,7 @@ class EnumMap implements ArrayAccess, Countable, IteratorAggregate
      * @param null|iterable<T|null|bool|int|float|string|array<mixed>, mixed> $map Initialize map
      * @throws InvalidArgumentException
      */
-    public function __construct(string $enumeration, iterable $map = null)
+    public function __construct(string $enumeration, ?iterable $map = null)
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(\sprintf(
