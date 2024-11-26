@@ -15,5 +15,6 @@ RUN if [[ "${CODE_COVERAGE}" == "true" ]] ; \
     then apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
       && pecl install xdebug \
       && docker-php-ext-enable xdebug \
-      && apk del --no-cache .build-deps
+      && apk del --no-cache .build-deps ; \
+    fi
 
