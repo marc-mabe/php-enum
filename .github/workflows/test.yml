@@ -95,7 +95,7 @@ jobs:
       - name: Run Unit Test
         run: |
           if [ "${{ matrix.CODE_COVERAGE }}" == "true" ]; then
-            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}-xdebug' php -d 'zend.assertions=1' ./vendor/bin/phpunit --coverage-clover=.clover.xml
+            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}-xdebug' php -d 'zend.assertions=1' -d 'xdebug.mode=coverage' ./vendor/bin/phpunit --coverage-clover=.clover.xml
           else
             docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' ./vendor/bin/phpunit
           fi
