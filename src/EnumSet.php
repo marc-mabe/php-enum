@@ -86,7 +86,7 @@ class EnumSet implements IteratorAggregate, Countable
      * @param iterable<T|null|bool|int|float|string|array<mixed>>|null $enumerators iterable list of enumerators initializing the set
      * @throws InvalidArgumentException
      */
-    public function __construct(string $enumeration, iterable $enumerators = null)
+    public function __construct(string $enumeration, ?iterable $enumerators = null)
     {
         if (!\is_subclass_of($enumeration, Enum::class)) {
             throw new InvalidArgumentException(\sprintf(

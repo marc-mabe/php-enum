@@ -13,46 +13,61 @@ jobs:
     strategy:
       matrix:
         include:
-          - PHP_VERSION: 7.1
+          - PHP_VERSION: "7.1"
             CODE_COVERAGE: false
             RUN_PHPSTAN: false
             RUN_PSALM: false
             RUN_BENCHMARK: false
-          - PHP_VERSION: 7.2
-            CODE_COVERAGE: true
+          - PHP_VERSION: "7.2"
+            CODE_COVERAGE: false
             RUN_PHPSTAN: false
             RUN_PSALM: false
             RUN_BENCHMARK: true
-          - PHP_VERSION: 7.3
-            CODE_COVERAGE: true
+          - PHP_VERSION: "7.3"
+            CODE_COVERAGE: false
             RUN_PHPSTAN: false
             RUN_PSALM: false
             RUN_BENCHMARK: false
-          - PHP_VERSION: 7.4
-            CODE_COVERAGE: true
+          - PHP_VERSION: "7.4"
+            CODE_COVERAGE: false
             RUN_PHPSTAN: true
-            RUN_PSALM: true
+            RUN_PSALM: false
             RUN_BENCHMARK: false
-          - PHP_VERSION: 8.0
-            CODE_COVERAGE: true
+          - PHP_VERSION: "8.0"
+            CODE_COVERAGE: false
             RUN_PHPSTAN: true
-            RUN_PSALM: true
+            RUN_PSALM: false
             RUN_BENCHMARK: false
-          - PHP_VERSION: 8.1
-            CODE_COVERAGE: true
-            RUN_PHPSTAN: true
-            RUN_PSALM: true
+          - PHP_VERSION: "8.1"
+            CODE_COVERAGE: false
+            RUN_PHPSTAN: false
+            RUN_PSALM: false
+            RUN_BENCHMARK: false
+          - PHP_VERSION: "8.2"
+            CODE_COVERAGE: false
+            RUN_PHPSTAN: false
+            RUN_PSALM: false
             RUN_BENCHMARK: true
+          - PHP_VERSION: "8.3"
+            CODE_COVERAGE: true
+            RUN_PHPSTAN: false
+            RUN_PSALM: true
+            RUN_BENCHMARK: false
+          - PHP_VERSION: "8.4"
+            CODE_COVERAGE: false
+            RUN_PHPSTAN: true
+            RUN_PSALM: false
+            RUN_BENCHMARK: false
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Cache Docker Image
         id: cache-docker-image
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/docker-image.tar
-          key: cache-docker-image-test:${{ matrix.PHP_VERSION }}
+          key: cache-docker-image-test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}
 
       - name: Load Docker Image
         if: steps.cache-docker-image.outputs.cache-hit == 'true'
@@ -60,10 +75,10 @@ jobs:
 
       - name: Build Docker Image
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
-        run: docker build -f .github/workflows/test.Dockerfile -t 'test:${{ matrix.PHP_VERSION }}' --build-arg 'PHP_VERSION=${{ matrix.PHP_VERSION }}' .
+        run: docker build -f .github/workflows/test.Dockerfile -t 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}' --build-arg 'PHP_VERSION=${{ matrix.PHP_VERSION }}' --build-arg 'CODE_COVERAGE=${{ matrix.CODE_COVERAGE }}' .
 
       - name: Cache Composer Cache Files
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/composer-cache-files
           key: cache-composer-cache-files-${{ matrix.PHP_VERSION }}
@@ -75,12 +90,12 @@ jobs:
           if [ "${{ matrix.RUN_PHPSTAN }}" != "true" ]; then composer remove --dev phpstan/phpstan --no-update --no-interaction; fi
           if [ "${{ matrix.RUN_PSALM }}" != "true" ]; then composer remove --dev vimeo/psalm --no-update --no-interaction; fi
           if [ "${{ matrix.RUN_BENCHMARK }}" != "true" ]; then composer remove --dev phpbench/phpbench --no-update --no-interaction; fi
-          docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v '/tmp/composer-cache-files:/.composer' 'test:${{ matrix.PHP_VERSION }}' composer install --no-interaction --no-progress --prefer-dist ${{ matrix.COMPOSER_EXTRA_ARGS }}
+          docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v '/tmp/composer-cache-files:/.composer' 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}' composer install --no-interaction --no-progress --prefer-dist ${{ matrix.COMPOSER_EXTRA_ARGS }}
 
       - name: Run Unit Test
         run: |
           if [ "${{ matrix.CODE_COVERAGE }}" == "true" ]; then
-            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' -d 'pcov.enabled=1' ./vendor/bin/phpunit --coverage-clover=.clover.xml
+            docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}-xdebug' php -d 'zend.assertions=1' -d 'xdebug.mode=coverage' ./vendor/bin/phpunit --coverage-clover=.clover.xml
           else
             docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=1' ./vendor/bin/phpunit
           fi
@@ -94,16 +109,16 @@ jobs:
 
       - name: Run PHPStan
         if: ${{ matrix.RUN_PHPSTAN }}
-        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'memory_limit=2G' ./vendor/bin/phpstan analyse --level max src/ tests/
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}' php -d 'memory_limit=2G' ./vendor/bin/phpstan analyse --level max src/ tests/
 
       - name: Run psalm
         if: ${{ matrix.RUN_PSALM }}
-        run: mkdir -p "$HOME/.cache/psalm" && docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v "$HOME/.cache/psalm:/.cache/psalm" 'test:${{ matrix.PHP_VERSION }}' php ./vendor/bin/psalm
+        run: mkdir -p "$HOME/.cache/psalm" && docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" -v "$HOME/.cache/psalm:/.cache/psalm" 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}' php ./vendor/bin/psalm
 
       - name: Run benchmark
         if: ${{ matrix.RUN_BENCHMARK }}
-        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}' php -d 'zend.assertions=-1' ./vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100 --progress=none
+        run: docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/workdir" 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}' php -d 'zend.assertions=-1' ./vendor/bin/phpbench run --no-interaction --revs=1 --retry-threshold=100 --progress=none
 
       - name: Export Docker Image
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
-        run: docker save --output /tmp/docker-image.tar 'test:${{ matrix.PHP_VERSION }}'
+        run: docker save --output /tmp/docker-image.tar 'test:${{ matrix.PHP_VERSION }}${{ matrix.CODE_COVERAGE && '-xdebug' || '' }}'

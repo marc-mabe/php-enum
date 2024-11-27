@@ -108,7 +108,7 @@ class EnumSerializableTraitTest extends TestCase
         }
 
         foreach ($reflClass->getProperties(ReflectionProperty::IS_STATIC) as $reflProp) {
-            $reflProp->setAccessible(true);;
+            $reflProp->setAccessible(true);
             $reflProp->setValue(null, []);
         }
     }

@@ -1,5 +1,7 @@
 ARG PHP_VERSION=latest
+ARG CODE_COVERAGE=false
 FROM php:${PHP_VERSION}-cli-alpine
+ARG CODE_COVERAGE
 
 WORKDIR /workdir
 
@@ -10,9 +12,10 @@ ENV COMPOSER_HTACCESS_PROTECT=0
 ENV COMPOSER_CACHE_DIR=/.composer
 
 # install PHP extension pcov
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && mkdir -p /usr/src/php/ext/pcov && curl -fsSL https://pecl.php.net/get/pcov | tar xvz -C /usr/src/php/ext/pcov --strip 1 \
-    && docker-php-ext-install pcov \
-    && docker-php-ext-enable pcov \
-    && rm -Rf /usr/src/php/ext/pcov \
-    && apk del --no-cache .build-deps
+RUN if [[ "${CODE_COVERAGE}" == "true" ]] ; \
+    then apk add --no-cache --virtual .build-deps $PHPIZE_DEPS linux-headers \
+      && pecl install xdebug \
+      && docker-php-ext-enable xdebug \
+      && apk del --no-cache .build-deps ; \
+    fi
+
