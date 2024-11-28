@@ -87,25 +87,23 @@ abstract class Enum implements \Stringable
     }
 
     /**
-     * @throws LogicException Enums are not serializable
-     *                        because instances are implemented as singletons
+     * @throws LogicException Serialization is not supported by default in this pseudo-enum implementation
      *
      * @psalm-return never-return
      */
     final public function __sleep()
     {
-        throw new LogicException('Enums are not serializable');
+        throw new LogicException('Serialization is not supported by default in this pseudo-enum implementation');
     }
 
     /**
-     * @throws LogicException Enums are not serializable
-     *                        because instances are implemented as singletons
+     * @throws LogicException Serialization is not supported by default in this pseudo-enum implementation
      *
      * @psalm-return never-return
      */
     final public function __wakeup()
     {
-        throw new LogicException('Enums are not serializable');
+        throw new LogicException('Serialization is not supported by default in this pseudo-enum implementation');
     }
 
     /**
