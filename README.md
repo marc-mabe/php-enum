@@ -469,7 +469,7 @@ Critical bug fixes and security relates fixes can also be backported to older re
 |---------|-------------|-----------------|
 | 1.x     | EOL         | \>=5.3          |
 | 2.x     | EOL         | \>=5.3 & HHVM<4 |
-| 3.x     | maintenance | \>=5.6 & HHVM<4 |
+| 3.x     | EOL         | \>=5.6 & HHVM<4 |
 | 4.x     | active      | \>=7.1          |
 
 
