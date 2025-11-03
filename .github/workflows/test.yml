@@ -58,6 +58,11 @@ jobs:
             RUN_PHPSTAN: true
             RUN_PSALM: false
             RUN_BENCHMARK: false
+          - PHP_VERSION: "8.5"
+            CODE_COVERAGE: false
+            RUN_PHPSTAN: true
+            RUN_PSALM: false
+            RUN_BENCHMARK: false
 
     steps:
       - uses: actions/checkout@v4
